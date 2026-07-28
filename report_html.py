@@ -65,6 +65,14 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
       cursor:pointer; user-select:none}
 .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
 .catgrp.hidden{display:none}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
 @media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
 """
 

@@ -207,8 +207,11 @@ def main():
 
     videos = load_videos(args.videos)
     prod_main = tag_and_filter(load_products(args.products))
-    prod_main = prod_main[prod_main["n_creators"] > 10]   # 売れ筋のみ: 低参画=専売疑いを除外
+    prod_main = prod_main[prod_main["n_creators"] > CONFIG["hot_min_creators"]]  # 売れ筋のみ: 低参画=専売疑いを除外
     prod_new = tag_and_filter(load_products(args.new))
+    # チャレンジ: 成長率マイナスと参画3人以下を除外
+    prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
+                        & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
 
     hot = build_table(prod_main, videos).sort_values("_gmv", ascending=False)
     # チャレンジ: 掲載45日以内(データにあれば適用) → 成長率順

@@ -43,6 +43,21 @@ CONFIG = {
     "recent_video_days": 7,           # 「新規投稿」とみなす日数
     # --- クリエイタープロデュース商品の除外名 (ここに追記して運用) ---
     "exclude_names": ["上司のあさみ"],
+    # --- 共通除外: 報酬率がこの値以下 (%) は除外 ---
+    "min_commission_pct": 3.0,
+    # --- 参画クリエイター数の下限 (この人数以下は除外) ---
+    "hot_min_creators": 10,        # 売れ筋: 実質専売の疑い
+    "challenge_min_creators": 3,   # チャレンジ: 新商品なので緩め
+    # --- チャレンジ: 成長率がこの値未満 (マイナス成長) は除外 ---
+    "challenge_min_growth": 0.0,
+    # --- カテゴリ誤り補正: 商品名キーワード(全て含む) → 正しいカテゴリ ---
+    #     上から順に評価し、最初に一致したルールを適用 (例: アームカバーが自動車・バイクになる誤分類の修正)
+    "category_overrides": [
+        (["アームカバー"], "ファッション小物 > アームカバー"),
+        (["腕カバー"], "ファッション小物 > アームカバー"),
+        (["ワイドパンツ", "メンズ"], "メンズウェア・下着 > パンツ"),
+        (["ワイドパンツ"], "レディースウェア・インナー > パンツ"),
+    ],
     # --- キャンペーンタグ用ワード (除外せずタグ付け) ---
     "campaign_words": ["クーポン", "OFF", "ＯＦＦ", "SALE", "セール", "割引", "福袋"],
     # --- 季節ワード (除外せずタグ付け) ---
@@ -128,6 +143,16 @@ def fix_image_url(u):
     if "-resize-webp:" in u and u.endswith(".jpeg"):
         return u.replace("-resize-webp:", "-resize-jpeg:"), u[:-5] + ".webp"
     return u, u
+
+
+def fix_category(name: str, category: str) -> str:
+    """CONFIG["category_overrides"] による商品名ベースのカテゴリ誤り補正"""
+    if not isinstance(name, str):
+        return category
+    for keywords, fixed in CONFIG["category_overrides"]:
+        if all(k in name for k in keywords):
+            return fixed
+    return category
 
 
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
@@ -228,6 +253,9 @@ def load_products(path: str) -> pd.DataFrame:
                         if find_col(df, ["画像リンク"]) else ""),
         "kalodata_link": df[col_kalo_link] if col_kalo_link else "",
     })
+    # カテゴリ誤り補正 (is_yakki判定や表示グループ化の前に適用)
+    out["category"] = [fix_category(n, c) for n, c in
+                       zip(out["product_name"], out["category"])]
     # チャネル構成比 (動画向き / LIVE向き判定用)
     content_gmv = out["live_gmv"] + out["video_gmv_30d"]
     out["live_share"] = (out["live_gmv"] / content_gmv).where(content_gmv > 0, 0)
@@ -253,8 +281,9 @@ def tag_and_filter(df: pd.DataFrame) -> pd.DataFrame:
         lambda s: any(w in s for w in CONFIG["seasonal_words"]))
     df["is_yakki"] = df["category"].fillna("").apply(
         lambda s: any(w in str(s) for w in CONFIG["yakki_categories"]))
-    # アフィリ非対応 (報酬率 "-") はクリエイター向けリストから必ず除外
-    return df[~df["is_excluded"] & df["affiliate_ok"]]
+    # アフィリ非対応 (報酬率 "-") と低報酬率 (3%以下) はクリエイター向けリストから必ず除外
+    return df[~df["is_excluded"] & df["affiliate_ok"]
+              & (df["commission_pct"] > CONFIG["min_commission_pct"])]
 
 
 # ============================================================
