@@ -1,5 +1,6 @@
-# 週次おすすめ商品の自動配信:
-# input/ にKalodataエクスポートをプッシュ → 生成 → サイト更新コミット → Discord投稿
+# 週次おすすめ商品の2段階配信:
+#  1) input/ にKalodataエクスポートをプッシュ → プレビューを /preview/ に自動生成 (公開・Discordなし)
+#  2) プレビュー確認後、Actionsタブ「Weekly Picks」→ Run workflow → 本公開 + Discord投稿
 name: Weekly Picks
 
 on:
@@ -16,7 +17,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-publish-post:
+  # ---- ステージ1: プレビュー生成 (input/ 更新で自動。本番には触らない) ----
+  preview:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,8 +31,51 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 生成が失敗した場合はここで止まり、Discord投稿は行われない
-      # (スクリプト内の投稿処理はExcel/HTML/アーカイブ生成がすべて成功した後に実行される)
+      - name: Generate preview (no archive, no Discord)
+        run: python weekly_data_v1.py --auto input/ --html --no-archive
+
+      - name: Add preview banner
+        run: |
+          python - <<'EOF'
+          for f in ["weekly_site/index.html", "weekly_site/challenge.html"]:
+              s = open(f, encoding="utf-8").read()
+              s = s.replace("</header>", "</header>"
+                  '<div class="arch-note">🧪 プレビュー版です。この内容で公開してよければ '
+                  'GitHub Actions の「Weekly Picks」→ Run workflow を実行してください'
+                  '（Web公開とDiscord投稿が行われます）</div>', 1)
+              open(f, "w", encoding="utf-8").write(s)
+          EOF
+
+      - name: Publish preview to /preview/ (commit & push)
+        run: |
+          mkdir -p preview
+          cp weekly_site/index.html preview/index.html
+          cp weekly_site/challenge.html preview/challenge.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preview/
+          if git diff --cached --quiet; then
+            echo "変更なし: コミットをスキップ"
+          else
+            git commit -m "chore: プレビュー更新 $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+          fi
+
+  # ---- ステージ2: 本公開 + Discord投稿 (Run workflow の手動実行のみ) ----
+  publish:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # 生成が失敗した場合はここで止まり、Discord投稿もサイト更新も行われない
       - name: Generate site and post to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -41,6 +87,7 @@ jobs:
           cp weekly_site/challenge.html challenge.html
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r --ignore-unmatch --quiet preview || true
           git add index.html challenge.html archive/ data/
           if git diff --cached --quiet; then
             echo "変更なし: コミットをスキップ"
