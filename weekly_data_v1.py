@@ -222,11 +222,62 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
                 send(content=head, embeds=embeds[i:i+10])
 
 
+def autodetect_inputs(input_dir: str):
+    """input_dir のKalodataエクスポートを自動判別して
+    (売れ筋, 新商品, 動画, フォロワー少動画orNone) を返す。判別できなければエラーで停止。
+    - Kalodata_Product_*.xlsx ×2: 「アップロード時間」が全行45日以内の方が新商品
+    - Kalodata_Video_*.xlsx ×1〜2: 2つある場合は行数が多い方が通常動画、少ない方がフォロワー少動画"""
+    import glob
+    prods = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Product_*.xlsx")))
+    vids = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Video_*.xlsx")))
+    if len(prods) != 2:
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_*.xlsx が2ファイル必要です "
+                 f"(検出 {len(prods)}件: {prods})")
+    if not 1 <= len(vids) <= 2:
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Video_*.xlsx が1〜2ファイル必要です "
+                 f"(検出 {len(vids)}件: {vids})")
+
+    def all_recent(path: str, days: int = 45) -> bool:
+        df = pd.read_excel(path)
+        if "アップロード時間" not in df.columns:
+            sys.exit(f"[error] --auto: {path} に「アップロード時間」列がありません")
+        ts = pd.to_datetime(df["アップロード時間"], errors="coerce").dropna()
+        if ts.empty:
+            sys.exit(f"[error] --auto: {path} の「アップロード時間」を日付として読めません")
+        return bool((ts >= pd.Timestamp.now() - pd.Timedelta(days=days)).all())
+
+    recent = [all_recent(p) for p in prods]
+    if recent == [True, False]:
+        new_f, hot_f = prods
+    elif recent == [False, True]:
+        hot_f, new_f = prods
+    else:
+        sys.exit("[error] --auto: 商品2ファイルの売れ筋/新商品を判別できません "
+                 f"(全行45日以内フラグ: {dict(zip(prods, recent))})。"
+                 "--products/--new を明示指定してください")
+
+    if len(vids) == 2:
+        rows = [len(pd.read_excel(v)) for v in vids]
+        if rows[0] == rows[1]:
+            sys.exit(f"[error] --auto: 動画2ファイルが同じ行数({rows[0]})で判別できません。"
+                     "--videos/--videos-small を明示指定してください")
+        main_v, small_v = (vids[0], vids[1]) if rows[0] > rows[1] else (vids[1], vids[0])
+    else:
+        main_v, small_v = vids[0], None
+
+    print(f"[info] --auto判別: 売れ筋={hot_f} / 新商品={new_f} / 動画={main_v}"
+          + (f" / フォロワー少動画={small_v}" if small_v else ""))
+    return hot_f, new_f, main_v, small_v
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--products", required=True)
-    ap.add_argument("--new", required=True)
-    ap.add_argument("--videos", required=True)
+    ap.add_argument("--auto", metavar="DIR", default=None,
+                    help="指定ディレクトリのKalodataエクスポートを自動判別 "
+                         "(--products/--new/--videos/--videos-small の代わり)")
+    ap.add_argument("--products", default=None)
+    ap.add_argument("--new", default=None)
+    ap.add_argument("--videos", default=None)
     ap.add_argument("--videos-small", default=None,
                     help="フォロワー少クリエイターの上位動画エクスポート (🔰判定の実証データ、任意)")
     ap.add_argument("--out", default=None)
@@ -243,6 +294,11 @@ def main():
     ap.add_argument("--no-archive", action="store_true",
                     help="archive/<日付>/ スナップショットと data/<日付>.json を保存しない")
     args = ap.parse_args()
+
+    if args.auto:
+        args.products, args.new, args.videos, args.videos_small = autodetect_inputs(args.auto)
+    elif not (args.products and args.new and args.videos):
+        ap.error("--products/--new/--videos を指定するか --auto <DIR> を使ってください")
 
     videos = load_videos(args.videos)
     small_keys = set()

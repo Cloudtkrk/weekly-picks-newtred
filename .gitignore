@@ -1,6 +1,5 @@
-# Kalodataエクスポート等の生データはコミットしない
-input/
-*.xlsx
+# 生成物のExcelはコミットしない (input/ のKalodataエクスポートはコミット対象 = Actionsの入力)
+weekly_data_*.xlsx
 
 # ローカル生成物・キャッシュ
 weekly_site/

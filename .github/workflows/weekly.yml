@@ -1,0 +1,50 @@
+# 週次おすすめ商品の自動配信:
+# input/ にKalodataエクスポートをプッシュ → 生成 → サイト更新コミット → Discord投稿
+name: Weekly Picks
+
+on:
+  push:
+    paths:
+      - "input/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-picks-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-publish-post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # 生成が失敗した場合はここで止まり、Discord投稿は行われない
+      # (スクリプト内の投稿処理はExcel/HTML/アーカイブ生成がすべて成功した後に実行される)
+      - name: Generate site and post to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3
+
+      - name: Publish site (commit & push)
+        run: |
+          cp weekly_site/index.html index.html
+          cp weekly_site/challenge.html challenge.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html challenge.html archive/ data/
+          if git diff --cached --quiet; then
+            echo "変更なし: コミットをスキップ"
+          else
+            git commit -m "chore: 週次サイト更新 $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+          fi
