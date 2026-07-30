@@ -3,22 +3,27 @@
 Kalodataのエクスポートから、自社クリエイター向けの週次おすすめ商品サイトを生成し、
 Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプロジェクト。
 
-## 毎週のワークフロー (GitHub Actionsで全自動)
+## 毎週のワークフロー (GitHub Actions・プレビュー承認式の2段階)
 
-**`input/` にKalodataエクスポート3〜4ファイルを置いてコミット&プッシュするだけ。**
-残りは GitHub Actions (`.github/workflows/weekly.yml`) が自動実行する:
+**ステージ1 (自動): `input/` のエクスポートを新しい3〜4ファイルに置き換えてコミット&プッシュ**
+→ Actions (`.github/workflows/weekly.yml` の `preview` ジョブ) がプレビューを生成し、
+`preview/` にコミットする。**本番ページ・Discordには一切触らない**。
+プレビューURL: `https://<Vercelドメイン>/preview/` (売れ筋) と `/preview/challenge.html`。
+プレビューには🧪バナーが付く。
 
-1. `input/**` へのpushをトリガーに起動 (手動実行は Actions タブの workflow_dispatch)
-2. `python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3` を実行
+**ステージ2 (手動承認): プレビューを確認してOKなら、Actionsタブ「Weekly Picks」→ Run workflow**
+→ `publish` ジョブが本生成を実行:
+1. `python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3`
    - `--auto` がファイルを自動判別: `Kalodata_Video_*.xlsx` → 動画 (2つあれば行数が多い方が通常動画、
      少ない方がフォロワー少動画)。`Kalodata_Product_*.xlsx` ×2 は「アップロード時間」が
      全行45日以内の方が新商品、もう一方が売れ筋。判別できない場合はエラーで停止
-3. 生成成功後、`weekly_site/` の2ファイルをリポジトリ直下の `index.html` / `challenge.html` に
-   コピーして bot名義でコミット&プッシュ (`[skip ci]` 付き、無限ループ防止) → Vercelが自動デプロイ
-4. Discordに1ジャンル上位3件のembedカードを投稿 (webhookは repoのSecret `DISCORD_WEBHOOK_URL`)
-5. 生成が失敗した場合はDiscord投稿もサイト更新も行われず、ジョブが失敗する
+2. 生成成功後、直下の `index.html` / `challenge.html` を更新し `archive/`・`data/` と一緒に
+   bot名義でコミット (`[skip ci]`、`preview/` はこの時点で削除) → Vercelが自動デプロイ
+3. Discordに1ジャンル上位3件のembedカードを投稿 (webhookは repoのSecret `DISCORD_WEBHOOK_URL`)
+4. 生成が失敗した場合はDiscord投稿もサイト更新も行われず、ジョブが失敗する
 
-翌週は `input/` の古いエクスポートを新しいファイルに置き換えてプッシュする。
+Claudeセッション経由の場合: xlsxを添付してもらい `input/` を差し替えてプッシュ→プレビューURLを案内→
+ユーザーのOK後に workflow_dispatch を実行 (GitHub MCPの `actions_run_trigger`) して本公開する。
 
 ### ローカル手動実行 (フォールバック)
 
