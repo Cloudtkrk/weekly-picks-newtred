@@ -58,6 +58,23 @@ CONFIG = {
         (["ワイドパンツ", "メンズ"], "メンズウェア・下着 > パンツ"),
         (["ワイドパンツ"], "レディースウェア・インナー > パンツ"),
     ],
+    # --- 5ジャンル固定構成: Kalodata大分類 → ジャンル (未定義は「その他」) ---
+    "genre_map": {
+        "美容・パーソナルケア": "美容", "健康": "美容",
+        "食品・飲料": "食品",
+        "家電製品": "家電ガジェット", "スマートフォン・エレクトロニクス": "家電ガジェット",
+        "キッチン用品": "キッチン・ホーム用品", "ホーム用品": "キッチン・ホーム用品",
+        "ホームセンター": "キッチン・ホーム用品",
+        "テキスタイル・ソフトファニシング": "キッチン・ホーム用品", "家具": "キッチン・ホーム用品",
+    },
+    "genre_order": ["美容", "食品", "家電ガジェット", "キッチン・ホーム用品", "その他"],
+    "per_genre_limit": 10,             # 売れ筋: 各ジャンル上位N件
+    # --- バッジ閾値 (サンプル承認難易度の可視化) ---
+    "easy_pace": 50,                   # 🔰 参画ペース (人/月) 下限
+    "easy_cvr": 40,                    # 🔰 成立率 (%) 下限
+    "gem_gmv_per_creator": 100_000,    # 💎 1人あたりGMV (円) 下限
+    "gem_cvr": 30,                     # 💎 成立率 (%) 下限
+    "own_sample_brands": [],           # 🎁 自社サンプル可 (商品名に部分一致、後日追加)
     # --- キャンペーンタグ用ワード (除外せずタグ付け) ---
     "campaign_words": ["クーポン", "OFF", "ＯＦＦ", "SALE", "セール", "割引", "福袋"],
     # --- 季節ワード (除外せずタグ付け) ---
@@ -380,7 +397,7 @@ def build_discord_message(hot: pd.DataFrame, challenge: pd.DataFrame) -> str:
     for i, (_, row) in enumerate(hot.iterrows(), 1):
         parts.append(product_line(row, i, "hot"))
         parts.append("")
-    parts.append("## 🚀 チャレンジ商品（伸び始め・先行者チャンス）")
+    parts.append("## 🚀 新商品（伸び始め・先行者チャンス）")
     for i, (_, row) in enumerate(challenge.iterrows(), 1):
         parts.append(product_line(row, i, "challenge"))
         parts.append("")
@@ -438,13 +455,13 @@ def main():
     # 突合率レポート (商品名マッチの健全性チェック)
     match_rate = (prod_main["recent_video_gmv_7d"] > 0).mean()
     print(f"[info] 売れ筋母集団 {len(prod_main)}件 / 動画突合率 {match_rate:.0%}")
-    print(f"[info] 売れ筋 {len(hot)}件 / チャレンジ {len(challenge)}件 選出")
+    print(f"[info] 売れ筋 {len(hot)}件 / 新商品 {len(challenge)}件 選出")
 
     # Excel出力 (社内確認用)
     out_path = args.out or f"weekly_picks_{dt.date.today():%Y%m%d}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as w:
         hot.to_excel(w, sheet_name="売れ筋", index=False)
-        challenge.to_excel(w, sheet_name="チャレンジ", index=False)
+        challenge.to_excel(w, sheet_name="新商品", index=False)
         prod_main.to_excel(w, sheet_name="母集団_売れ筋", index=False)
         prod_new.to_excel(w, sheet_name="母集団_新着", index=False)
     print(f"[info] 出力: {out_path}")

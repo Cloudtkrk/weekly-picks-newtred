@@ -14,7 +14,7 @@ import requests
 
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
-                          fmt_money, CONFIG)
+                          fmt_money, pct_rank, CONFIG)
 
 
 def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
@@ -23,6 +23,29 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
           "median_gpm", "organic_gmv_share"]
     df = prod.merge(videos[["product_key"] + vc], on="product_key", how="left")
     df[vc] = df[vc].fillna(0)
+
+    # 新指標: 参画ペース (人/月) = 参画数÷掲載月数 (最低1ヶ月)、1人あたりGMV = 30日売上÷参画数
+    # 累積参画数は掲載期間で歪む (1年で150人と1ヶ月で150人は別物)。
+    # 高GMVでも参画1000人超なら飽和していて新規の取り分が小さい
+    months = ((pd.Timestamp.now() - df["listed_at"]).dt.days / 30).clip(lower=1)
+    pace = df["n_creators"] / months                                # 掲載日欠損はNaN→"-"
+    gmv_pc = (df["gmv_30d"] / df["n_creators"]).where(df["n_creators"] > 0)
+
+    # バッジ (サンプル承認難易度)。NaNとの比較はFalseになり自動的に非該当
+    c = CONFIG
+    has_star = df["recent_video_gmv_7d"] > 0
+    is_easy = (pace >= c["easy_pace"]) & (df["creator_cvr_pct"] >= c["easy_cvr"]) & has_star
+    is_gem = ~is_easy & (gmv_pc >= c["gem_gmv_per_creator"]) & (df["creator_cvr_pct"] >= c["gem_cvr"])
+    is_own = df["product_name"].fillna("").apply(
+        lambda s: any(b in s for b in c["own_sample_brands"]))
+
+    def join_badges(e, g, o):
+        b = []
+        if e: b.append("🔰初心者でも狙いやすい")
+        elif g: b.append("💎狙い目（実績者向け）")
+        if o: b.append("🎁自社サンプル可")
+        return "・".join(b)
+    badge = [join_badges(*t) for t in zip(is_easy, is_gem, is_own)]
 
     def tags(r):
         t = []
@@ -37,10 +60,13 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
             t.append("広告主導")
         return "・".join(t)
 
+    major = df["category"].astype(str).str.split(">").str[0].str.strip()
     out = pd.DataFrame({
-        "おすすめ": (df["recent_video_gmv_7d"] > 0).map({True: "⭐", False: ""}),
+        "おすすめ": has_star.map({True: "⭐", False: ""}),
+        "バッジ": badge,
         "商品名": df["product_name"].str.slice(0, 50),
-        "大分類": df["category"].astype(str).str.split(">").str[0].str.strip(),
+        "ジャンル": major.map(lambda x: CONFIG["genre_map"].get(x, "その他")),
+        "大分類": major,
         "カテゴリ": df["category"].astype(str).str.split(">").str[-1].str.strip(),
         "30日売上": df["gmv_30d"].map(fmt_money),
         "成長率": df["growth_pct"].map(lambda v: f"{v:+.0f}%"),
@@ -52,6 +78,8 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
             lambda v: f"約{v:,.0f}円" if v > 0 else "-"),
         "報酬率": df["commission_pct"].map(lambda v: f"{v:.0f}%" if v else "-"),
         "参画クリエイター数": df["n_creators"].astype(int),
+        "参画ペース": pace.map(lambda v: f"{v:.0f}人/月" if v == v else "-"),
+        "1人あたりGMV": gmv_pc.map(lambda v: fmt_money(v) if v == v else "-"),
         "成立率": df["creator_cvr_pct"].map(lambda v: f"{v:.0f}%"),
         "評価": df["rating"],
         "タグ": df.apply(tags, axis=1),
@@ -62,6 +90,8 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
         "_gmv": df["gmv_30d"],
         "_growth": df["growth_pct"],
         "_listed": df["listed_at"],
+        "_cvr": df["creator_cvr_pct"],
+        "_gmv_pc": gmv_pc,
     })
     return out
 
@@ -177,8 +207,8 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
     today = dt.date.today().strftime("%m/%d")
     send(content=f"# 📦 今週のおすすめ商品（{today}更新）\n"
                  f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください")
-    for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 チャレンジ", new_tbl, "challenge")]:
-        for cat, g in tbl.groupby("大分類", sort=False):
+    for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 新商品", new_tbl, "challenge")]:
+        for cat, g in tbl.groupby("ジャンル", sort=False):
             g = g.head(top_per_cat)
             embeds = [make_embed(r, kind) for _, r in g.iterrows()]
             # Discordは1メッセージ10 embedまで
@@ -215,62 +245,66 @@ def main():
     prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
                         & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
 
-    hot = build_table(prod_main, videos).sort_values("_gmv", ascending=False)
-    # チャレンジ: 掲載45日以内(データにあれば適用) → 成長率順
+    hot = build_table(prod_main, videos)
+    # 新商品: 掲載45日以内(データにあれば適用)
     new_tbl = build_table(prod_new, videos)
     cutoff = pd.Timestamp.now() - pd.Timedelta(days=45)
     recent_mask = new_tbl["_listed"] >= cutoff
     if recent_mask.any():
         new_tbl = new_tbl[recent_mask]
-    new_tbl = new_tbl.sort_values("_growth", ascending=False)
 
-    drop = ["_gmv", "_growth", "_listed"]
-    hot_raw_gmv = hot["_gmv"]
-    new_raw_gmv = new_tbl["_gmv"]
+    # 並び順: ジャンル固定順 → ⭐(直近7日動画売上あり)優先 → 乗りやすさ順。
+    # 乗りやすさ = 成立率のパーセンタイル + 1人あたりGMVのパーセンタイル
+    # (売上高順は廃止: 高GMVでも飽和商品は新規の取り分が小さい)
+    genre_pos = {g: i for i, g in enumerate(CONFIG["genre_order"])}
+    hot["_genre"] = hot["ジャンル"].map(genre_pos)
+    hot["_star"] = (hot["おすすめ"] == "⭐").astype(int)
+    hot["_ride"] = pct_rank(hot["_cvr"].fillna(0)) + pct_rank(hot["_gmv_pc"].fillna(0))
+    hot = hot.sort_values(["_genre", "_star", "_ride"],
+                          ascending=[True, False, False], kind="stable")
+    hot = hot.groupby("ジャンル", sort=False).head(CONFIG["per_genre_limit"])
+    # 新商品は件数制限なし・同じジャンル構成で成長率順のまま
+    new_tbl["_genre"] = new_tbl["ジャンル"].map(genre_pos)
+    new_tbl = new_tbl.sort_values(["_genre", "_growth"],
+                                  ascending=[True, False], kind="stable")
+
+    drop = ["_gmv", "_growth", "_listed", "_cvr", "_gmv_pc", "_genre", "_star", "_ride"]
+    hot_gmv_raw = hot["_gmv"]
+    new_gmv_raw = new_tbl["_gmv"]
     hot = hot.drop(columns=drop)
-    new_tbl = new_tbl.drop(columns=drop)
+    new_tbl = new_tbl.drop(columns=[c for c in drop if c in new_tbl.columns])
 
-    # カテゴリサマリー (大分類ごとの件数と売上合計)
+    # ジャンルサマリー (件数と売上合計)
     def cat_summary(tbl, gmv_raw):
         s = tbl.copy()
         s["_g"] = gmv_raw.loc[s.index]
-        agg = (s.groupby("大分類")
-                .agg(商品数=("商品名", "count"), 合計30日売上=("_g", "sum"))
-                .sort_values("合計30日売上", ascending=False))
+        agg = (s.groupby("ジャンル", sort=False)
+                .agg(商品数=("商品名", "count"), 合計30日売上=("_g", "sum")))
         agg["合計30日売上"] = agg["合計30日売上"].map(fmt_money)
         return agg.reset_index()
-
-    hot_gmv_raw = hot_raw_gmv
-    new_gmv_raw = new_raw_gmv
-    # 大分類を売上合計の大きい順に並べ、その中で商品を売上順に
-    cat_order = (hot.assign(_g=hot_gmv_raw).groupby("大分類")["_g"].sum()
-                    .sort_values(ascending=False).index.tolist())
-    hot["_cat_rank"] = hot["大分類"].map({c: i for i, c in enumerate(cat_order)})
-    hot = hot.sort_values(["_cat_rank"], kind="stable").drop(columns="_cat_rank")
-    new_tbl = new_tbl.sort_values("大分類", kind="stable")
 
     out_path = args.out or f"weekly_data_{dt.date.today():%Y%m%d}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as w:
         cat_summary(hot, hot_gmv_raw).to_excel(w, sheet_name="カテゴリ別サマリー", index=False)
         hot.to_excel(w, sheet_name="売れ筋候補", index=False)
-        new_tbl.to_excel(w, sheet_name="チャレンジ候補", index=False)
+        new_tbl.to_excel(w, sheet_name="新商品候補", index=False)
         # 列幅調整
         for ws in w.book.worksheets:
             for col_cells in ws.columns:
                 width = max(len(str(c.value)) for c in col_cells if c.value) + 2
                 ws.column_dimensions[col_cells[0].column_letter].width = min(width, 50)
 
-    print(f"[info] 売れ筋候補 {len(hot)}件 / チャレンジ候補 {len(new_tbl)}件 → {out_path}")
+    print(f"[info] 売れ筋候補 {len(hot)}件 / 新商品候補 {len(new_tbl)}件 → {out_path}")
 
     if args.images:
-        embed_images(out_path, ["売れ筋候補", "チャレンジ候補"])
+        embed_images(out_path, ["売れ筋候補", "新商品候補"])
 
     if args.html or args.html_embed:
         from report_html import write_site, archive_site
         site_dir = "weekly_site"
         write_site(hot, new_tbl, site_dir, embed=args.html_embed)
         print(f"[info] Webサイト出力: {site_dir}/index.html (売れ筋), "
-              f"{site_dir}/challenge.html (チャレンジ)"
+              f"{site_dir}/challenge.html (新商品)"
               + (" [画像埋め込み版]" if args.html_embed else ""))
         if not args.no_archive:
             arch_dir = archive_site(hot, new_tbl, root_dir=".")
@@ -281,7 +315,7 @@ def main():
     today = dt.date.today().strftime("%m/%d")
     lines = [f"# 📦 今週のおすすめ商品データ（{today}）", "",
              "# 🔥 売れ筋候補"]
-    for cat, g in hot.groupby("大分類", sort=False):
+    for cat, g in hot.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]
         for _, r in g.iterrows():
             lines += [
@@ -289,8 +323,8 @@ def main():
                 f"　30日売上 {r['30日売上']}（{r['販売件数']}）｜直近7日動画売上 {r['直近7日動画売上']}（{r['直近7日動画本数']}本）",
                 f"　単価 {r['単価']}｜報酬率 {r['報酬率']}→**1件{r['報酬目安/件']}**｜成立率 {r['成立率']}（参画{r['参画クリエイター数']}人）",
                 f"　タグ: {r['タグ'] or 'なし'}", ""]
-    lines += ["# 🚀 チャレンジ候補"]
-    for cat, g in new_tbl.groupby("大分類", sort=False):
+    lines += ["# 🚀 新商品候補"]
+    for cat, g in new_tbl.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]
         for _, r in g.iterrows():
             lines += [

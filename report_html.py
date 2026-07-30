@@ -2,6 +2,8 @@
 import datetime as dt
 import html as _h
 
+from weekly_picks import CONFIG
+
 
 CSS = """
 :root{
@@ -47,7 +49,18 @@ header .date{color:var(--sub); font-size:13px}
 .tag.yakki{background:#ffe4e8; color:#a1233a}
 .rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
      color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
-     padding:3px 10px; border-radius:99px; margin-bottom:5px}
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
 .info{cursor:help; border-bottom:1px dotted var(--sub)}
 footer{margin-top:44px; color:var(--sub); font-size:12px;
        border-top:1px solid var(--line); padding-top:14px}
@@ -120,10 +133,18 @@ def _card(r, kind: str, embed_fn=None) -> str:
     else:
         img = '<div class="noimg">no image</div>' 
     link = r["商品リンク"] if isinstance(r["商品リンク"], str) and r["商品リンク"].startswith("http") else "#"
-    rec = ('<span class="rec">⭐ 今週売れてる</span><br>'
-           if kind == "hot" and r.get("おすすめ") == "⭐" else "")
+    # 商品名の上のピル行: ⭐今週売れてる + サンプル承認難易度バッジ (併記可)
+    pills = []
+    if kind == "hot" and r.get("おすすめ") == "⭐":
+        pills.append('<span class="rec">⭐ 今週売れてる</span>')
+    for b in str(r.get("バッジ") or "").split("・"):
+        if not b:
+            continue
+        cls = "easy" if b.startswith("🔰") else "gem" if b.startswith("💎") else "own"
+        pills.append(f'<span class="pill {cls}">{_h.escape(b)}</span>')
+    rec = f'<div class="pills">{"".join(pills)}</div>' if pills else ""
     if kind == "hot":
-        line1 = f'30日売上 <b>{r["30日売上"]}</b>（{r["販売件数"]}）' 
+        line1 = f'30日売上 <b>{r["30日売上"]}</b>（{r["販売件数"]}）'
     else:
         line1 = (f'成長率 <b>{r["成長率"]}</b>｜30日売上 <b>{r["30日売上"]}</b>'
                  f'（{r["販売件数"]}）｜掲載 {r["掲載日"]}')
@@ -131,15 +152,20 @@ def _card(r, kind: str, embed_fn=None) -> str:
              f' → 1件 <span class="reward">{r["報酬目安/件"]}</span>｜'
              f'<span class="info" title="その商品に参画したクリエイターのうち、実際に売上を出した人の割合">成立率</span> '
              f'<b>{r["成立率"]}</b>（参画{r["参画クリエイター数"]}人）')
+    line3 = (f'<span class="info" title="参画クリエイター数÷掲載月数。承認の速さの目安">参画ペース</span> '
+             f'<b>{r.get("参画ペース", "-")}</b>｜'
+             f'<span class="info" title="30日売上÷参画クリエイター数。1人あたりの取り分の目安">1人あたりGMV</span> '
+             f'<b>{r.get("1人あたりGMV", "-")}</b>')
     return (f'<div class="card">{img}<div class="body">{rec}'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(str(r["商品名"]))}</a>'
             f'<div class="stats">{line1}</div><div class="stats">{line2}</div>'
+            f'<div class="stats">{line3}</div>'
             f'{_tag_html(r["タグ"])}</div></div>')
 
 
 def _section(tbl, kind: str, embed_fn=None) -> str:
     parts = []
-    for cat, g in tbl.groupby("大分類", sort=False):
+    for cat, g in tbl.groupby("ジャンル", sort=False):
         cat_e = _h.escape(str(cat))
         parts.append(f'<div class="catgrp" data-cat="{cat_e}">')
         parts.append(f'<div class="cat">▼ <b>{cat_e}</b>（{len(g)}件）</div>')
@@ -161,7 +187,7 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
 
 
 def _filter_bar(tbl) -> str:
-    cats = list(dict.fromkeys(tbl["大分類"].astype(str)))
+    cats = list(dict.fromkeys(tbl["ジャンル"].astype(str)))
     chips = ['<span class="chip on" data-cat="all">すべて</span>']
     chips += [f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
     return f'<div class="filters">{"".join(chips)}</div>' 
@@ -207,22 +233,40 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
     if kind == "hot":
         title, color_cls = "🔥 売れ筋", "hot"
         tabs = (f'<a class="tab active hot" href="./">🔥 売れ筋（{n_hot}）</a>'
-                f'<a class="tab" href="./challenge.html">🚀 チャレンジ（{n_chal}）</a>')
+                f'<a class="tab" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
     else:
-        title, color_cls = "🚀 チャレンジ", "chal"
+        title, color_cls = "🚀 新商品", "chal"
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
-                f'<a class="tab active chal" href="./challenge.html">🚀 チャレンジ（{n_chal}）</a>')
+                f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
+    guide = ""
+    if kind == "hot":
+        guide = """<div class="guide"><div class="g-title">自分に合う商品の選び方</div><ul>
+<li><span class="pill easy">🔰 初心者でも狙いやすい</span>承認ペースが速く成立率も高い。実績が少なくてもサンプルが通りやすい</li>
+<li><span class="pill own">🎁 自社サンプル可</span>弊社経由でサンプルを渡せる商品。実績ゼロでもまずここから</li>
+<li><span class="pill gem">💎 狙い目</span>1人あたりの取り分が大きいが、承認には実績や投稿数が必要</li>
+<li><span class="rec">⭐ 今週売れてる</span>直近7日も動画で売れている＝今から乗っても間に合う</li>
+</ul></div>"""
+    c = CONFIG
+    badge_note = (
+        f'🔰 <b>初心者でも狙いやすい</b>＝参画ペース{c["easy_pace"]}人/月以上 × '
+        f'成立率{c["easy_cvr"]}%以上 × ⭐今週売れてる ／ '
+        f'💎 <b>狙い目（実績者向け）</b>＝1人あたりGMV{c["gem_gmv_per_creator"] // 10000}万円以上 × '
+        f'成立率{c["gem_cvr"]}%以上 ／ '
+        f'🎁 <b>自社サンプル可</b>＝弊社取扱ブランドの商品<br>'
+        f'<b>参画ペース</b>＝参画クリエイター数÷掲載月数（承認の速さの目安）。'
+        f'<b>1人あたりGMV</b>＝30日売上÷参画クリエイター数（1人あたりの取り分の目安）<br>')
     doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} 週次おすすめ商品 {today}</title><style>{CSS}</style></head><body>
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">{today} 更新</span></header>
 <div class="tabs">{tabs}</div>
+{guide}
 {_filter_bar(tbl)}
 {_section(tbl, kind, embed_fn)}
 <footer>⭐ <b>今週売れてる</b>＝直近7日間に投稿動画から売上が発生している商品（今から乗っても売れやすい）<br>
-<b>成立率</b>＝その商品に参画したクリエイターのうち、実際に売上を出した人の割合。高いほど「乗れば売れる」商品です<br><br>
+{badge_note}<b>成立率</b>＝その商品に参画したクリエイターのうち、実際に売上を出した人の割合。高いほど「乗れば売れる」商品です<br><br>
 ※ 報酬率・1件あたり報酬目安は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
 ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ。売上等の数値は独自集計の参考値です。</footer>
 </div>{FILTER_JS}</body></html>"""
@@ -303,7 +347,7 @@ def write_archive_index(root_dir: str = "."):
                 with open(jpath, encoding="utf-8") as f:
                     j = json.load(f)
                 counts = (f'<span class="stats">🔥 売れ筋 {j["n_hot"]}件 / '
-                          f'🚀 チャレンジ {j["n_challenge"]}件</span>')
+                          f'🚀 新商品 {j["n_challenge"]}件</span>')
             except Exception:
                 pass
         rows.append(f'<a class="card week" href="./{d}/">'
@@ -318,7 +362,7 @@ def write_archive_index(root_dir: str = "."):
 <div class="wrap">
 <header><h1>📅 過去のランキング</h1></header>
 <div class="tabs"><a class="tab" href="/">🔥 最新の売れ筋</a>
-<a class="tab" href="/challenge.html">🚀 最新のチャレンジ</a></div>
+<a class="tab" href="/challenge.html">🚀 最新の新商品</a></div>
 {body}
 <footer>毎週の更新時に自動保存されるアーカイブです。数値・報酬率は各時点の参考値で、現在の条件とは異なる場合があります。</footer>
 </div></body></html>"""
