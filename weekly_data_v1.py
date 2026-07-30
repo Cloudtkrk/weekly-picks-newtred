@@ -17,12 +17,16 @@ from weekly_picks import (load_videos, load_products, tag_and_filter,
                           fmt_money, pct_rank, CONFIG)
 
 
-def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
-    """商品×直近7日動画実績を突合して表示用テーブルを作る"""
+def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
+                small_keys: set | None = None) -> pd.DataFrame:
+    """商品×直近7日動画実績を突合して表示用テーブルを作る。
+    small_keys: フォロワー少クリエイター動画エクスポートに売上が載っていた商品キー
+    (=実績の少ないクリエイターでも売れている実証。🔰判定に使う)"""
     vc = ["recent_video_gmv_7d", "n_videos_7d", "n_new_posts",
           "median_gpm", "organic_gmv_share"]
     df = prod.merge(videos[["product_key"] + vc], on="product_key", how="left")
     df[vc] = df[vc].fillna(0)
+    small_hit = df["product_key"].isin(small_keys or set())
 
     # 新指標: 参画ペース (人/月) = 参画数÷掲載月数 (最低1ヶ月)、1人あたりGMV = 30日売上÷参画数
     # 累積参画数は掲載期間で歪む (1年で150人と1ヶ月で150人は別物)。
@@ -32,9 +36,10 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame) -> pd.DataFrame:
     gmv_pc = (df["gmv_30d"] / df["n_creators"]).where(df["n_creators"] > 0)
 
     # バッジ (サンプル承認難易度)。NaNとの比較はFalseになり自動的に非該当
+    # 🔰は「参画ペース×成立率×⭐」または「フォロワー少クリエイター動画で直近売上あり」
     c = CONFIG
     has_star = df["recent_video_gmv_7d"] > 0
-    is_easy = (pace >= c["easy_pace"]) & (df["creator_cvr_pct"] >= c["easy_cvr"]) & has_star
+    is_easy = ((pace >= c["easy_pace"]) & (df["creator_cvr_pct"] >= c["easy_cvr"]) & has_star) | small_hit
     is_gem = ~is_easy & (gmv_pc >= c["gem_gmv_per_creator"]) & (df["creator_cvr_pct"] >= c["gem_cvr"])
     is_own = df["product_name"].fillna("").apply(
         lambda s: any(b in s for b in c["own_sample_brands"]))
@@ -222,6 +227,8 @@ def main():
     ap.add_argument("--products", required=True)
     ap.add_argument("--new", required=True)
     ap.add_argument("--videos", required=True)
+    ap.add_argument("--videos-small", default=None,
+                    help="フォロワー少クリエイターの上位動画エクスポート (🔰判定の実証データ、任意)")
     ap.add_argument("--out", default=None)
     ap.add_argument("--post", action="store_true", help="Discordにembed形式で投稿")
     ap.add_argument("--webhook", default=os.environ.get("DISCORD_WEBHOOK_URL", ""))
@@ -238,17 +245,22 @@ def main():
     args = ap.parse_args()
 
     videos = load_videos(args.videos)
+    small_keys = set()
+    if args.videos_small:
+        vs = load_videos(args.videos_small)
+        small_keys = set(vs.loc[vs["recent_video_gmv_7d"] > 0, "product_key"])
+        print(f"[info] フォロワー少動画: 商品{len(small_keys)}件を🔰判定に使用")
     prod_main = tag_and_filter(load_products(args.products))
     prod_main = prod_main[prod_main["n_creators"] > CONFIG["hot_min_creators"]]  # 売れ筋のみ: 低参画=専売疑いを除外
     prod_new = tag_and_filter(load_products(args.new))
-    # チャレンジ: 成長率マイナスと参画3人以下を除外
+    # 新商品: 成長率マイナスと参画3人以下を除外
     prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
                         & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
 
-    hot = build_table(prod_main, videos)
-    # 新商品: 掲載45日以内(データにあれば適用)
-    new_tbl = build_table(prod_new, videos)
-    cutoff = pd.Timestamp.now() - pd.Timedelta(days=45)
+    hot = build_table(prod_main, videos, small_keys)
+    # 新商品: 掲載日数以内(データにあれば適用)
+    new_tbl = build_table(prod_new, videos, small_keys)
+    cutoff = pd.Timestamp.now() - pd.Timedelta(days=CONFIG["challenge_max_listed_days"])
     recent_mask = new_tbl["_listed"] >= cutoff
     if recent_mask.any():
         new_tbl = new_tbl[recent_mask]

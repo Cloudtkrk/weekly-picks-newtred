@@ -242,7 +242,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
     guide = ""
     if kind == "hot":
         guide = """<div class="guide"><div class="g-title">自分に合う商品の選び方</div><ul>
-<li><span class="pill easy">🔰 初心者でも狙いやすい</span>承認ペースが速く成立率も高い。実績が少なくてもサンプルが通りやすい</li>
+<li><span class="pill easy">🔰 初心者でも狙いやすい</span>承認ペースが速く成立率も高い、またはフォロワーの少ないクリエイターでも売れている実績あり</li>
 <li><span class="pill own">🎁 自社サンプル可</span>弊社経由でサンプルを渡せる商品。実績ゼロでもまずここから</li>
 <li><span class="pill gem">💎 狙い目</span>1人あたりの取り分が大きいが、承認には実績や投稿数が必要</li>
 <li><span class="rec">⭐ 今週売れてる</span>直近7日も動画で売れている＝今から乗っても間に合う</li>
@@ -250,7 +250,8 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
     c = CONFIG
     badge_note = (
         f'🔰 <b>初心者でも狙いやすい</b>＝参画ペース{c["easy_pace"]}人/月以上 × '
-        f'成立率{c["easy_cvr"]}%以上 × ⭐今週売れてる ／ '
+        f'成立率{c["easy_cvr"]}%以上 × ⭐今週売れてる、'
+        f'またはフォロワーの少ないクリエイターの動画で直近7日に売上実績あり ／ '
         f'💎 <b>狙い目（実績者向け）</b>＝1人あたりGMV{c["gem_gmv_per_creator"] // 10000}万円以上 × '
         f'成立率{c["gem_cvr"]}%以上 ／ '
         f'🎁 <b>自社サンプル可</b>＝弊社取扱ブランドの商品<br>'
