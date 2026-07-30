@@ -65,6 +65,10 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
       cursor:pointer; user-select:none}
 .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
 .catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
 @media(max-width:640px){
   /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
   .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
@@ -208,6 +212,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         title, color_cls = "🚀 チャレンジ", "chal"
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
                 f'<a class="tab active chal" href="./challenge.html">🚀 チャレンジ（{n_chal}）</a>')
+    tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} 週次おすすめ商品 {today}</title><style>{CSS}</style></head><body>
@@ -234,3 +239,88 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False):
           embed_fn, today, len(hot), len(new_tbl))
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
           embed_fn, today, len(hot), len(new_tbl))
+
+
+# ============================================================
+# アーカイブ (過去週スナップショット + data JSON + 一覧ページ)
+# ============================================================
+def _to_archive(doc: str, date_str: str) -> str:
+    """生成済みページをアーカイブ用に変換: 注意バナー挿入 + アーカイブリンクを一覧へ"""
+    note = (f'<div class="arch-note">📌 これは <b>{date_str}</b> 時点のアーカイブです。'
+            f'<a href="../">アーカイブ一覧</a>｜<a href="/">最新のランキングを見る</a></div>')
+    doc = doc.replace('</header>', '</header>' + note, 1)
+    return doc.replace('href="./archive/"', 'href="../"')
+
+
+def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None):
+    """archive/<日付>/ にスナップショット保存 + data/<日付>.json + 一覧ページ更新"""
+    import json
+    import os
+    date_str = date_str or dt.date.today().strftime("%Y-%m-%d")
+    arch_dir = os.path.join(root_dir, "archive", date_str)
+    os.makedirs(arch_dir, exist_ok=True)
+    today = dt.date.today().strftime("%Y/%m/%d")
+    _page(hot, "hot", os.path.join(arch_dir, "index.html"),
+          None, today, len(hot), len(new_tbl))
+    _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
+          None, today, len(hot), len(new_tbl))
+    for fn in ("index.html", "challenge.html"):
+        p = os.path.join(arch_dir, fn)
+        with open(p, encoding="utf-8") as f:
+            doc = f.read()
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(_to_archive(doc, date_str))
+    # 表示テーブルをJSONでも蓄積 (先週比・連続ランクイン等の将来機能の材料)
+    data_dir = os.path.join(root_dir, "data")
+    os.makedirs(data_dir, exist_ok=True)
+    payload = {"date": date_str, "n_hot": len(hot), "n_challenge": len(new_tbl),
+               "hot": hot.to_dict(orient="records"),
+               "challenge": new_tbl.to_dict(orient="records")}
+    with open(os.path.join(data_dir, f"{date_str}.json"), "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=1, default=str)
+    write_archive_index(root_dir)
+    return arch_dir
+
+
+def write_archive_index(root_dir: str = "."):
+    """archive/ 配下の日付フォルダを走査して一覧ページを再生成"""
+    import json
+    import os
+    import re
+    arch_root = os.path.join(root_dir, "archive")
+    os.makedirs(arch_root, exist_ok=True)
+    dates = sorted(
+        (d for d in os.listdir(arch_root)
+         if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
+         and os.path.exists(os.path.join(arch_root, d, "index.html"))),
+        reverse=True)
+    rows = []
+    for d in dates:
+        counts = ""
+        jpath = os.path.join(root_dir, "data", f"{d}.json")
+        if os.path.exists(jpath):
+            try:
+                with open(jpath, encoding="utf-8") as f:
+                    j = json.load(f)
+                counts = (f'<span class="stats">🔥 売れ筋 {j["n_hot"]}件 / '
+                          f'🚀 チャレンジ {j["n_challenge"]}件</span>')
+            except Exception:
+                pass
+        rows.append(f'<a class="card week" href="./{d}/">'
+                    f'<span class="wk">📦 {d}</span>{counts}</a>')
+    body = "\n".join(rows) or '<p class="stats">まだアーカイブがありません</p>'
+    doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📅 過去のランキング｜週次おすすめ商品</title><style>{CSS}
+.card.week{{align-items:center; justify-content:space-between; text-decoration:none}}
+.card.week .wk{{font-weight:800; font-size:15px; color:var(--ink)}}
+.card.week:hover{{border-color:var(--ink)}}</style></head><body>
+<div class="wrap">
+<header><h1>📅 過去のランキング</h1></header>
+<div class="tabs"><a class="tab" href="/">🔥 最新の売れ筋</a>
+<a class="tab" href="/challenge.html">🚀 最新のチャレンジ</a></div>
+{body}
+<footer>毎週の更新時に自動保存されるアーカイブです。数値・報酬率は各時点の参考値で、現在の条件とは異なる場合があります。</footer>
+</div></body></html>"""
+    with open(os.path.join(arch_root, "index.html"), "w", encoding="utf-8") as f:
+        f.write(doc)

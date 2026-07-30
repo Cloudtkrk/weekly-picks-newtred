@@ -1,0 +1,8 @@
+# Kalodataエクスポート等の生データはコミットしない
+input/
+*.xlsx
+
+# ローカル生成物・キャッシュ
+weekly_site/
+.img_cache/
+__pycache__/

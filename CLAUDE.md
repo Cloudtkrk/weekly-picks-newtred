@@ -15,8 +15,8 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
    python weekly_data_v1.py --products <売れ筋> --new <チャレンジ> --videos <動画> --html
    ```
 3. コンソール出力の件数・突合率を確認し、`weekly_site/index.html` をブラウザで開いて目視確認するようユーザーに促す
-4. ユーザーのOK後、`weekly_site/index.html` と `weekly_site/challenge.html` をリポジトリにコミット&プッシュ
-   → Vercelが自動デプロイ
+4. ユーザーのOK後、`weekly_site/` の2ファイルをリポジトリ**直下**の `index.html` / `challenge.html` として上書きし、
+   自動生成された `archive/` と `data/` も一緒にコミット&プッシュ → Vercelが自動デプロイ
 
 ## Kalodataエクスポート条件 (ユーザー側の手作業・参考)
 
@@ -66,8 +66,18 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 ## デプロイ
 
 - リポジトリ: `Cloudtkrk/weekly-picks-newtred` (public) → Vercel自動デプロイ
-- 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋) と `/challenge.html`
-- プッシュ対象は `weekly_site/` の2ファイルのみ。エクスポートxlsx等のデータは絶対にコミットしない (.gitignore済)
+- 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋) と `/challenge.html`、`/archive/` (過去週一覧)
+- プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下。
+  エクスポートxlsx等の生データは絶対にコミットしない (.gitignore済)
+
+## アーカイブ
+
+- HTML生成時に `archive/<YYYY-MM-DD>/` へその週のスナップショット、`data/<YYYY-MM-DD>.json` へ
+  表示テーブル全項目を自動保存する (`--no-archive` で無効化)
+- `archive/index.html` (過去週一覧) も自動再生成される。アーカイブページには注意バナーが付き、
+  タブの「📅 アーカイブ」リンクから遷移できる
+- data JSONは「先週比」「連続ランクイン」等の将来機能の材料。2026-07-28分は配信済みHTMLからの
+  シードのため一部項目 (商品名/大分類/報酬率/参画数など) のみ
 
 ## Discord配信 (未稼働・Webhook発行待ち)
 

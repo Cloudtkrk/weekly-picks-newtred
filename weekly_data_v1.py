@@ -203,6 +203,8 @@ def main():
                     help="画像付きHTMLレポートも出力する")
     ap.add_argument("--html-embed", action="store_true",
                     help="画像をbase64でHTML内に埋め込む (どこで開いても表示される自己完結版)")
+    ap.add_argument("--no-archive", action="store_true",
+                    help="archive/<日付>/ スナップショットと data/<日付>.json を保存しない")
     args = ap.parse_args()
 
     videos = load_videos(args.videos)
@@ -264,12 +266,16 @@ def main():
         embed_images(out_path, ["売れ筋候補", "チャレンジ候補"])
 
     if args.html or args.html_embed:
-        from report_html import write_site
+        from report_html import write_site, archive_site
         site_dir = "weekly_site"
         write_site(hot, new_tbl, site_dir, embed=args.html_embed)
         print(f"[info] Webサイト出力: {site_dir}/index.html (売れ筋), "
               f"{site_dir}/challenge.html (チャレンジ)"
               + (" [画像埋め込み版]" if args.html_embed else ""))
+        if not args.no_archive:
+            arch_dir = archive_site(hot, new_tbl, root_dir=".")
+            print(f"[info] アーカイブ保存: {arch_dir}/ と data/*.json "
+                  f"(archive/ data/ もコミット対象)")
 
     # Discordプレビュー (テキスト)
     today = dt.date.today().strftime("%m/%d")
