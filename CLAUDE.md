@@ -134,6 +134,15 @@ python weekly_data_v1.py --auto input/ --html
 
 `--post --webhook <URL>` (または環境変数 `DISCORD_WEBHOOK_URL`) でembedカード投稿
 (1ジャンルあたり `--top-per-cat` 件、既定5・Actionsでは3。⭐は商品名先頭に付与)。
+
+**投稿の情報構成はWebカード (`report_html._card`) と必ず一致させる**:
+バッジ(🔰/💎/🎁) → 商品名 → **30日売上／単価／報酬率の3項目のみ** → タグ。
+販売件数・成立率・参画数・参画ペース・1人あたりGMV・報酬目安・成長率・掲載日・カテゴリ(細分類)は
+Webに出さない方針なのでDiscordにも出さない (Excelと `data/*.json` にのみ残す)。
+冒頭メッセージにはWebの「自分に合う商品の選び方」ガイドと同じバッジ凡例、
+報酬率の参考値注記、薬機法注意の喚起を載せる。表示項目を変更するときは
+`report_html._card` と `make_embed` の両方を必ず揃えて直すこと。
+なおコンソール出力は運用者の目視確認用の詳細ダンプで、投稿内容とは別物。
 Actionsからは repoのSecret `DISCORD_WEBHOOK_URL` 経由で投稿される。
 チャンネル切り替え時は必ずテスト用チャンネルで一度確認してから本番Webhookに差し替える。
 

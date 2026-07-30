@@ -180,13 +180,16 @@ def embed_images(xlsx_path: str, sheet_names: list[str]):
 
 
 def make_embed(r, kind: str) -> dict:
+    """Webカード (report_html._card) と同じ情報構成にする:
+    ⭐/バッジ → 商品名 → 30日売上・単価・報酬率の3項目 → タグ。
+    販売件数・成立率・参画数・報酬目安・成長率・掲載日などの詳細指標は
+    Webに出さない方針なのでDiscordにも出さない (Excel/data JSONにのみ残す)"""
     color = 0xE74C3C if kind == "hot" else 0x2ECC71
     desc = []
-    if kind == "hot":
-        desc.append(f"30日売上 **{r['30日売上']}**（{r['販売件数']}）")
-    else:
-        desc.append(f"成長率 **{r['成長率']}**｜30日売上 **{r['30日売上']}**｜掲載 {r['掲載日']}")
-    desc.append(f"単価 {r['単価']}｜報酬率※ **{r['報酬率']}**→1件 **{r['報酬目安/件']}**｜成立率 {r['成立率']}（参画{r['参画クリエイター数']}人）")
+    badges = str(r.get("バッジ") or "")
+    if badges:
+        desc.append(badges.replace("・", "　"))       # Webのピル行に相当
+    desc.append(f"30日売上 **{r['30日売上']}**｜単価 {r['単価']}｜報酬率※ **{r['報酬率']}**")
     if r["タグ"]:
         desc.append(f"🏷️ {r['タグ']}")
     star = "⭐ " if r.get("おすすめ") == "⭐" and kind == "hot" else ""
@@ -195,7 +198,6 @@ def make_embed(r, kind: str) -> dict:
         "url": r["商品リンク"] if isinstance(r["商品リンク"], str) and r["商品リンク"].startswith("http") else None,
         "description": "\n".join(desc),
         "color": color,
-        "footer": {"text": r["カテゴリ"]},
     }
     if isinstance(r["画像"], str) and r["画像"].startswith("http"):
         embed["thumbnail"] = {"url": r["画像"]}
@@ -224,9 +226,17 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
             time.sleep(wait + 0.5)
         r.raise_for_status()
 
+    # 冒頭のバッジ凡例はWebの「自分に合う商品の選び方」ガイドとフッター注記に合わせる
     today = dt.date.today().strftime("%m/%d")
-    send(content=f"# 📦 今週のおすすめ商品（{today}更新）\n"
-                 f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください")
+    send(content=(
+        f"# 📦 今週のおすすめ商品（{today}更新）\n"
+        f"⭐ **今週売れてる**＝直近7日も動画で売れている（今から乗っても間に合う）\n"
+        f"🔰 **初心者でも狙いやすい**＝承認ペースが速く成立率も高い、"
+        f"またはフォロワーの少ないクリエイターでも売れている実績あり\n"
+        f"🎁 **自社サンプル可**＝弊社経由でサンプルを渡せる商品（実績ゼロでもまずここから）\n"
+        f"💎 **狙い目（実績者向け）**＝1人あたりの取り分が大きいが、承認には実績や投稿数が必要\n"
+        f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください\n"
+        f"-# ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ"))
     for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 新商品", new_tbl, "challenge")]:
         for cat, g in tbl.groupby("ジャンル", sort=False):
             g = g.head(top_per_cat)
@@ -394,9 +404,10 @@ def main():
             print(f"[info] アーカイブ保存: {arch_dir}/ と data/*.json "
                   f"(archive/ data/ もコミット対象)")
 
-    # Discordプレビュー (テキスト)
+    # コンソール確認用の詳細ダンプ (件数・突合の目視確認向け。Discord投稿の内容とは別物で、
+    # Discordとサイトには30日売上/単価/報酬率の3項目しか出さない)
     today = dt.date.today().strftime("%m/%d")
-    lines = [f"# 📦 今週のおすすめ商品データ（{today}）", "",
+    lines = [f"# 📦 今週のおすすめ商品データ（{today}｜コンソール確認用）", "",
              "# 🔥 売れ筋候補"]
     for cat, g in hot.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]
