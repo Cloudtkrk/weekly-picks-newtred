@@ -203,11 +203,26 @@ def make_embed(r, kind: str) -> dict:
 
 
 def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
+    import time
+
     def send(content=None, embeds=None):
         payload = {}
         if content: payload["content"] = content
         if embeds: payload["embeds"] = embeds
-        requests.post(webhook, json=payload, timeout=15).raise_for_status()
+        # Discord Webhookはレート制限が厳しい(概ね5リクエスト/2秒)ため、
+        # 429はRetry-Afterに従って再試行し、送信間隔も空ける
+        for _ in range(5):
+            r = requests.post(webhook, json=payload, timeout=15)
+            if r.status_code != 429:
+                r.raise_for_status()
+                time.sleep(0.6)
+                return
+            try:
+                wait = float(r.headers.get("Retry-After") or r.json().get("retry_after", 2))
+            except Exception:
+                wait = 2.0
+            time.sleep(wait + 0.5)
+        r.raise_for_status()
 
     today = dt.date.today().strftime("%m/%d")
     send(content=f"# 📦 今週のおすすめ商品（{today}更新）\n"
