@@ -143,9 +143,8 @@ def _card(r, kind: str, embed_fn=None) -> str:
         cls = "easy" if b.startswith("🔰") else "gem" if b.startswith("💎") else "own"
         pills.append(f'<span class="pill {cls}">{_h.escape(b)}</span>')
     rec = f'<div class="pills">{"".join(pills)}</div>' if pills else ""
-    # 表示はシンプルに3項目のみ (新商品は成長率も表示)。詳細指標はExcel/data JSON側に残す
-    growth = f'成長率 <b>{r["成長率"]}</b>｜' if kind != "hot" else ""
-    line1 = (f'{growth}30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
+    # 表示はシンプルに3項目のみ。詳細指標はExcel/data JSON側に残す
+    line1 = (f'30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
              f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
     return (f'<div class="card">{img}<div class="body">{rec}'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(str(r["商品名"]))}</a>'
