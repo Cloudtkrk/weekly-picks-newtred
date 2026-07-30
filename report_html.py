@@ -143,23 +143,13 @@ def _card(r, kind: str, embed_fn=None) -> str:
         cls = "easy" if b.startswith("🔰") else "gem" if b.startswith("💎") else "own"
         pills.append(f'<span class="pill {cls}">{_h.escape(b)}</span>')
     rec = f'<div class="pills">{"".join(pills)}</div>' if pills else ""
-    if kind == "hot":
-        line1 = f'30日売上 <b>{r["30日売上"]}</b>（{r["販売件数"]}）'
-    else:
-        line1 = (f'成長率 <b>{r["成長率"]}</b>｜30日売上 <b>{r["30日売上"]}</b>'
-                 f'（{r["販売件数"]}）｜掲載 {r["掲載日"]}')
-    line2 = (f'単価 {r["単価"]}｜報酬率※ <b>{r["報酬率"]}</b>'
-             f' → 1件 <span class="reward">{r["報酬目安/件"]}</span>｜'
-             f'<span class="info" title="その商品に参画したクリエイターのうち、実際に売上を出した人の割合">成立率</span> '
-             f'<b>{r["成立率"]}</b>（参画{r["参画クリエイター数"]}人）')
-    line3 = (f'<span class="info" title="参画クリエイター数÷掲載月数。承認の速さの目安">参画ペース</span> '
-             f'<b>{r.get("参画ペース", "-")}</b>｜'
-             f'<span class="info" title="30日売上÷参画クリエイター数。1人あたりの取り分の目安">1人あたりGMV</span> '
-             f'<b>{r.get("1人あたりGMV", "-")}</b>')
+    # 表示はシンプルに3項目のみ (新商品は成長率も表示)。詳細指標はExcel/data JSON側に残す
+    growth = f'成長率 <b>{r["成長率"]}</b>｜' if kind != "hot" else ""
+    line1 = (f'{growth}30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
+             f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
     return (f'<div class="card">{img}<div class="body">{rec}'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(str(r["商品名"]))}</a>'
-            f'<div class="stats">{line1}</div><div class="stats">{line2}</div>'
-            f'<div class="stats">{line3}</div>'
+            f'<div class="stats">{line1}</div>'
             f'{_tag_html(r["タグ"])}</div></div>')
 
 
