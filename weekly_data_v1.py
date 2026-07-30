@@ -180,13 +180,16 @@ def embed_images(xlsx_path: str, sheet_names: list[str]):
 
 
 def make_embed(r, kind: str) -> dict:
+    """Webカード (report_html._card) と同じ情報構成にする:
+    ⭐/バッジ → 商品名 → 30日売上・単価・報酬率の3項目 → タグ。
+    販売件数・成立率・参画数・報酬目安・成長率・掲載日などの詳細指標は
+    Webに出さない方針なのでDiscordにも出さない (Excel/data JSONにのみ残す)"""
     color = 0xE74C3C if kind == "hot" else 0x2ECC71
     desc = []
-    if kind == "hot":
-        desc.append(f"30日売上 **{r['30日売上']}**（{r['販売件数']}）")
-    else:
-        desc.append(f"成長率 **{r['成長率']}**｜30日売上 **{r['30日売上']}**｜掲載 {r['掲載日']}")
-    desc.append(f"単価 {r['単価']}｜報酬率※ **{r['報酬率']}**→1件 **{r['報酬目安/件']}**｜成立率 {r['成立率']}（参画{r['参画クリエイター数']}人）")
+    badges = str(r.get("バッジ") or "")
+    if badges:
+        desc.append(badges.replace("・", "　"))       # Webのピル行に相当
+    desc.append(f"30日売上 **{r['30日売上']}**｜単価 {r['単価']}｜報酬率※ **{r['報酬率']}**")
     if r["タグ"]:
         desc.append(f"🏷️ {r['タグ']}")
     star = "⭐ " if r.get("おすすめ") == "⭐" and kind == "hot" else ""
@@ -195,7 +198,6 @@ def make_embed(r, kind: str) -> dict:
         "url": r["商品リンク"] if isinstance(r["商品リンク"], str) and r["商品リンク"].startswith("http") else None,
         "description": "\n".join(desc),
         "color": color,
-        "footer": {"text": r["カテゴリ"]},
     }
     if isinstance(r["画像"], str) and r["画像"].startswith("http"):
         embed["thumbnail"] = {"url": r["画像"]}
@@ -203,15 +205,38 @@ def make_embed(r, kind: str) -> dict:
 
 
 def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
+    import time
+
     def send(content=None, embeds=None):
         payload = {}
         if content: payload["content"] = content
         if embeds: payload["embeds"] = embeds
-        requests.post(webhook, json=payload, timeout=15).raise_for_status()
+        # Discord Webhookはレート制限が厳しい(概ね5リクエスト/2秒)ため、
+        # 429はRetry-Afterに従って再試行し、送信間隔も空ける
+        for _ in range(5):
+            r = requests.post(webhook, json=payload, timeout=15)
+            if r.status_code != 429:
+                r.raise_for_status()
+                time.sleep(0.6)
+                return
+            try:
+                wait = float(r.headers.get("Retry-After") or r.json().get("retry_after", 2))
+            except Exception:
+                wait = 2.0
+            time.sleep(wait + 0.5)
+        r.raise_for_status()
 
+    # 冒頭のバッジ凡例はWebの「自分に合う商品の選び方」ガイドとフッター注記に合わせる
     today = dt.date.today().strftime("%m/%d")
-    send(content=f"# 📦 今週のおすすめ商品（{today}更新）\n"
-                 f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください")
+    send(content=(
+        f"# 📦 今週のおすすめ商品（{today}更新）\n"
+        f"⭐ **今週売れてる**＝直近7日も動画で売れている（今から乗っても間に合う）\n"
+        f"🔰 **初心者でも狙いやすい**＝承認ペースが速く成立率も高い、"
+        f"またはフォロワーの少ないクリエイターでも売れている実績あり\n"
+        f"🎁 **自社サンプル可**＝弊社経由でサンプルを渡せる商品（実績ゼロでもまずここから）\n"
+        f"💎 **狙い目（実績者向け）**＝1人あたりの取り分が大きいが、承認には実績や投稿数が必要\n"
+        f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください\n"
+        f"-# ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ"))
     for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 新商品", new_tbl, "challenge")]:
         for cat, g in tbl.groupby("ジャンル", sort=False):
             g = g.head(top_per_cat)
@@ -222,11 +247,62 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
                 send(content=head, embeds=embeds[i:i+10])
 
 
+def autodetect_inputs(input_dir: str):
+    """input_dir のKalodataエクスポートを自動判別して
+    (売れ筋, 新商品, 動画, フォロワー少動画orNone) を返す。判別できなければエラーで停止。
+    - Kalodata_Product_*.xlsx ×2: 「アップロード時間」が全行45日以内の方が新商品
+    - Kalodata_Video_*.xlsx ×1〜2: 2つある場合は行数が多い方が通常動画、少ない方がフォロワー少動画"""
+    import glob
+    prods = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Product_*.xlsx")))
+    vids = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Video_*.xlsx")))
+    if len(prods) != 2:
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_*.xlsx が2ファイル必要です "
+                 f"(検出 {len(prods)}件: {prods})")
+    if not 1 <= len(vids) <= 2:
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Video_*.xlsx が1〜2ファイル必要です "
+                 f"(検出 {len(vids)}件: {vids})")
+
+    def all_recent(path: str, days: int = 45) -> bool:
+        df = pd.read_excel(path)
+        if "アップロード時間" not in df.columns:
+            sys.exit(f"[error] --auto: {path} に「アップロード時間」列がありません")
+        ts = pd.to_datetime(df["アップロード時間"], errors="coerce").dropna()
+        if ts.empty:
+            sys.exit(f"[error] --auto: {path} の「アップロード時間」を日付として読めません")
+        return bool((ts >= pd.Timestamp.now() - pd.Timedelta(days=days)).all())
+
+    recent = [all_recent(p) for p in prods]
+    if recent == [True, False]:
+        new_f, hot_f = prods
+    elif recent == [False, True]:
+        hot_f, new_f = prods
+    else:
+        sys.exit("[error] --auto: 商品2ファイルの売れ筋/新商品を判別できません "
+                 f"(全行45日以内フラグ: {dict(zip(prods, recent))})。"
+                 "--products/--new を明示指定してください")
+
+    if len(vids) == 2:
+        rows = [len(pd.read_excel(v)) for v in vids]
+        if rows[0] == rows[1]:
+            sys.exit(f"[error] --auto: 動画2ファイルが同じ行数({rows[0]})で判別できません。"
+                     "--videos/--videos-small を明示指定してください")
+        main_v, small_v = (vids[0], vids[1]) if rows[0] > rows[1] else (vids[1], vids[0])
+    else:
+        main_v, small_v = vids[0], None
+
+    print(f"[info] --auto判別: 売れ筋={hot_f} / 新商品={new_f} / 動画={main_v}"
+          + (f" / フォロワー少動画={small_v}" if small_v else ""))
+    return hot_f, new_f, main_v, small_v
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--products", required=True)
-    ap.add_argument("--new", required=True)
-    ap.add_argument("--videos", required=True)
+    ap.add_argument("--auto", metavar="DIR", default=None,
+                    help="指定ディレクトリのKalodataエクスポートを自動判別 "
+                         "(--products/--new/--videos/--videos-small の代わり)")
+    ap.add_argument("--products", default=None)
+    ap.add_argument("--new", default=None)
+    ap.add_argument("--videos", default=None)
     ap.add_argument("--videos-small", default=None,
                     help="フォロワー少クリエイターの上位動画エクスポート (🔰判定の実証データ、任意)")
     ap.add_argument("--out", default=None)
@@ -243,6 +319,11 @@ def main():
     ap.add_argument("--no-archive", action="store_true",
                     help="archive/<日付>/ スナップショットと data/<日付>.json を保存しない")
     args = ap.parse_args()
+
+    if args.auto:
+        args.products, args.new, args.videos, args.videos_small = autodetect_inputs(args.auto)
+    elif not (args.products and args.new and args.videos):
+        ap.error("--products/--new/--videos を指定するか --auto <DIR> を使ってください")
 
     videos = load_videos(args.videos)
     small_keys = set()
@@ -323,9 +404,10 @@ def main():
             print(f"[info] アーカイブ保存: {arch_dir}/ と data/*.json "
                   f"(archive/ data/ もコミット対象)")
 
-    # Discordプレビュー (テキスト)
+    # コンソール確認用の詳細ダンプ (件数・突合の目視確認向け。Discord投稿の内容とは別物で、
+    # Discordとサイトには30日売上/単価/報酬率の3項目しか出さない)
     today = dt.date.today().strftime("%m/%d")
-    lines = [f"# 📦 今週のおすすめ商品データ（{today}）", "",
+    lines = [f"# 📦 今週のおすすめ商品データ（{today}｜コンソール確認用）", "",
              "# 🔥 売れ筋候補"]
     for cat, g in hot.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]

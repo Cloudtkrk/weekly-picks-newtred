@@ -3,23 +3,31 @@
 Kalodataのエクスポートから、自社クリエイター向けの週次おすすめ商品サイトを生成し、
 Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプロジェクト。
 
-## 毎週のワークフロー
+## 毎週のワークフロー (GitHub Actionsで全自動)
 
-ユーザーが `input/` にKalodataエクスポート3〜4ファイルを置いて「今週の生成して」と言ったら:
+**`input/` にKalodataエクスポート3〜4ファイルを置いてコミット&プッシュするだけ。**
+残りは GitHub Actions (`.github/workflows/weekly.yml`) が自動実行する:
 
-1. `input/` のファイルを特定する (`Kalodata_Product_*.xlsx` ×2 と `Kalodata_Video_*.xlsx` ×1〜2)
-   - **売れ筋用** と **新商品用** の見分け方: 「アップロード時間」列が全行30日以内なら新商品用。
-     もう一方(古い商品を含む方)が売れ筋用。判別に迷ったら行数が多い方が売れ筋(上限150 vs 100)
-   - **動画2ファイル** の見分け方: 行数が多い方(上限200)が通常の動画上位、少ない方(上限100)が
-     フォロワー少クリエイターの上位動画 (🔰判定用・任意)。エクスポートにフォロワー数列はないため行数で判別
-2. 生成コマンドを実行:
-   ```
-   python weekly_data_v1.py --products <売れ筋> --new <新商品> --videos <動画> \
-       --videos-small <フォロワー少動画※ある場合のみ> --html
-   ```
-3. コンソール出力の件数・突合率を確認し、`weekly_site/index.html` をブラウザで開いて目視確認するようユーザーに促す
-4. ユーザーのOK後、`weekly_site/` の2ファイルをリポジトリ**直下**の `index.html` / `challenge.html` として上書きし、
-   自動生成された `archive/` と `data/` も一緒にコミット&プッシュ → Vercelが自動デプロイ
+1. `input/**` へのpushをトリガーに起動 (手動実行は Actions タブの workflow_dispatch)
+2. `python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3` を実行
+   - `--auto` がファイルを自動判別: `Kalodata_Video_*.xlsx` → 動画 (2つあれば行数が多い方が通常動画、
+     少ない方がフォロワー少動画)。`Kalodata_Product_*.xlsx` ×2 は「アップロード時間」が
+     全行45日以内の方が新商品、もう一方が売れ筋。判別できない場合はエラーで停止
+3. 生成成功後、`weekly_site/` の2ファイルをリポジトリ直下の `index.html` / `challenge.html` に
+   コピーして bot名義でコミット&プッシュ (`[skip ci]` 付き、無限ループ防止) → Vercelが自動デプロイ
+4. Discordに1ジャンル上位3件のembedカードを投稿 (webhookは repoのSecret `DISCORD_WEBHOOK_URL`)
+5. 生成が失敗した場合はDiscord投稿もサイト更新も行われず、ジョブが失敗する
+
+翌週は `input/` の古いエクスポートを新しいファイルに置き換えてプッシュする。
+
+### ローカル手動実行 (フォールバック)
+
+```
+python weekly_data_v1.py --auto input/ --html
+```
+
+または従来通り `--products <売れ筋> --new <新商品> --videos <動画> --videos-small <フォロワー少>` で明示指定。
+目視確認後に直下の `index.html` / `challenge.html` へコピーし、`archive/`・`data/` と一緒にコミット&プッシュ
 
 ## Kalodataエクスポート条件 (ユーザー側の手作業・参考)
 
@@ -109,8 +117,9 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 
 - リポジトリ: `Cloudtkrk/weekly-picks-newtred` (public) → Vercel自動デプロイ
 - 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋) と `/challenge.html`、`/archive/` (過去週一覧)
-- プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下。
-  エクスポートxlsx等の生データは絶対にコミットしない (.gitignore済)
+- プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下、
+  および Actionsの入力となる `input/*.xlsx` (privateリポジトリのためコミットOK)。
+  生成物の `weekly_data_*.xlsx` と `.img_cache/` はコミットしない (.gitignore済)
 
 ## アーカイブ
 
@@ -121,10 +130,21 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 - data JSONは「先週比」「連続ランクイン」等の将来機能の材料。2026-07-28分は配信済みHTMLからの
   シードのため一部項目 (商品名/大分類/報酬率/参画数など) のみ
 
-## Discord配信 (未稼働・Webhook発行待ち)
+## Discord配信
 
-`--post --webhook <URL>` でembedカード投稿 (1ジャンル上位5件、⭐は商品名先頭に付与)。
-稼働開始時は必ずテスト用チャンネルで一度確認してから本番チャンネルに切り替える。
+`--post --webhook <URL>` (または環境変数 `DISCORD_WEBHOOK_URL`) でembedカード投稿
+(1ジャンルあたり `--top-per-cat` 件、既定5・Actionsでは3。⭐は商品名先頭に付与)。
+
+**投稿の情報構成はWebカード (`report_html._card`) と必ず一致させる**:
+バッジ(🔰/💎/🎁) → 商品名 → **30日売上／単価／報酬率の3項目のみ** → タグ。
+販売件数・成立率・参画数・参画ペース・1人あたりGMV・報酬目安・成長率・掲載日・カテゴリ(細分類)は
+Webに出さない方針なのでDiscordにも出さない (Excelと `data/*.json` にのみ残す)。
+冒頭メッセージにはWebの「自分に合う商品の選び方」ガイドと同じバッジ凡例、
+報酬率の参考値注記、薬機法注意の喚起を載せる。表示項目を変更するときは
+`report_html._card` と `make_embed` の両方を必ず揃えて直すこと。
+なおコンソール出力は運用者の目視確認用の詳細ダンプで、投稿内容とは別物。
+Actionsからは repoのSecret `DISCORD_WEBHOOK_URL` 経由で投稿される。
+チャンネル切り替え時は必ずテスト用チャンネルで一度確認してから本番Webhookに差し替える。
 
 ## してはいけないこと
 
