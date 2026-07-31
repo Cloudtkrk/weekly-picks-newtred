@@ -174,6 +174,20 @@ def fix_category(name: str, category: str) -> str:
     return category
 
 
+def load_own_list(path: str = "own_list.csv") -> list[dict]:
+    """自社案件リスト (Googleシートのスナップショット own_list.csv) を読む。
+    列: ジャンル/ブランド/商品名/価格/報酬率/アフィリエイトリンク/商品ID。
+    「掲載」列がある場合は非空の行のみ返す。ファイルがなければ空リスト"""
+    import csv
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if rows and "掲載" in rows[0]:
+        rows = [r for r in rows if str(r.get("掲載", "")).strip()]
+    return rows
+
+
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
     """カラム名の揺れに対応した検索 (部分一致)"""
     for cand in candidates:

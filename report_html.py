@@ -71,6 +71,7 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active{color:#fff; border-color:transparent}
 .tab.active.hot{background:var(--hot)}
 .tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
 .filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
          position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
 .chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
@@ -218,7 +219,7 @@ def make_embed_fn():
 
 
 def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
-          n_hot: int, n_chal: int):
+          n_hot: int, n_chal: int, n_own: int = 0):
     if kind == "hot":
         title, color_cls = "🔥 売れ筋", "hot"
         tabs = (f'<a class="tab active hot" href="./">🔥 売れ筋（{n_hot}）</a>'
@@ -227,6 +228,8 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         title, color_cls = "🚀 新商品", "chal"
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
                 f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
+    if n_own:
+        tabs += f'<a class="tab" href="./recommend.html">🎁 おすすめ（{n_own}）</a>'
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     guide = ""
     if kind == "hot":
@@ -264,15 +267,72 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         f.write(doc)
 
 
-def write_site(hot, new_tbl, out_dir: str, embed: bool = False):
+def _own_card(r: dict) -> str:
+    link = r.get("アフィリエイトリンク", "") or "#"
+    price = (r.get("価格", "") or "-").strip()
+    rate = str(r.get("報酬率", "") or "").strip()
+    rate = (rate + "%") if rate and not rate.endswith("%") else (rate or "-")
+    brand = (r.get("ブランド", "") or "").strip()
+    brand_html = f'<div class="stats">{_h.escape(brand)}</div>' if brand else ""
+    return (f'<div class="card"><div class="noimg">no image</div><div class="body">'
+            f'<div class="pills"><span class="pill own">🎁 自社サンプル可</span></div>'
+            f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(r.get("商品名", ""))}</a>'
+            f'<div class="stats">価格 <b>{_h.escape(price)}</b>｜'
+            f'報酬率※ <b class="reward">{_h.escape(rate)}</b></div>'
+            f'{brand_html}</div></div>')
+
+
+def _own_page(own_rows: list, out_path: str, today: str, n_hot: int, n_chal: int):
+    """🎁 おすすめ (自社案件リスト) ページ。リンクは全てアフィリエイトリンク"""
+    tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
+            f'<a class="tab" href="./challenge.html">🚀 新商品（{n_chal}）</a>'
+            f'<a class="tab active own" href="./recommend.html">🎁 おすすめ（{len(own_rows)}）</a>'
+            '<a class="tab arch" href="./archive/">📅 アーカイブ</a>')
+    groups, order = {}, []
+    for r in own_rows:
+        g = (r.get("ジャンル") or "その他").strip() or "その他"
+        if g not in groups:
+            groups[g] = []
+            order.append(g)
+        groups[g].append(r)
+    chips = ['<span class="chip on" data-cat="all">すべて</span>'] + [
+        f'<span class="chip" data-cat="{_h.escape(g)}">{_h.escape(g)}</span>' for g in order]
+    parts = []
+    for g in order:
+        parts.append(f'<div class="catgrp" data-cat="{_h.escape(g)}">')
+        parts.append(f'<div class="cat">▼ <b>{_h.escape(g)}</b>（{len(groups[g])}件）</div>')
+        parts += [_own_card(r) for r in groups[g]]
+        parts.append('</div>')
+    doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎁 おすすめ 週次おすすめ商品 {today}</title><style>{CSS}</style></head><body>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">{today} 更新</span></header>
+<div class="tabs">{tabs}</div>
+<div class="guide"><div class="g-title">🎁 自社サンプル可の案件リスト</div>
+弊社経由でサンプルを渡せる商品です。実績ゼロでもまずここから。商品名をタップするとそのままアフィリエイトリンクに飛べます。</div>
+<div class="filters">{"".join(chips)}</div>
+{"".join(parts)}
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>{FILTER_JS}</body></html>"""
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(doc)
+
+
+def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list | None = None):
     import os
     os.makedirs(out_dir, exist_ok=True)
     embed_fn = make_embed_fn() if embed else None
     today = dt.date.today().strftime("%Y/%m/%d")
+    n_own = len(own_rows or [])
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
-          embed_fn, today, len(hot), len(new_tbl))
+          embed_fn, today, len(hot), len(new_tbl), n_own)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
-          embed_fn, today, len(hot), len(new_tbl))
+          embed_fn, today, len(hot), len(new_tbl), n_own)
+    if own_rows:
+        _own_page(own_rows, os.path.join(out_dir, "recommend.html"),
+                  today, len(hot), len(new_tbl))
 
 
 # ============================================================
@@ -286,7 +346,8 @@ def _to_archive(doc: str, date_str: str) -> str:
     return doc.replace('href="./archive/"', 'href="../"')
 
 
-def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None):
+def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
+                 own_rows: list | None = None):
     """archive/<日付>/ にスナップショット保存 + data/<日付>.json + 一覧ページ更新"""
     import json
     import os
@@ -294,11 +355,17 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None)
     arch_dir = os.path.join(root_dir, "archive", date_str)
     os.makedirs(arch_dir, exist_ok=True)
     today = dt.date.today().strftime("%Y/%m/%d")
+    n_own = len(own_rows or [])
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
-          None, today, len(hot), len(new_tbl))
+          None, today, len(hot), len(new_tbl), n_own)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
-          None, today, len(hot), len(new_tbl))
-    for fn in ("index.html", "challenge.html"):
+          None, today, len(hot), len(new_tbl), n_own)
+    pages = ["index.html", "challenge.html"]
+    if own_rows:
+        _own_page(own_rows, os.path.join(arch_dir, "recommend.html"),
+                  today, len(hot), len(new_tbl))
+        pages.append("recommend.html")
+    for fn in pages:
         p = os.path.join(arch_dir, fn)
         with open(p, encoding="utf-8") as f:
             doc = f.read()
