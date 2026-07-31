@@ -37,7 +37,8 @@ jobs:
       - name: Add preview banner
         run: |
           python - <<'EOF'
-          for f in ["weekly_site/index.html", "weekly_site/challenge.html"]:
+          import glob
+          for f in glob.glob("weekly_site/*.html"):
               s = open(f, encoding="utf-8").read()
               s = s.replace("</header>", "</header>"
                   '<div class="arch-note">🧪 プレビュー版です。この内容で公開してよければ '
@@ -49,8 +50,7 @@ jobs:
       - name: Publish preview to /preview/ (commit & push)
         run: |
           mkdir -p preview
-          cp weekly_site/index.html preview/index.html
-          cp weekly_site/challenge.html preview/challenge.html
+          cp weekly_site/*.html preview/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add preview/
@@ -85,10 +85,12 @@ jobs:
         run: |
           cp weekly_site/index.html index.html
           cp weekly_site/challenge.html challenge.html
+          if [ -f weekly_site/recommend.html ]; then cp weekly_site/recommend.html recommend.html; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -r --ignore-unmatch --quiet preview || true
           git add index.html challenge.html archive/ data/
+          git add recommend.html 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "変更なし: コミットをスキップ"
           else

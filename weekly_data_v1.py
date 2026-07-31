@@ -14,7 +14,36 @@ import requests
 
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
-                          fmt_money, pct_rank, CONFIG)
+                          fmt_money, pct_rank, load_own_list, CONFIG)
+
+
+def apply_own_list(tbl: pd.DataFrame, own_by_id: dict,
+                   own_by_name: dict | None = None) -> tuple[pd.DataFrame, int]:
+    """自社案件リストと突合し、一致した商品は遷移先をアフィリエイトリンクに
+    差し替え + 🎁自社サンプル可バッジを付与。商品IDで一致が最優先、
+    同名・別IDの再出品にも当たるよう正規化商品名でもフォールバック突合する"""
+    import re
+    from weekly_picks import norm_name
+    if not own_by_id:
+        return tbl, 0
+    links, badges, n = [], [], 0
+    for link, badge, name in zip(tbl["商品リンク"], tbl["バッジ"], tbl["商品名"]):
+        m = re.search(r"/product/(\d+)", str(link))
+        row = own_by_id.get(m.group(1)) if m else None
+        if row is None and own_by_name:
+            row = own_by_name.get(norm_name(str(name)))
+        if row:
+            n += 1
+            links.append(row["アフィリエイトリンク"])
+            if "🎁" not in badge:
+                badge = (badge + "・" if badge else "") + "🎁自社サンプル可"
+        else:
+            links.append(link)
+        badges.append(badge)
+    tbl = tbl.copy()
+    tbl["商品リンク"] = links
+    tbl["バッジ"] = badges
+    return tbl, n
 
 
 def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
@@ -367,6 +396,17 @@ def main():
     hot = hot.drop(columns=drop)
     new_tbl = new_tbl.drop(columns=[c for c in drop if c in new_tbl.columns])
 
+    # 自社案件リスト (own_list.csv): 一致商品のリンク差し替え + 🎁付与
+    from weekly_picks import norm_name
+    own_rows = load_own_list()
+    own_by_id = {r["商品ID"]: r for r in own_rows}
+    own_by_name = {norm_name(r["商品名"]): r for r in own_rows}
+    hot, n_own_hot = apply_own_list(hot, own_by_id, own_by_name)
+    new_tbl, n_own_new = apply_own_list(new_tbl, own_by_id, own_by_name)
+    if own_rows:
+        print(f"[info] 自社案件リスト {len(own_rows)}件 / "
+              f"リンク差替 売れ筋{n_own_hot}件・新商品{n_own_new}件")
+
     # ジャンルサマリー (件数と売上合計)
     def cat_summary(tbl, gmv_raw):
         s = tbl.copy()
@@ -395,12 +435,12 @@ def main():
     if args.html or args.html_embed:
         from report_html import write_site, archive_site
         site_dir = "weekly_site"
-        write_site(hot, new_tbl, site_dir, embed=args.html_embed)
+        write_site(hot, new_tbl, site_dir, embed=args.html_embed, own_rows=own_rows)
         print(f"[info] Webサイト出力: {site_dir}/index.html (売れ筋), "
               f"{site_dir}/challenge.html (新商品)"
               + (" [画像埋め込み版]" if args.html_embed else ""))
         if not args.no_archive:
-            arch_dir = archive_site(hot, new_tbl, root_dir=".")
+            arch_dir = archive_site(hot, new_tbl, root_dir=".", own_rows=own_rows)
             print(f"[info] アーカイブ保存: {arch_dir}/ と data/*.json "
                   f"(archive/ data/ もコミット対象)")
 
