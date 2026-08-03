@@ -118,17 +118,52 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 #   突破の敷居を上げつつ、解除状態は localStorage に保存する
 # ============================================================
 GATE_TEASER = ""      # ゲートに出す件数ティザー (write_site/archive_site が設定)
+GATE_PREVIEW = ""     # ゲートに出す売れ筋チラ見せHTML (同上)
+
+
+def _set_gate_preview(hot):
+    """ゲート画面に出す売れ筋の上位N件 (CONFIG["gate_preview_count"]) を組み立てる"""
+    global GATE_PREVIEW
+    n = int(CONFIG.get("gate_preview_count", 0) or 0)
+    if n <= 0 or hot is None or not len(hot):
+        GATE_PREVIEW = ""
+        return
+    rows = []
+    for _, r in hot.head(n).iterrows():
+        url = r.get("画像", "")
+        img = (f'<img src="{_h.escape(str(url))}" alt="" loading="lazy" '
+               f"onerror=\"this.outerHTML='<div class=noimg>no image</div>'\">"
+               if isinstance(url, str) and url.startswith(("http", "/"))
+               else '<div class="noimg">no image</div>')
+        star = "⭐ " if r.get("おすすめ") == "⭐" else ""
+        rows.append(
+            f'<div class="gpv-i">{img}<div><div class="gpv-n">{star}'
+            f'{_h.escape(str(r["商品名"]))}</div>'
+            f'<div class="gpv-s">30日売上 {_h.escape(str(r["30日売上"]))}'
+            f'｜報酬率 {_h.escape(str(r["報酬率"]))}</div></div></div>')
+    GATE_PREVIEW = (f'<div class="gpv"><div class="gpv-t">今週の売れ筋 TOP{n}</div>'
+                    f'{"".join(rows)}'
+                    f'<div class="gpv-more">…続きは合言葉を入れてご覧ください</div></div>')
 
 GATE_CSS = """
 html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
-html.gate-locked body>.wrap{filter:blur(7px); pointer-events:none; user-select:none}
-#gate{position:fixed; inset:0; z-index:9999; padding:20px;
-      background:rgba(246,247,249,.66); backdrop-filter:blur(3px);
-      -webkit-backdrop-filter:blur(3px);
-      display:flex; align-items:center; justify-content:center}
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px 16px; overflow-y:auto;
+      background:var(--bg); display:flex; align-items:center; justify-content:center}
 #gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
       padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
-#gate .peek{color:var(--sub); font-size:11.5px; margin-bottom:14px}
+#gate .gpv{margin-bottom:14px; text-align:left}
+#gate .gpv-t{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:6px;
+      text-align:center}
+#gate .gpv-i{display:flex; gap:10px; align-items:center; padding:8px;
+      border:1px solid var(--line); border-radius:10px; margin-bottom:6px}
+#gate .gpv-i img,#gate .gpv-i .noimg{width:46px; height:46px; border-radius:8px;
+      object-fit:cover; flex-shrink:0; background:var(--tag-bg); font-size:9px;
+      display:flex; align-items:center; justify-content:center; color:var(--sub)}
+#gate .gpv-n{font-size:12px; font-weight:700; line-height:1.4; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+#gate .gpv-s{font-size:11px; color:var(--sub); margin-top:2px}
+#gate .gpv-more{text-align:center; font-size:11.5px; color:var(--sub); margin-top:2px}
 #gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
       padding:26px 22px; max-width:380px; width:100%; text-align:center}
 #gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
@@ -157,8 +192,8 @@ def _gate_html() -> str:
     line_url = str(CONFIG.get("line_add_url", "") or "")
     line_btn = (f'<a class="btn line" href="{_h.escape(line_url)}" target="_blank">'
                 f'💬 公式LINEを友だち追加する</a>' if line_url else "")
-    teaser = (f'<div class="teaser">{GATE_TEASER}</div>'
-              f'<div class="peek">↓ 背景がこのページの中身です</div>' if GATE_TEASER else "")
+    teaser = f'<div class="teaser">{GATE_TEASER}</div>' if GATE_TEASER else ""
+    teaser += GATE_PREVIEW
     return f"""<div id="gate"><div class="box">
 <h1>📦 週次おすすめ商品</h1>
 <p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
@@ -804,6 +839,7 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
     _set_teaser(len(hot), len(new_tbl), n_own, n_live)
+    _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
           embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
@@ -843,6 +879,7 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
     _set_teaser(len(hot), len(new_tbl), n_own, n_live)
+    _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
           None, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
