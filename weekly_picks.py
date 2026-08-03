@@ -82,7 +82,7 @@ CONFIG = {
     #     line_add_url : 公式LINEの友だち追加URL。設定するとゲートに追加ボタンが出る
     #     ※ 静的サイトのフロント側チェックなので、ソースを読める人は突破できる簡易ゲートです
     "site_passcode": "newtrend2026",
-    "line_add_url": "",
+    "line_add_url": "https://lin.ee/Sv2jDrZ",
     # --- タイムセール依頼フォームの送信先 (Google Apps Scriptのウェブアプリ /exec URL) ---
     #     gas/timesale_webhook.gs の手順でデプロイして取得したURLを貼る。
     #     空のままだと送信されず、完了画面だけ表示される
