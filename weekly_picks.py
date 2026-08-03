@@ -195,10 +195,25 @@ def load_own_list(path: str = "own_list.csv") -> list[dict]:
     return rows
 
 
-def is_live(row: dict) -> bool:
-    """シートの「ライブ」列に値が入っていれば LIVEタイムセール可能 商品"""
-    v = str(row.get("ライブ", "") or "").strip().lower()
+def _flag_on(v) -> bool:
+    v = str(v or "").strip().lower()
     return bool(v) and v not in ("0", "false", "no", "×", "x", "-")
+
+
+def is_live(row: dict) -> bool:
+    """シートの「LIVE」列に値 (⚪︎ / 一部可 / 一部可能 など) が入っていればLIVE対象"""
+    return _flag_on(row.get("ライブ"))
+
+
+def live_label(row: dict) -> str:
+    """LIVE列の値に応じたピル文言 (「一部」を含む値は一部可能と明示)"""
+    v = str(row.get("ライブ", "") or "").strip()
+    return "📺 LIVEタイムセール一部可能" if "一部" in v else "📺 LIVEタイムセール可能"
+
+
+def is_featured(row: dict) -> bool:
+    """シートの「表示」列に記載がある商品 (優先的に前へ出す)"""
+    return _flag_on(row.get("表示"))
 
 
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:

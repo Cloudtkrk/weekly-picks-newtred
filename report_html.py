@@ -77,6 +77,7 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active.own{background:#f97316}
 .tab.active.live{background:#7c3aed}
 .pill.live{background:#ede9fe; color:#5b21b6}
+.pill.feat{background:#fee2e2; color:#b91c1c}
 .shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
         margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
 .shop-name{font-weight:800; font-size:14.5px}
@@ -294,10 +295,18 @@ def shop_slug(shop: str) -> str:
     return hashlib.md5(shop.encode("utf-8")).hexdigest()[:10]
 
 
-def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
-    """show_shop: ショップ見出しが無いページ (ライブタブ) だけショップ名を出す"""
-    from weekly_picks import is_live
+def timesale_path(pid: str, prefix: str = "") -> str:
+    return f"{prefix}timesale/{pid}.html"
+
+
+def _own_card(r: dict, prefix: str = "", show_shop: bool = False,
+              via_timesale: bool = False) -> str:
+    """show_shop: ショップ見出しが無いページ (ライブタブ) だけショップ名を出す
+    via_timesale: 遷移先をタイムセール設定依頼ページにする (ライブタブ)"""
+    from weekly_picks import is_live, is_featured, live_label
     link = r.get("アフィリエイトリンク", "") or "#"
+    if via_timesale and (r.get("商品ID") or "").strip():
+        link = timesale_path(r["商品ID"].strip(), prefix)
     price = (r.get("価格", "") or "-").strip() or "-"
     rate = str(r.get("報酬率", "") or "").strip()
     rate = (rate + "%") if rate and not rate.endswith("%") else (rate or "-")
@@ -306,9 +315,12 @@ def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
     if shop and show_shop:
         shop_html = (f'<div class="stats"><a class="shoplink" href="{prefix}shops/'
                      f'{shop_slug(shop)}.html">🏬 {_h.escape(shop)}</a></div>')
-    pills = ['<span class="pill own">🎁 自社サンプル可</span>']
+    pills = []
+    if is_featured(r):
+        pills.append('<span class="pill feat">⭐ イチオシ</span>')
+    pills.append('<span class="pill own">🎁 自社サンプル可</span>')
     if is_live(r):
-        pills.append('<span class="pill live">📺 LIVEタイムセール可能</span>')
+        pills.append(f'<span class="pill live">{live_label(r)}</span>')
     # 画像は自社ホスト (product-images/<商品ID>.jpeg)。無い商品は onerror で no image に落とす
     img_url = (r.get("画像") or "").strip()
     if img_url.startswith(("http", "/")):    # "/product-images/..." はリポジトリ同梱画像
@@ -318,7 +330,8 @@ def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
         img = '<div class="noimg">no image</div>'
     return (f'<div class="card">{img}<div class="body">'
             f'<div class="pills">{"".join(pills)}</div>'
-            f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(r.get("商品名", ""))}</a>'
+            f'<a class="name" href="{_h.escape(link)}"{"" if via_timesale else " target=_blank"}>'
+            f'{_h.escape(r.get("商品名", ""))}</a>'
             f'<div class="stats">価格 <b>{_h.escape(price)}</b>｜'
             f'報酬率※ <b class="reward">{_h.escape(rate)}</b></div>'
             f'{shop_html}</div></div>')
@@ -355,12 +368,16 @@ def _own_doc(title: str, tabs: str, guide: str, chips: str, body: str, today: st
 
 
 def _group_by_shop(own_rows: list) -> "OrderedDict":
-    """カテゴリ→ショップの順序を保ったままショップ単位にまとめる"""
+    """カテゴリ→ショップの順序を保ったままショップ単位にまとめる。
+    ショップ内はシートの「表示」列がある商品を先頭に (それ以外はシート順を維持)"""
     from collections import OrderedDict
+    from weekly_picks import is_featured
     shops = OrderedDict()
     for r in own_rows:
         key = (r.get("ショップ") or "その他").strip() or "その他"
         shops.setdefault(key, []).append(r)
+    for k, items in shops.items():
+        shops[k] = sorted(items, key=lambda r: 0 if is_featured(r) else 1)
     return shops
 
 
@@ -408,19 +425,222 @@ def _live_page(live_rows: list, out_path: str, today: str, n_hot: int, n_chal: i
         cats.append(cat)
         parts.append(f'<div class="catgrp" data-cat="{_h.escape(cat)}">')
         parts.append(f'<div class="cat">▼ <b>{_h.escape(cat)}</b>（{len(items)}件）</div>')
-        parts += [_own_card(r, prefix=shop_prefix, show_shop=True) for r in items]
+        parts += [_own_card(r, prefix=shop_prefix, show_shop=True, via_timesale=True)
+                  for r in items]
         parts.append('</div>')
     chips = ['<span class="chip on" data-cat="all">すべて</span>'] + [
         f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
     guide = ('<div class="guide"><div class="g-title">📺 LIVEタイムセール可能な商品</div>'
-             'LIVE配信でタイムセールを設定できる商品です。'
-             'タイムセールの設定依頼は担当者までご連絡ください。</div>')
+             'LIVE配信でタイムセールを設定できる商品です。商品をタップすると'
+             '<b>タイムセール設定依頼ページ</b>が開きます。'
+             'そこでショーケースに追加し、希望日程を送信してください。</div>')
     doc = _own_doc("📺 ライブ 週次おすすめ商品",
                    _own_tabs("live", n_hot, n_chal, n_own, len(live_rows)),
                    guide, f'<div class="filters">{"".join(chips)}</div>',
                    "\n".join(parts), today)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(doc)
+
+
+TIMESALE_CSS = """
+.panel{background:var(--card); border:1px solid var(--line); border-radius:14px;
+       padding:16px; margin:14px 0}
+.panel .name{font-weight:800; font-size:15px; margin:8px 0 6px; -webkit-line-clamp:none}
+.demo-note{background:#fff3d6; color:#8a6100; border-radius:10px; padding:10px 12px;
+           font-size:12.5px; margin-bottom:14px}
+.step{display:flex; align-items:center; gap:8px; font-weight:800; font-size:15px; margin-bottom:10px}
+.step .n{background:var(--ink); color:#fff; border-radius:99px; width:24px; height:24px;
+         display:inline-flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0}
+.btn{display:block; width:100%; text-align:center; padding:14px; border-radius:12px;
+     font-weight:800; font-size:15px; border:none; cursor:pointer; text-decoration:none}
+.btn.showcase{background:linear-gradient(90deg,#ff7a1a,#f97316); color:#fff}
+.btn.submit{background:var(--ink); color:#fff; margin-top:14px}
+.btn.submit:disabled{background:#c3c6cf; cursor:not-allowed}
+.hint{color:var(--sub); font-size:12px; margin-top:8px}
+label{display:block; font-weight:700; font-size:13px; margin:12px 0 6px}
+input[type=text],textarea{width:100%; padding:11px 12px; border:1px solid var(--line);
+     border-radius:10px; font-size:14px; background:#fff; font-family:inherit}
+textarea{min-height:84px; resize:vertical; line-height:1.5}
+.opt{color:var(--sub); font-weight:600; font-size:11.5px; margin-left:4px}
+.cal-head{display:flex; justify-content:space-between; align-items:center; margin:12px 0 8px}
+.cal-head .mon{font-weight:800; font-size:14px}
+.cal-head button{border:1px solid var(--line); background:#fff; border-radius:8px;
+     width:32px; height:32px; font-size:15px; cursor:pointer}
+.cal{width:100%; border-collapse:collapse; table-layout:fixed}
+.cal th{color:var(--sub); font-size:11px; font-weight:700; padding:4px 0}
+.cal td{text-align:center; padding:2px 0}
+.cal .d{display:inline-flex; align-items:center; justify-content:center;
+        width:38px; height:38px; border-radius:10px; font-size:13.5px;
+        font-variant-numeric:tabular-nums; cursor:pointer; user-select:none}
+.cal .d.dis{color:#c3c6cf; cursor:not-allowed}
+.cal .d.sel{background:#f97316; color:#fff; font-weight:800}
+.cal .d.insel{background:#ffedd5; color:#9a3412; font-weight:700}
+.picked{margin-top:12px; display:flex; flex-direction:column; gap:6px}
+.picked .slot{display:flex; justify-content:space-between; align-items:center;
+      background:#ffedd5; color:#9a3412; border-radius:10px; padding:8px 12px;
+      font-weight:700; font-size:13px}
+.picked .slot button{border:none; background:none; color:#9a3412; font-size:15px;
+      cursor:pointer; font-weight:800}
+.empty{color:var(--sub); font-size:12.5px; background:var(--tag-bg);
+      border-radius:10px; padding:10px 12px; margin-top:12px}
+.done{display:none; text-align:center; padding:30px 10px}
+.done .big{font-size:40px}
+.done h2{font-size:17px; margin:10px 0 6px}
+"""
+
+TIMESALE_JS = """
+<script>
+(function(){
+  const MS = 86400000, BLOCK = 3, MAX_BLOCKS = 3, LEAD_DAYS = 2;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const minStart = new Date(today.getTime() + LEAD_DAYS * MS);
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+  let blocks = [];
+  const $ = id => document.getElementById(id);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  const inBlock = (d, s) => d >= s && d < new Date(s.getTime() + BLOCK*MS);
+  const findBlock = d => blocks.find(b => inBlock(d, b));
+  const overlaps = s => blocks.some(b => Math.abs(s - b) < BLOCK*MS);
+  function render(){
+    $("mon").textContent = `${view.getFullYear()}年 ${view.getMonth()+1}月`;
+    const first = new Date(view);
+    let cur = new Date(first.getTime() - first.getDay()*MS);
+    const body = $("cal-body"); body.innerHTML = "";
+    for (let r = 0; r < 6; r++){
+      const tr = document.createElement("tr");
+      for (let c = 0; c < 7; c++){
+        const td = document.createElement("td");
+        if (cur.getMonth() === view.getMonth()){
+          const d = new Date(cur), div = document.createElement("span");
+          div.className = "d"; div.textContent = d.getDate();
+          const blk = findBlock(d);
+          if (blk) div.classList.add(+blk === +d ? "sel" : "insel");
+          if (d < minStart) div.classList.add("dis");
+          else div.addEventListener("click", () => {
+            const hit = findBlock(d);
+            if (hit) blocks = blocks.filter(b => +b !== +hit);
+            else if (blocks.length >= MAX_BLOCKS){ alert("選択できるのは3枠までです。不要な枠を外してから選び直してください"); return; }
+            else if (overlaps(d)){ alert("既に選択した3日間と重なっています"); return; }
+            else { blocks.push(new Date(d)); blocks.sort((a,b)=>a-b); }
+            render();
+          });
+          td.appendChild(div);
+        }
+        tr.appendChild(td);
+        cur = new Date(cur.getTime() + MS);
+      }
+      body.appendChild(tr);
+      if (cur.getMonth() !== view.getMonth() && cur > view) break;
+    }
+    const picked = $("picked"); picked.innerHTML = "";
+    blocks.forEach(b => {
+      const end = new Date(b.getTime() + (BLOCK-1)*MS);
+      const slot = document.createElement("div"); slot.className = "slot";
+      slot.innerHTML = `<span>🗓️ ${fmt(b)} 〜 ${fmt(end)}（3日間）</span>`;
+      const x = document.createElement("button"); x.textContent = "✕";
+      x.addEventListener("click", () => { blocks = blocks.filter(v => +v !== +b); render(); });
+      slot.appendChild(x); picked.appendChild(slot);
+    });
+    $("empty").style.display = blocks.length ? "none" : "block";
+    update();
+  }
+  function update(){ $("submit").disabled = !(blocks.length && $("acct").value.trim().length > 1); }
+  $("acct").addEventListener("input", update);
+  $("prev").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()-1, 1); render(); });
+  $("next").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()+1, 1); render(); });
+  $("submit").addEventListener("click", () => {
+    const ranges = blocks.map(b => `${fmt(b)}〜${fmt(new Date(b.getTime()+(BLOCK-1)*MS))}`).join(" / ");
+    const note = $("note").value.trim();
+    $("done-detail").textContent = `${$("acct").value.trim()} さん｜希望日程: ${ranges}` + (note ? `｜備考: ${note}` : "");
+    $("form-card").style.display = "none";
+    $("done").style.display = "block";
+    window.scrollTo({top: 0, behavior: "smooth"});
+  });
+  render();
+})();
+</script>"""
+
+
+def _timesale_page(r: dict, out_path: str, today: str):
+    """LIVE商品ごとのタイムセール設定依頼ページ (ショーケース追加 + 希望日程 + 備考)"""
+    from weekly_picks import live_label
+    name = _h.escape(r.get("商品名", ""))
+    price = _h.escape((r.get("価格") or "-").strip() or "-")
+    rate = str(r.get("報酬率", "") or "").strip()
+    rate = _h.escape((rate + "%") if rate and not rate.endswith("%") else (rate or "-"))
+    shop = _h.escape((r.get("ショップ") or "").strip())
+    aff = _h.escape(r.get("アフィリエイトリンク", "") or "#")
+    img_url = (r.get("画像") or "").strip()
+    img = (f'<img src="{_h.escape(img_url)}" alt="" loading="lazy" '
+           f"onerror=\"this.outerHTML='<div class=noimg>no image</div>'\">"
+           if img_url.startswith(("http", "/")) else '<div class="noimg">no image</div>')
+    doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>タイムセール設定依頼｜{name}</title>
+<style>{CSS}{TIMESALE_CSS}</style></head><body>
+<div class="wrap">
+<a class="more back" href="../live.html">← 📺 ライブ一覧に戻る</a>
+<header style="margin-top:10px"><h1>🔥 タイムセール設定依頼</h1></header>
+<div class="card">{img}<div class="body">
+<div class="pills"><span class="pill own">🎁 自社サンプル可</span>
+<span class="pill live">{live_label(r)}</span></div>
+<div class="name">{name}</div>
+<div class="stats">価格 <b>{price}</b>｜報酬率※ <b class="reward">{rate}</b></div>
+<div class="stats">🏬 {shop}</div>
+</div></div>
+
+<div class="panel">
+  <div class="step"><span class="n">1</span>まずはショーケースに追加</div>
+  <a class="btn showcase" href="{aff}" target="_blank">🛒 ショーケースに追加する</a>
+  <div class="hint">タップするとTikTokの商品ページが開きます</div>
+</div>
+
+<div class="panel" id="form-card">
+  <div class="step"><span class="n">2</span>タイムセールの希望日程を選択</div>
+  <div class="hint" style="margin-top:0">タイムセールは<b>3日間単位</b>です。開始日をタップすると3日分が選択されます（<b>最大3枠</b>・本日から2日間は選択不可）</div>
+  <div class="cal-head">
+    <button id="prev" aria-label="前の月">‹</button>
+    <span class="mon" id="mon"></span>
+    <button id="next" aria-label="次の月">›</button>
+  </div>
+  <table class="cal"><thead><tr>
+    <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+  </tr></thead><tbody id="cal-body"></tbody></table>
+  <div id="picked" class="picked"></div>
+  <div id="empty" class="empty">まだ日程が選択されていません。カレンダーから開始日をタップしてください</div>
+  <label for="acct">TikTokアカウント名（@から）</label>
+  <input type="text" id="acct" placeholder="@your_account">
+  <label for="note">備考<span class="opt">任意</span></label>
+  <textarea id="note" placeholder="希望時間帯、LIVE予定、サンプルの相談など自由にご記入ください"></textarea>
+  <button class="btn submit" id="submit" disabled>この内容で依頼する</button>
+</div>
+
+<div class="panel done" id="done">
+  <div class="big">✅</div>
+  <h2>依頼を受け付けました</h2>
+  <p class="stats" id="done-detail"></p>
+  <p class="stats" style="margin-top:8px">担当者が内容を確認してタイムセールを設定します。</p>
+</div>
+
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。タイムセールの設定可否・時間帯は在庫や施策状況により調整される場合があります。</footer>
+</div>{TIMESALE_JS}</body></html>"""
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(doc)
+
+
+def _timesale_pages(live_rows: list, out_dir: str, today: str) -> int:
+    import os
+    d = os.path.join(out_dir, "timesale")
+    os.makedirs(d, exist_ok=True)
+    n = 0
+    for r in live_rows:
+        pid = (r.get("商品ID") or "").strip()
+        if not pid:
+            continue
+        _timesale_page(r, os.path.join(d, f"{pid}.html"), today)
+        n += 1
+    return n
 
 
 def _shop_pages(own_rows: list, out_dir: str, today: str, n_hot: int, n_chal: int,
@@ -465,6 +685,7 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
         if live_rows:
             _live_page(live_rows, os.path.join(out_dir, "live.html"),
                        today, len(hot), len(new_tbl), n_own)
+            _timesale_pages(live_rows, out_dir, today)
 
 
 # ============================================================
