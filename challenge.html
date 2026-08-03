@@ -59,7 +59,10 @@ header .date{color:var(--sub); font-size:13px}
 .info{cursor:help; border-bottom:1px dotted var(--sub)}
 footer{margin-top:44px; color:var(--sub); font-size:12px;
        border-top:1px solid var(--line); padding-top:14px}
-.tabs{display:flex; gap:8px; margin:16px 0 4px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
 .tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
      text-decoration:none; color:var(--sub); background:var(--card);
      border:1px solid var(--line)}
@@ -67,6 +70,19 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active.hot{background:var(--hot)}
 .tab.active.chal{background:var(--chal)}
 .tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
 .filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
          position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
 .chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
@@ -90,7 +106,7 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 </style></head><body>
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/03 更新</span></header>
-<div class="tabs"><a class="tab" href="./">🔥 売れ筋（50）</a><a class="tab active chal" href="./challenge.html">🚀 新商品（38）</a><a class="tab" href="./recommend.html">🎁 おすすめ（516）</a><a class="tab arch" href="./archive/">📅 アーカイブ</a></div>
+<div class="tabs"><a class="tab" href="./">🔥 売れ筋（50）</a><a class="tab active chal" href="./challenge.html">🚀 新商品（38）</a><a class="tab" href="./recommend.html">🎁 おすすめ（3661）</a><a class="tab arch" href="./archive/">📅 アーカイブ</a></div>
 
 <div class="filters"><span class="chip on" data-cat="all">すべて</span><span class="chip" data-cat="美容">美容</span><span class="chip" data-cat="食品">食品</span><span class="chip" data-cat="家電ガジェット">家電ガジェット</span><span class="chip" data-cat="キッチン・ホーム用品">キッチン・ホーム用品</span><span class="chip" data-cat="その他">その他</span></div>
 <div class="catgrp" data-cat="美容">
@@ -108,7 +124,7 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 <div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/7488074007f24cb59cdf5762c36ac469~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/7488074007f24cb59cdf5762c36ac469~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736416420274865863?region=JP&amp;locale=en" target="_blank">【クーポン利用で50%OFF！！！】サーモン 刺身 1kg (200gx5) 切り落とし 冷凍 ハラ</a><div class="stats">30日売上 <b>126万円</b>｜単価 8,508円｜報酬率※ <b class="reward">4%</b></div><div class="tags"><span class="tag camp">🎫キャンペーン中</span></div></div></div>
 <div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c58027a418594325b6a5b3e65f48f9ee~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c58027a418594325b6a5b3e65f48f9ee~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736222450879268442?region=JP&amp;locale=en" target="_blank">3種から選べる讃岐純生そうめん　8人前 プレーン/梅/オリーブから選べる</a><div class="stats">30日売上 <b>69万円</b>｜単価 1,987円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
 <div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/6e74730910df4900b0851f903e7cf192~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/6e74730910df4900b0851f903e7cf192~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736237085453092262?region=JP&amp;locale=en" target="_blank">辛旨タレたっぷり染み込み 海鮮風こんにゃくおつまみ 個包装携帯簡単</a><div class="stats">30日売上 <b>123万円</b>｜単価 2,013円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
-<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/dfb3446f89574a8496d2d98f0e042ada~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/dfb3446f89574a8496d2d98f0e042ada~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736441994501195590?region=JP&amp;locale=en" target="_blank">【ポスト投函での配送】 チーズケーキ 「ブルーチーズ使用!お手軽チーズケーキバー!スターチーズケーキ</a><div class="stats">30日売上 <b>481万円</b>｜単価 1,924円｜報酬率※ <b class="reward">5%</b></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/dfb3446f89574a8496d2d98f0e042ada~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/dfb3446f89574a8496d2d98f0e042ada~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="pill own">🎁自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMfedL8" target="_blank">【ポスト投函での配送】 チーズケーキ 「ブルーチーズ使用!お手軽チーズケーキバー!スターチーズケーキ</a><div class="stats">30日売上 <b>481万円</b>｜単価 1,924円｜報酬率※ <b class="reward">5%</b></div></div></div>
 <div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b2ad81b6e24b45c8a305e14d19ca24ec~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b2ad81b6e24b45c8a305e14d19ca24ec~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736436418606041023?region=JP&amp;locale=en" target="_blank">【マカプレッソ製人気No.1セット】【送料込み・ギフトBOX入り】トゥンカロン3個＆ドバイチョコもっ</a><div class="stats">30日売上 <b>69万円</b>｜単価 3,337円｜報酬率※ <b class="reward">9%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
 </div>
 <div class="catgrp" data-cat="家電ガジェット">

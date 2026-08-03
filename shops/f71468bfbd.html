@@ -1,0 +1,143 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏬 LASIEM 2026/08/03</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style></head><body>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/03 更新</span></header>
+<div class="tabs"><a class="tab" href="../">🔥 売れ筋（50）</a><a class="tab" href="../challenge.html">🚀 新商品（38）</a><a class="tab" href="../recommend.html">🎁 おすすめ（3661）</a><a class="tab arch" href="../archive/">📅 アーカイブ</a></div>
+<div class="guide"><div class="g-title">🏬 LASIEM</div>ファッション・アパレル｜全20件。すべて弊社経由でサンプル相談ができます。</div><a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>
+
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqRB3ht2l" target="_blank">LASIEM ショルダーバッグ レディース ナイロン 大人 軽量 本革 ミニボストン ミニショルダーバッグ ボストンバッグ ペットボトルが入る 撥水 バッグチャーム ショルダー ベルト付 上品 おしゃれ きれいめ ブランド</a><div class="stats">価格 <b>¥12,800</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQ7aPuJd" target="_blank">LASIEM マルチポーチ キーケース ティッシュケース付き</a><div class="stats">価格 <b>¥3,280</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqRBFFr9Q" target="_blank">LASIEM メタリック長財布 長財布 レディース 小さい長財布 小さめ 財布 短い長財布 短い 本革</a><div class="stats">価格 <b>¥7,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQRpiBBI" target="_blank">LASIEM メッシュハンカチポーチ メッシュ タオル ハンカチ ポーチ 濡れたハンカチ</a><div class="stats">価格 <b>¥1,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQnK0AIe" target="_blank">LASIEM 大容量自立メイクポーチ メイクポーチ　大容量　メイク</a><div class="stats">価格 <b>¥3,480</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQ7R4FBx" target="_blank">LASIEM 本革お財布ショルダーバッグ お財布機能付き</a><div class="stats">価格 <b>¥10,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQnF36dU" target="_blank">LASIEM 本革キューブバッグ スカーフ付き レディース ハンドバッグ トートバッグ バッグインバッグ付 ショルダーストラップ付</a><div class="stats">価格 <b>¥12,800〜¥13,800</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQn6FbhX" target="_blank">LASIEM 本革バイカラーベルト二つ折り財布 引き手二タイプ付き</a><div class="stats">価格 <b>¥5,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqRBO3Xfs" target="_blank">LASIEM 本革リップケース 鏡付き リップ ケース 本革 口紅ケース 口紅入れ 化粧ポーチ</a><div class="stats">価格 <b>¥1,780</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqRBf6TMm" target="_blank">LASIEM 特注シープレザー キルティング二つ折り　ミニ財布</a><div class="stats">価格 <b>¥3,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQSMyuIL" target="_blank">LASIEM 特注シープレザーキルティング 財布</a><div class="stats">価格 <b>¥4,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQnchMJR" target="_blank">LASIEM 特注シープレザーキルティングフラグメントケース</a><div class="stats">価格 <b>¥2,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqRBW1tTq" target="_blank">かっさプレート 美顔器 テラヘルツ 美顔 美容 美肌 美人 かっさ 頭皮マッサージ リンパマッサージ カッサ カッサプレート 突起 健康 ツボ押し つぼ押し 温熱 温かい お風呂 リンパ 持ち運び 便利 顔 頭 腕 足 脚 手 かっさマッサージ</a><div class="stats">価格 <b>¥1,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQRhSWKB" target="_blank">ショルダーバッグ レディース 本革 大人 軽量 ミニボストン 斜めがけ 肩掛け 小さめ ペットボトルが入る ハンドバッグ　ミニショルダーバッグ ハンドバッグ  バッグチャーム ショルダーストラップ ベルト付 かわいい 上品 おしゃれ きれいめ ブランド クリスマス</a><div class="stats">価格 <b>¥14,800</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQ7h12NM" target="_blank">バイカラー ベルト 三つ折り財布 ミニ財布 小さい財布 三つ折り コンパクト ミニウォレット お財布 レディース財布 本革 革 レザー ブランド 薄い ミニ 折りたたみ財布 使いやすい 小さめ スキミング防止 小銭入れ かわいい おしゃれ  シンプル財布 レディース</a><div class="stats">価格 <b>¥3,580</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQS3BMhV" target="_blank">ミニ財布 レディース 三つ折り財布 財布 三つ折り 本革 革 レザー 小さい財布 コンパクト ミニウォレット ブランド 小銭入れ かわいい おしゃれ カードケース ミニ 鍵 コインケース カード入れ スリム 薄い 薄型 プレゼント</a><div class="stats">価格 <b>¥2,980</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQ7uDOie" target="_blank">二つ折り財布 レディース ミニ財布 財布 二つ折り 本革 時短財布 スリム 薄い 薄型 革 レザー 小さい コンパクト ミニウォレット ブランド 小銭入れ かわいい おしゃれ カードケース ミニサイズ クリスマス カード入れ</a><div class="stats">価格 <b>¥4,480</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQSEBaBT" target="_blank">財布 メンズ ミニ財布 二つ折り小さい財布 コンパクト コインケース レディース カードケース 本革 小さい レザー じゃばら カード入れ 小銭入れ お札折らない 折りたたみ ミニウォレット 本革ミニ財布 カードたくさん スキミング防止 革 父の日 実用的 プレゼント</a><div class="stats">価格 <b>¥3,490</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQ7qdkxl" target="_blank">財布 メンズ ミニ財布 小さい財布 二つ折り  二つ折り財布 二つ折り財布メンズ 折りたたみ財布 折りたたみ コンパクト ミニウォレット カードケース 本革 レザー 小さい じゃばら 小銭入れ お札折らない カードたくさん スキミング防止</a><div class="stats">価格 <b>¥5,280</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKYAqQnW65lb" target="_blank">＼上向き顔へ／美顔スティック ツボ押し 顔 ツボ押し棒 かっさ テラヘルツ 筋膜リリース マッサージ 顔ツボ棒 ペン型美顔器 トリガーポイント 指圧棒 小顔 美顔 美顔器 コリほぐし 表情筋 ほうれい線 むくみ フェイスライン クマ リフトアップ</a><div class="stats">価格 <b>¥1,580〜¥1,780</b>｜報酬率※ <b class="reward">14%</b></div></div></div>
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>

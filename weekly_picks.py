@@ -176,16 +176,29 @@ def fix_category(name: str, category: str) -> str:
 
 def load_own_list(path: str = "own_list.csv") -> list[dict]:
     """自社案件リスト (Googleシートのスナップショット own_list.csv) を読む。
-    列: ジャンル/ブランド/商品名/価格/報酬率/アフィリエイトリンク/商品ID。
+    列: カテゴリ/ショップ/商品名/価格/報酬率/アフィリエイトリンク/商品ID/ライブ。
+    旧形式 (ジャンル/ブランド) のCSVもキーを読み替えて受け付ける。
     「掲載」列がある場合は非空の行のみ返す。ファイルがなければ空リスト"""
     import csv
     if not os.path.exists(path):
         return []
     with open(path, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    if rows and "掲載" in rows[0]:
+    if not rows:
+        return []
+    for r in rows:                      # 旧列名 → 新列名のフォールバック
+        r.setdefault("カテゴリ", r.get("ジャンル", ""))
+        r.setdefault("ショップ", r.get("ブランド", ""))
+        r.setdefault("ライブ", "")
+    if "掲載" in rows[0]:
         rows = [r for r in rows if str(r.get("掲載", "")).strip()]
     return rows
+
+
+def is_live(row: dict) -> bool:
+    """シートの「ライブ」列に値が入っていれば LIVEタイムセール可能 商品"""
+    v = str(row.get("ライブ", "") or "").strip().lower()
+    return bool(v) and v not in ("0", "false", "no", "×", "x", "-")
 
 
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:

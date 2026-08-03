@@ -64,7 +64,10 @@ header .date{color:var(--sub); font-size:13px}
 .info{cursor:help; border-bottom:1px dotted var(--sub)}
 footer{margin-top:44px; color:var(--sub); font-size:12px;
        border-top:1px solid var(--line); padding-top:14px}
-.tabs{display:flex; gap:8px; margin:16px 0 4px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
 .tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
      text-decoration:none; color:var(--sub); background:var(--card);
      border:1px solid var(--line)}
@@ -72,6 +75,19 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active.hot{background:var(--hot)}
 .tab.active.chal{background:var(--chal)}
 .tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
 .filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
          position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
 .chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
@@ -219,7 +235,7 @@ def make_embed_fn():
 
 
 def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
-          n_hot: int, n_chal: int, n_own: int = 0):
+          n_hot: int, n_chal: int, n_own: int = 0, n_live: int = 0):
     if kind == "hot":
         title, color_cls = "🔥 売れ筋", "hot"
         tabs = (f'<a class="tab active hot" href="./">🔥 売れ筋（{n_hot}）</a>'
@@ -230,6 +246,8 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
                 f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
     if n_own:
         tabs += f'<a class="tab" href="./recommend.html">🎁 おすすめ（{n_own}）</a>'
+    if n_live:
+        tabs += f'<a class="tab" href="./live.html">📺 ライブ（{n_live}）</a>'
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     guide = ""
     if kind == "hot":
@@ -267,72 +285,179 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         f.write(doc)
 
 
-def _own_card(r: dict) -> str:
+OWN_TOP_N = 5          # おすすめページでショップごとに表示する代表件数
+
+
+def shop_slug(shop: str) -> str:
+    """ショップ名 → 安定したファイル名 (週次再生成でもURLが変わらないようハッシュ)"""
+    import hashlib
+    return hashlib.md5(shop.encode("utf-8")).hexdigest()[:10]
+
+
+def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
+    """show_shop: ショップ見出しが無いページ (ライブタブ) だけショップ名を出す"""
+    from weekly_picks import is_live
     link = r.get("アフィリエイトリンク", "") or "#"
-    price = (r.get("価格", "") or "-").strip()
+    price = (r.get("価格", "") or "-").strip() or "-"
     rate = str(r.get("報酬率", "") or "").strip()
     rate = (rate + "%") if rate and not rate.endswith("%") else (rate or "-")
-    brand = (r.get("ブランド", "") or "").strip()
-    brand_html = f'<div class="stats">{_h.escape(brand)}</div>' if brand else ""
+    shop = (r.get("ショップ") or "").strip()
+    shop_html = ""
+    if shop and show_shop:
+        shop_html = (f'<div class="stats"><a class="shoplink" href="{prefix}shops/'
+                     f'{shop_slug(shop)}.html">🏬 {_h.escape(shop)}</a></div>')
+    pills = ['<span class="pill own">🎁 自社サンプル可</span>']
+    if is_live(r):
+        pills.append('<span class="pill live">📺 LIVEタイムセール可能</span>')
     return (f'<div class="card"><div class="noimg">no image</div><div class="body">'
-            f'<div class="pills"><span class="pill own">🎁 自社サンプル可</span></div>'
+            f'<div class="pills">{"".join(pills)}</div>'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(r.get("商品名", ""))}</a>'
             f'<div class="stats">価格 <b>{_h.escape(price)}</b>｜'
             f'報酬率※ <b class="reward">{_h.escape(rate)}</b></div>'
-            f'{brand_html}</div></div>')
+            f'{shop_html}</div></div>')
 
 
-def _own_page(own_rows: list, out_path: str, today: str, n_hot: int, n_chal: int):
-    """🎁 おすすめ (自社案件リスト) ページ。リンクは全てアフィリエイトリンク"""
-    tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
-            f'<a class="tab" href="./challenge.html">🚀 新商品（{n_chal}）</a>'
-            f'<a class="tab active own" href="./recommend.html">🎁 おすすめ（{len(own_rows)}）</a>'
-            '<a class="tab arch" href="./archive/">📅 アーカイブ</a>')
-    groups, order = {}, []
-    for r in own_rows:
-        g = (r.get("ジャンル") or "その他").strip() or "その他"
-        if g not in groups:
-            groups[g] = []
-            order.append(g)
-        groups[g].append(r)
-    chips = ['<span class="chip on" data-cat="all">すべて</span>'] + [
-        f'<span class="chip" data-cat="{_h.escape(g)}">{_h.escape(g)}</span>' for g in order]
-    parts = []
-    for g in order:
-        parts.append(f'<div class="catgrp" data-cat="{_h.escape(g)}">')
-        parts.append(f'<div class="cat">▼ <b>{_h.escape(g)}</b>（{len(groups[g])}件）</div>')
-        parts += [_own_card(r) for r in groups[g]]
-        parts.append('</div>')
-    doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
+def _own_tabs(active: str, n_hot: int, n_chal: int, n_own: int, n_live: int,
+              prefix: str = "") -> str:
+    """おすすめ/ライブ/ショップ各ページ共通のタブ"""
+    def cls(name, extra=""):
+        return f'tab active {extra}' if active == name else 'tab'
+    t = (f'<a class="{cls("hot","hot")}" href="{prefix or "./"}">🔥 売れ筋（{n_hot}）</a>'
+         f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>'
+         f'<a class="{cls("own","own")}" href="{prefix}recommend.html">🎁 おすすめ（{n_own}）</a>')
+    if n_live:
+        t += f'<a class="{cls("live","live")}" href="{prefix}live.html">📺 ライブ（{n_live}）</a>'
+    t += f'<a class="tab arch" href="{prefix}archive/">📅 アーカイブ</a>'
+    return t
+
+
+def _own_doc(title: str, tabs: str, guide: str, chips: str, body: str, today: str,
+             footer_extra: str = "") -> str:
+    return f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎁 おすすめ 週次おすすめ商品 {today}</title><style>{CSS}</style></head><body>
+<title>{title} {today}</title><style>{CSS}</style></head><body>
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">{today} 更新</span></header>
 <div class="tabs">{tabs}</div>
-<div class="guide"><div class="g-title">🎁 自社サンプル可の案件リスト</div>
-弊社経由でサンプルを渡せる商品です。実績ゼロでもまずここから。商品名をタップするとそのままアフィリエイトリンクに飛べます。</div>
-<div class="filters">{"".join(chips)}</div>
-{"".join(parts)}
-<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+{guide}
+{chips}
+{body}
+<footer>{footer_extra}※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
 サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
 </div>{FILTER_JS}</body></html>"""
+
+
+def _group_by_shop(own_rows: list) -> "OrderedDict":
+    """カテゴリ→ショップの順序を保ったままショップ単位にまとめる"""
+    from collections import OrderedDict
+    shops = OrderedDict()
+    for r in own_rows:
+        key = (r.get("ショップ") or "その他").strip() or "その他"
+        shops.setdefault(key, []).append(r)
+    return shops
+
+
+def _own_page(own_rows: list, out_path: str, today: str, n_hot: int, n_chal: int,
+              n_live: int = 0, shop_prefix: str = ""):
+    """🎁 おすすめ: ショップごとに代表 OWN_TOP_N 件 + ショップページへの導線。
+    shop_prefix はショップページの参照先 (アーカイブからは本サイトの "/" を指す)"""
+    shops = _group_by_shop(own_rows)
+    cats, parts = [], []
+    for shop, items in shops.items():
+        cat = (items[0].get("カテゴリ") or "その他").strip() or "その他"
+        if cat not in cats:
+            cats.append(cat)
+        parts.append(f'<div class="catgrp" data-cat="{_h.escape(cat)}">')
+        parts.append(f'<div class="shop-h"><span class="shop-name">🏬 {_h.escape(shop)}</span>'
+                     f'<span class="shop-n">{len(items)}件</span></div>')
+        parts += [_own_card(r, prefix=shop_prefix) for r in items[:OWN_TOP_N]]
+        if len(items) > OWN_TOP_N:
+            parts.append(f'<a class="more" href="{shop_prefix}shops/{shop_slug(shop)}.html">'
+                         f'このショップの全{len(items)}件を見る →</a>')
+        parts.append('</div>')
+    chips = ['<span class="chip on" data-cat="all">すべて</span>'] + [
+        f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
+    guide = (f'<div class="guide"><div class="g-title">🎁 自社サンプル可の案件リスト</div>'
+             f'弊社経由でサンプルを渡せる商品です。実績ゼロでもまずここから。'
+             f'各ショップ代表{OWN_TOP_N}件を掲載しています（全{len(own_rows)}件・{len(shops)}ショップ）。'
+             f'ショップ名をタップすると、そのショップの全商品を見られます。</div>')
+    doc = _own_doc("🎁 おすすめ 週次おすすめ商品",
+                   _own_tabs("own", n_hot, n_chal, len(own_rows), n_live),
+                   guide, f'<div class="filters">{"".join(chips)}</div>',
+                   "\n".join(parts), today)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(doc)
 
 
+def _live_page(live_rows: list, out_path: str, today: str, n_hot: int, n_chal: int,
+               n_own: int, shop_prefix: str = ""):
+    """📺 ライブ: シートの「ライブ」列が立っている商品だけを集めたページ"""
+    cats, parts = [], []
+    from collections import OrderedDict
+    by_cat = OrderedDict()
+    for r in live_rows:
+        by_cat.setdefault((r.get("カテゴリ") or "その他").strip() or "その他", []).append(r)
+    for cat, items in by_cat.items():
+        cats.append(cat)
+        parts.append(f'<div class="catgrp" data-cat="{_h.escape(cat)}">')
+        parts.append(f'<div class="cat">▼ <b>{_h.escape(cat)}</b>（{len(items)}件）</div>')
+        parts += [_own_card(r, prefix=shop_prefix, show_shop=True) for r in items]
+        parts.append('</div>')
+    chips = ['<span class="chip on" data-cat="all">すべて</span>'] + [
+        f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
+    guide = ('<div class="guide"><div class="g-title">📺 LIVEタイムセール可能な商品</div>'
+             'LIVE配信でタイムセールを設定できる商品です。'
+             'タイムセールの設定依頼は担当者までご連絡ください。</div>')
+    doc = _own_doc("📺 ライブ 週次おすすめ商品",
+                   _own_tabs("live", n_hot, n_chal, n_own, len(live_rows)),
+                   guide, f'<div class="filters">{"".join(chips)}</div>',
+                   "\n".join(parts), today)
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(doc)
+
+
+def _shop_pages(own_rows: list, out_dir: str, today: str, n_hot: int, n_chal: int,
+                n_live: int):
+    """shops/<hash>.html にショップごとの全商品ページを生成"""
+    import os
+    shops = _group_by_shop(own_rows)
+    shop_dir = os.path.join(out_dir, "shops")
+    os.makedirs(shop_dir, exist_ok=True)
+    for shop, items in shops.items():
+        cat = (items[0].get("カテゴリ") or "その他").strip() or "その他"
+        guide = (f'<div class="guide"><div class="g-title">🏬 {_h.escape(shop)}</div>'
+                 f'{_h.escape(cat)}｜全{len(items)}件。すべて弊社経由でサンプル相談ができます。</div>'
+                 f'<a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>')
+        body = "\n".join(_own_card(r, prefix="../") for r in items)
+        doc = _own_doc(f"🏬 {_h.escape(shop)}",
+                       _own_tabs("", n_hot, n_chal, len(own_rows), n_live, prefix="../"),
+                       guide, "", body, today)
+        with open(os.path.join(shop_dir, f"{shop_slug(shop)}.html"), "w",
+                  encoding="utf-8") as f:
+            f.write(doc)
+    return len(shops)
+
+
 def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list | None = None):
     import os
+    from weekly_picks import is_live
     os.makedirs(out_dir, exist_ok=True)
     embed_fn = make_embed_fn() if embed else None
     today = dt.date.today().strftime("%Y/%m/%d")
-    n_own = len(own_rows or [])
+    own_rows = own_rows or []
+    live_rows = [r for r in own_rows if is_live(r)]
+    n_own, n_live = len(own_rows), len(live_rows)
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
-          embed_fn, today, len(hot), len(new_tbl), n_own)
+          embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
-          embed_fn, today, len(hot), len(new_tbl), n_own)
+          embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
     if own_rows:
         _own_page(own_rows, os.path.join(out_dir, "recommend.html"),
-                  today, len(hot), len(new_tbl))
+                  today, len(hot), len(new_tbl), n_live)
+        _shop_pages(own_rows, out_dir, today, len(hot), len(new_tbl), n_live)
+        if live_rows:
+            _live_page(live_rows, os.path.join(out_dir, "live.html"),
+                       today, len(hot), len(new_tbl), n_own)
 
 
 # ============================================================
@@ -355,16 +480,24 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     arch_dir = os.path.join(root_dir, "archive", date_str)
     os.makedirs(arch_dir, exist_ok=True)
     today = dt.date.today().strftime("%Y/%m/%d")
-    n_own = len(own_rows or [])
+    from weekly_picks import is_live
+    own_rows = own_rows or []
+    live_rows = [r for r in own_rows if is_live(r)]
+    n_own, n_live = len(own_rows), len(live_rows)
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
-          None, today, len(hot), len(new_tbl), n_own)
+          None, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
-          None, today, len(hot), len(new_tbl), n_own)
+          None, today, len(hot), len(new_tbl), n_own, n_live)
     pages = ["index.html", "challenge.html"]
     if own_rows:
+        # ショップページ本体はアーカイブに複製せず本サイト側 (/shops/) を参照する
         _own_page(own_rows, os.path.join(arch_dir, "recommend.html"),
-                  today, len(hot), len(new_tbl))
+                  today, len(hot), len(new_tbl), n_live, shop_prefix="/")
         pages.append("recommend.html")
+        if live_rows:
+            _live_page(live_rows, os.path.join(arch_dir, "live.html"),
+                       today, len(hot), len(new_tbl), n_own, shop_prefix="/")
+            pages.append("live.html")
     for fn in pages:
         p = os.path.join(arch_dir, fn)
         with open(p, encoding="utf-8") as f:
