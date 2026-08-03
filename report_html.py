@@ -309,7 +309,14 @@ def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
     pills = ['<span class="pill own">🎁 自社サンプル可</span>']
     if is_live(r):
         pills.append('<span class="pill live">📺 LIVEタイムセール可能</span>')
-    return (f'<div class="card"><div class="noimg">no image</div><div class="body">'
+    # 画像は自社ホスト (product-images/<商品ID>.jpeg)。無い商品は onerror で no image に落とす
+    img_url = (r.get("画像") or "").strip()
+    if img_url.startswith("http"):
+        img = (f'<img src="{_h.escape(img_url)}" loading="lazy" alt="" '
+               f"onerror=\"this.outerHTML='<div class=noimg>no image</div>'\">")
+    else:
+        img = '<div class="noimg">no image</div>'
+    return (f'<div class="card">{img}<div class="body">'
             f'<div class="pills">{"".join(pills)}</div>'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(r.get("商品名", ""))}</a>'
             f'<div class="stats">価格 <b>{_h.escape(price)}</b>｜'
