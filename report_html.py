@@ -311,7 +311,7 @@ def _own_card(r: dict, prefix: str = "", show_shop: bool = False) -> str:
         pills.append('<span class="pill live">📺 LIVEタイムセール可能</span>')
     # 画像は自社ホスト (product-images/<商品ID>.jpeg)。無い商品は onerror で no image に落とす
     img_url = (r.get("画像") or "").strip()
-    if img_url.startswith("http"):
+    if img_url.startswith(("http", "/")):    # "/product-images/..." はリポジトリ同梱画像
         img = (f'<img src="{_h.escape(img_url)}" loading="lazy" alt="" '
                f"onerror=\"this.outerHTML='<div class=noimg>no image</div>'\">")
     else:
