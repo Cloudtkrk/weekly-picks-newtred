@@ -80,7 +80,7 @@ CONFIG = {
     # --- タイムセール依頼フォームの送信先 (Google Apps Scriptのウェブアプリ /exec URL) ---
     #     gas/timesale_webhook.gs の手順でデプロイして取得したURLを貼る。
     #     空のままだと送信されず、完了画面だけ表示される
-    "timesale_webhook_url": "",
+    "timesale_webhook_url": "https://script.google.com/macros/s/AKfycbzjKtCH7opQwOKuvPCumYG25F-Q_w7jXS_8cCCcRnyYGxsd1Hh15w2K-vxdgGSJWTye/exec",
     # --- キャンペーンタグ用ワード (除外せずタグ付け) ---
     "campaign_words": ["クーポン", "OFF", "ＯＦＦ", "SALE", "セール", "割引", "福袋"],
     # --- 季節ワード (除外せずタグ付け) ---
