@@ -117,10 +117,18 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 #   静的サイトのフロント側チェックなので簡易ゲート。合言葉はSHA-256で埋め込み、
 #   突破の敷居を上げつつ、解除状態は localStorage に保存する
 # ============================================================
+GATE_TEASER = ""      # ゲートに出す件数ティザー (write_site/archive_site が設定)
+
 GATE_CSS = """
-html.gate-locked body>.wrap{display:none}
-#gate{position:fixed; inset:0; z-index:9999; background:var(--bg);
-      display:flex; align-items:center; justify-content:center; padding:20px}
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{filter:blur(7px); pointer-events:none; user-select:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px;
+      background:rgba(246,247,249,.66); backdrop-filter:blur(3px);
+      -webkit-backdrop-filter:blur(3px);
+      display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .peek{color:var(--sub); font-size:11.5px; margin-bottom:14px}
 #gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
       padding:26px 22px; max-width:380px; width:100%; text-align:center}
 #gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
@@ -149,10 +157,13 @@ def _gate_html() -> str:
     line_url = str(CONFIG.get("line_add_url", "") or "")
     line_btn = (f'<a class="btn line" href="{_h.escape(line_url)}" target="_blank">'
                 f'💬 公式LINEを友だち追加する</a>' if line_url else "")
+    teaser = (f'<div class="teaser">{GATE_TEASER}</div>'
+              f'<div class="peek">↓ 背景がこのページの中身です</div>' if GATE_TEASER else "")
     return f"""<div id="gate"><div class="box">
 <h1>📦 週次おすすめ商品</h1>
 <p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
 LINEでお伝えしている合言葉を入力してください。</p>
+{teaser}
 {line_btn}
 <input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
 <button class="btn go" id="gate-go">閲覧する</button>
@@ -772,6 +783,17 @@ def _shop_pages(own_rows: list, out_dir: str, today: str, n_hot: int, n_chal: in
     return len(shops)
 
 
+def _set_teaser(n_hot: int, n_chal: int, n_own: int, n_live: int):
+    """ゲート画面に出す「今週の中身」ティザーを組み立てる"""
+    global GATE_TEASER
+    parts = [f"🔥 売れ筋 {n_hot}件", f"🚀 新商品 {n_chal}件"]
+    if n_own:
+        parts.append(f"🎁 自社サンプル可 {n_own:,}件")
+    if n_live:
+        parts.append(f"📺 LIVEタイムセール {n_live}件")
+    GATE_TEASER = "　".join(parts) + " を掲載中"
+
+
 def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list | None = None):
     import os
     from weekly_picks import is_live
@@ -781,6 +803,7 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
     own_rows = own_rows or []
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
+    _set_teaser(len(hot), len(new_tbl), n_own, n_live)
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
           embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
@@ -819,6 +842,7 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     own_rows = own_rows or []
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
+    _set_teaser(len(hot), len(new_tbl), n_own, n_live)
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
           None, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),

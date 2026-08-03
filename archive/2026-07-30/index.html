@@ -87,9 +87,15 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 }
 @media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
 </style><style>
-html.gate-locked body>.wrap{display:none}
-#gate{position:fixed; inset:0; z-index:9999; background:var(--bg);
-      display:flex; align-items:center; justify-content:center; padding:20px}
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{filter:blur(7px); pointer-events:none; user-select:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px;
+      background:rgba(246,247,249,.66); backdrop-filter:blur(3px);
+      -webkit-backdrop-filter:blur(3px);
+      display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .peek{color:var(--sub); font-size:11.5px; margin-bottom:14px}
 #gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
       padding:26px 22px; max-width:380px; width:100%; text-align:center}
 #gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
@@ -107,6 +113,7 @@ html.gate-locked body>.wrap{display:none}
 <h1>📦 週次おすすめ商品</h1>
 <p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
 LINEでお伝えしている合言葉を入力してください。</p>
+<div class="teaser">🔥 売れ筋 50件　🚀 新商品 38件　🎁 自社サンプル可 3,661件　📺 LIVEタイムセール 566件 を掲載中</div><div class="peek">↓ 背景がこのページの中身です</div>
 <a class="btn line" href="https://lin.ee/Sv2jDrZ" target="_blank">💬 公式LINEを友だち追加する</a>
 <input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
 <button class="btn go" id="gate-go">閲覧する</button>
