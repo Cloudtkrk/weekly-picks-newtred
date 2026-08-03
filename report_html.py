@@ -112,6 +112,90 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 """
 
 
+# ============================================================
+# 閲覧ゲート (公式LINE登録者限定の合言葉)
+#   静的サイトのフロント側チェックなので簡易ゲート。合言葉はSHA-256で埋め込み、
+#   突破の敷居を上げつつ、解除状態は localStorage に保存する
+# ============================================================
+GATE_CSS = """
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; background:var(--bg);
+      display:flex; align-items:center; justify-content:center; padding:20px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+"""
+
+
+def _gate_html() -> str:
+    """ゲートのオーバーレイ + 判定スクリプト (合言葉が未設定なら空文字)"""
+    import hashlib
+    import json as _json
+    code = str(CONFIG.get("site_passcode", "") or "")
+    if not code:
+        return ""
+    sha = hashlib.sha256(code.encode("utf-8")).hexdigest()
+    b64 = __import__("base64").b64encode(code.encode("utf-8")).decode()
+    line_url = str(CONFIG.get("line_add_url", "") or "")
+    line_btn = (f'<a class="btn line" href="{_h.escape(line_url)}" target="_blank">'
+                f'💬 公式LINEを友だち追加する</a>' if line_url else "")
+    return f"""<div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+{line_btn}
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){{
+  const SHA={_json.dumps(sha)}, B64={_json.dumps(b64)}, KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){{
+    if (window.crypto && crypto.subtle && window.isSecureContext){{
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }}
+    return null;
+  }}
+  function ok(){{ root.classList.remove("gate-locked"); gate.remove(); }}
+  try {{ if (localStorage.getItem(KEY) === SHA) return ok(); }} catch(e) {{}}
+  async function submit(){{
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){{ try{{ localStorage.setItem(KEY, SHA); }}catch(e){{}} ok(); }}
+    else {{ document.getElementById("gate-err").textContent="合言葉が違います"; }}
+  }}
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{{ if(e.key==="Enter") submit(); }});
+}})();
+</script>"""
+
+
+def _write(path: str, doc: str):
+    """生成HTMLにゲートを差し込んで書き出す (全ページ共通の出口)"""
+    gate = _gate_html()
+    if gate:
+        doc = doc.replace("</head>", f"<style>{GATE_CSS}</style></head>", 1)
+        doc = doc.replace("<body>", '<body><script>document.documentElement.'
+                          'classList.add("gate-locked")</script>' + gate, 1)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(doc)
+
+
 def _tag_html(tags: str) -> str:
     if not tags:
         return ""
@@ -282,8 +366,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
 ※ 報酬率・1件あたり報酬目安は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
 ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ。売上等の数値は独自集計の参考値です。</footer>
 </div>{FILTER_JS}</body></html>"""
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(doc)
+    _write(out_path, doc)
 
 
 OWN_TOP_N = 5          # おすすめページでショップごとに表示する代表件数
@@ -409,8 +492,7 @@ def _own_page(own_rows: list, out_path: str, today: str, n_hot: int, n_chal: int
                    _own_tabs("own", n_hot, n_chal, len(own_rows), n_live),
                    guide, f'<div class="filters">{"".join(chips)}</div>',
                    "\n".join(parts), today)
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(doc)
+    _write(out_path, doc)
 
 
 def _live_page(live_rows: list, out_path: str, today: str, n_hot: int, n_chal: int,
@@ -438,8 +520,7 @@ def _live_page(live_rows: list, out_path: str, today: str, n_hot: int, n_chal: i
                    _own_tabs("live", n_hot, n_chal, n_own, len(live_rows)),
                    guide, f'<div class="filters">{"".join(chips)}</div>',
                    "\n".join(parts), today)
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(doc)
+    _write(out_path, doc)
 
 
 TIMESALE_CSS = """
@@ -654,8 +735,7 @@ def _timesale_page(r: dict, out_path: str, today: str):
 </div>
 <script>window.TIMESALE_ENDPOINT={_json.dumps(endpoint)};
 window.TIMESALE_PRODUCT={product_js};</script>{TIMESALE_JS}</body></html>"""
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(doc)
+    _write(out_path, doc)
 
 
 def _timesale_pages(live_rows: list, out_dir: str, today: str) -> int:
@@ -688,9 +768,7 @@ def _shop_pages(own_rows: list, out_dir: str, today: str, n_hot: int, n_chal: in
         doc = _own_doc(f"🏬 {_h.escape(shop)}",
                        _own_tabs("", n_hot, n_chal, len(own_rows), n_live, prefix="../"),
                        guide, "", body, today)
-        with open(os.path.join(shop_dir, f"{shop_slug(shop)}.html"), "w",
-                  encoding="utf-8") as f:
-            f.write(doc)
+        _write(os.path.join(shop_dir, f"{shop_slug(shop)}.html"), doc)
     return len(shops)
 
 
@@ -813,5 +891,4 @@ def write_archive_index(root_dir: str = "."):
 {body}
 <footer>毎週の更新時に自動保存されるアーカイブです。数値・報酬率は各時点の参考値で、現在の条件とは異なる場合があります。</footer>
 </div></body></html>"""
-    with open(os.path.join(arch_root, "index.html"), "w", encoding="utf-8") as f:
-        f.write(doc)
+    _write(os.path.join(arch_root, "index.html"), doc)

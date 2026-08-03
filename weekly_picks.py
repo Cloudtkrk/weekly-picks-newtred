@@ -77,6 +77,12 @@ CONFIG = {
     "gem_gmv_per_creator": 100_000,    # 💎 1人あたりGMV (円) 下限
     "gem_cvr": 30,                     # 💎 成立率 (%) 下限
     "own_sample_brands": [],           # 🎁 自社サンプル可 (商品名に部分一致、後日追加)
+    # --- 閲覧ゲート (公式LINE登録者限定) ---
+    #     site_passcode: 合言葉。空にするとゲート無効 (誰でも閲覧可)
+    #     line_add_url : 公式LINEの友だち追加URL。設定するとゲートに追加ボタンが出る
+    #     ※ 静的サイトのフロント側チェックなので、ソースを読める人は突破できる簡易ゲートです
+    "site_passcode": "newtrend2026",
+    "line_add_url": "",
     # --- タイムセール依頼フォームの送信先 (Google Apps Scriptのウェブアプリ /exec URL) ---
     #     gas/timesale_webhook.gs の手順でデプロイして取得したURLを貼る。
     #     空のままだと送信されず、完了画面だけ表示される

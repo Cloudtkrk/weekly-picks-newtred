@@ -74,7 +74,57 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
   .chip{white-space:nowrap; flex-shrink:0}
 }
 @media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
-</style></head><body>
+</style><style>
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; background:var(--bg);
+      display:flex; align-items:center; justify-content:center; padding:20px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+</style></head><body><script>document.documentElement.classList.add("gate-locked")</script><div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){
+  const SHA="ed775ddbb6f84ee329d8ba195fe096133516a8e96ea69563dbca7ad7cd5aa827", B64="bmV3dHJlbmQyMDI2", KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){
+    if (window.crypto && crypto.subtle && window.isSecureContext){
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+    return null;
+  }
+  function ok(){ root.classList.remove("gate-locked"); gate.remove(); }
+  try { if (localStorage.getItem(KEY) === SHA) return ok(); } catch(e) {}
+  async function submit(){
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){ try{ localStorage.setItem(KEY, SHA); }catch(e){} ok(); }
+    else { document.getElementById("gate-err").textContent="合言葉が違います"; }
+  }
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{ if(e.key==="Enter") submit(); });
+})();
+</script>
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">2026/07/28 更新</span></header><div class="arch-note">📌 これは <b>2026-07-28</b> 時点のアーカイブです。<a href="../">アーカイブ一覧</a>｜<a href="/">最新のランキングを見る</a></div>
 <div class="tabs"><a class="tab active hot" href="./">🔥 売れ筋（134）</a><a class="tab" href="./challenge.html">🚀 チャレンジ（24）</a><a class="tab arch" href="../">📅 アーカイブ</a></div>
