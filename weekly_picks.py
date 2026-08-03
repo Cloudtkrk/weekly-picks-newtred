@@ -77,6 +77,10 @@ CONFIG = {
     "gem_gmv_per_creator": 100_000,    # 💎 1人あたりGMV (円) 下限
     "gem_cvr": 30,                     # 💎 成立率 (%) 下限
     "own_sample_brands": [],           # 🎁 自社サンプル可 (商品名に部分一致、後日追加)
+    # --- タイムセール依頼フォームの送信先 (Google Apps Scriptのウェブアプリ /exec URL) ---
+    #     gas/timesale_webhook.gs の手順でデプロイして取得したURLを貼る。
+    #     空のままだと送信されず、完了画面だけ表示される
+    "timesale_webhook_url": "",
     # --- キャンペーンタグ用ワード (除外せずタグ付け) ---
     "campaign_words": ["クーポン", "OFF", "ＯＦＦ", "SALE", "セール", "割引", "福袋"],
     # --- 季節ワード (除外せずタグ付け) ---

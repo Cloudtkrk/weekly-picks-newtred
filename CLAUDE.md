@@ -158,8 +158,15 @@ python weekly_data_v1.py --auto input/ --html
      `timesale/<商品ID>.html`** (タイムセール設定依頼ページ) で、1クッション挟む
   4b. `timesale/<商品ID>.html`: LIVE商品ごとの設定依頼ページ。①ショーケース追加ボタン
      (アフィリエイトリンク) ②3日間単位×最大3枠のカレンダー (本日から2日間は選択不可)
-     ③TikTokアカウント名 ④備考(任意)。送信は現状フロント完結の完了画面のみで、
-     スプレッドシート自動格納は未実装 (Google Apps Scriptのwebhookを立てれば対応可能)
+     ③TikTokアカウント名 ④備考(任意)。冒頭・フッター・完了画面に
+     **「LIVEの実施には審査があります」** の注記を必ず入れる
+  4c. 送信内容は `CONFIG["timesale_webhook_url"]` (Google Apps Scriptのウェブアプリ /exec URL) へ
+     POSTしてスプレッドシートに自動格納する。GASのコードと設置手順は `gas/timesale_webhook.gs`、
+     格納先シートは「タイムセール設定依頼_受付」
+     (ID: `1LpMX46K7PMveKiT92UqD6nor8NFxqSSNB0UPDOxAB4g`)。
+     URLが空の場合は送信せず完了画面だけ出す (CORS回避のため text/plain + no-cors で送るので
+     フロントからは成否を検知できない。疎通確認はウェブアプリURLをブラウザで開いて
+     `{"ok":true,"ping":true}` が返るかで行う)
   5. アーカイブには `shops/` を複製せず、`archive/<日付>/recommend.html` から本サイトの
      `/shops/` を参照する (毎週164ページ複製するとリポジトリが肥大化するため)
   6. `own_list.csv` が無い場合はおすすめ/ライブタブ非表示・差し替えなしの従来動作

@@ -548,10 +548,23 @@ TIMESALE_JS = """
   $("acct").addEventListener("input", update);
   $("prev").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()-1, 1); render(); });
   $("next").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()+1, 1); render(); });
-  $("submit").addEventListener("click", () => {
-    const ranges = blocks.map(b => `${fmt(b)}〜${fmt(new Date(b.getTime()+(BLOCK-1)*MS))}`).join(" / ");
+  $("submit").addEventListener("click", async () => {
+    const slots = blocks.map(b => `${fmt(b)}〜${fmt(new Date(b.getTime()+(BLOCK-1)*MS))}`);
     const note = $("note").value.trim();
-    $("done-detail").textContent = `${$("acct").value.trim()} さん｜希望日程: ${ranges}` + (note ? `｜備考: ${note}` : "");
+    const acct = $("acct").value.trim();
+    const btn = $("submit");
+    btn.disabled = true; btn.textContent = "送信中…";
+    // スプレッドシート(Google Apps Script)へ送信。text/plainでpreflightを避ける
+    if (window.TIMESALE_ENDPOINT){
+      const payload = Object.assign({account: acct, slots: slots, note: note,
+        pageUrl: location.href}, window.TIMESALE_PRODUCT || {});
+      try {
+        await fetch(window.TIMESALE_ENDPOINT, {method: "POST", mode: "no-cors",
+          headers: {"Content-Type": "text/plain;charset=utf-8"},
+          body: JSON.stringify(payload)});
+      } catch (err) { console.error("送信エラー", err); }
+    }
+    $("done-detail").textContent = `${acct} さん｜希望日程: ${slots.join(" / ")}` + (note ? `｜備考: ${note}` : "");
     $("form-card").style.display = "none";
     $("done").style.display = "block";
     window.scrollTo({top: 0, behavior: "smooth"});
@@ -574,6 +587,15 @@ def _timesale_page(r: dict, out_path: str, today: str):
     img = (f'<img src="{_h.escape(img_url)}" alt="" loading="lazy" '
            f"onerror=\"this.outerHTML='<div class=noimg>no image</div>'\">"
            if img_url.startswith(("http", "/")) else '<div class="noimg">no image</div>')
+    import json as _json
+    pid = _h.escape((r.get("商品ID") or "").strip())
+    product_js = _json.dumps({
+        "productId": (r.get("商品ID") or "").strip(),
+        "product": r.get("商品名", ""),
+        "shop": (r.get("ショップ") or "").strip(),
+        "affiliate": r.get("アフィリエイトリンク", "") or "",
+    }, ensure_ascii=False)
+    endpoint = CONFIG.get("timesale_webhook_url", "") or ""
     doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
@@ -582,6 +604,9 @@ def _timesale_page(r: dict, out_path: str, today: str):
 <div class="wrap">
 <a class="more back" href="../live.html">← 📺 ライブ一覧に戻る</a>
 <header style="margin-top:10px"><h1>🔥 タイムセール設定依頼</h1></header>
+<div class="arch-note">⚠️ <b>LIVEの実施には審査がございます。</b>
+お申し込み後、担当者が内容を確認のうえ可否をご連絡します。
+審査結果によってはご希望に沿えない場合がありますのでご了承ください。</div>
 <div class="card">{img}<div class="body">
 <div class="pills"><span class="pill own">🎁 自社サンプル可</span>
 <span class="pill live">{live_label(r)}</span></div>
@@ -620,11 +645,15 @@ def _timesale_page(r: dict, out_path: str, today: str):
   <div class="big">✅</div>
   <h2>依頼を受け付けました</h2>
   <p class="stats" id="done-detail"></p>
-  <p class="stats" style="margin-top:8px">担当者が内容を確認してタイムセールを設定します。</p>
+  <p class="stats" style="margin-top:8px">担当者が内容を確認し、<b>審査のうえ</b>タイムセールを設定します。
+  結果は追ってご連絡します。</p>
 </div>
 
-<footer>※ 報酬率は取得時点の<b>参考値</b>です。タイムセールの設定可否・時間帯は在庫や施策状況により調整される場合があります。</footer>
-</div>{TIMESALE_JS}</body></html>"""
+<footer>⚠️ <b>LIVEの実施には審査があります。</b>お申し込み内容によってはお受けできない場合があります。<br>
+※ 報酬率は取得時点の<b>参考値</b>です。タイムセールの設定可否・時間帯は在庫や施策状況により調整される場合があります。</footer>
+</div>
+<script>window.TIMESALE_ENDPOINT={_json.dumps(endpoint)};
+window.TIMESALE_PRODUCT={product_js};</script>{TIMESALE_JS}</body></html>"""
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(doc)
 

@@ -154,6 +154,9 @@ textarea{min-height:84px; resize:vertical; line-height:1.5}
 <div class="wrap">
 <a class="more back" href="../live.html">← 📺 ライブ一覧に戻る</a>
 <header style="margin-top:10px"><h1>🔥 タイムセール設定依頼</h1></header>
+<div class="arch-note">⚠️ <b>LIVEの実施には審査がございます。</b>
+お申し込み後、担当者が内容を確認のうえ可否をご連絡します。
+審査結果によってはご希望に沿えない場合がありますのでご了承ください。</div>
 <div class="card"><img src="/product-images/1732165687641932992.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body">
 <div class="pills"><span class="pill own">🎁 自社サンプル可</span>
 <span class="pill live">📺 LIVEタイムセール一部可能</span></div>
@@ -192,11 +195,15 @@ textarea{min-height:84px; resize:vertical; line-height:1.5}
   <div class="big">✅</div>
   <h2>依頼を受け付けました</h2>
   <p class="stats" id="done-detail"></p>
-  <p class="stats" style="margin-top:8px">担当者が内容を確認してタイムセールを設定します。</p>
+  <p class="stats" style="margin-top:8px">担当者が内容を確認し、<b>審査のうえ</b>タイムセールを設定します。
+  結果は追ってご連絡します。</p>
 </div>
 
-<footer>※ 報酬率は取得時点の<b>参考値</b>です。タイムセールの設定可否・時間帯は在庫や施策状況により調整される場合があります。</footer>
+<footer>⚠️ <b>LIVEの実施には審査があります。</b>お申し込み内容によってはお受けできない場合があります。<br>
+※ 報酬率は取得時点の<b>参考値</b>です。タイムセールの設定可否・時間帯は在庫や施策状況により調整される場合があります。</footer>
 </div>
+<script>window.TIMESALE_ENDPOINT="";
+window.TIMESALE_PRODUCT={"productId": "1732165687641932992", "product": "あおさのり 40g 三重県 伊勢志摩産 ブランド アオサ アオサ海苔 あおさ海苔 乾燥 海苔", "shop": "港ダイニングしおそう", "affiliate": "https://affiliate.tiktok.com/api/v1/share/AL1bIyR9g1Nm"};</script>
 <script>
 (function(){
   const MS = 86400000, BLOCK = 3, MAX_BLOCKS = 3, LEAD_DAYS = 2;
@@ -256,10 +263,23 @@ textarea{min-height:84px; resize:vertical; line-height:1.5}
   $("acct").addEventListener("input", update);
   $("prev").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()-1, 1); render(); });
   $("next").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()+1, 1); render(); });
-  $("submit").addEventListener("click", () => {
-    const ranges = blocks.map(b => `${fmt(b)}〜${fmt(new Date(b.getTime()+(BLOCK-1)*MS))}`).join(" / ");
+  $("submit").addEventListener("click", async () => {
+    const slots = blocks.map(b => `${fmt(b)}〜${fmt(new Date(b.getTime()+(BLOCK-1)*MS))}`);
     const note = $("note").value.trim();
-    $("done-detail").textContent = `${$("acct").value.trim()} さん｜希望日程: ${ranges}` + (note ? `｜備考: ${note}` : "");
+    const acct = $("acct").value.trim();
+    const btn = $("submit");
+    btn.disabled = true; btn.textContent = "送信中…";
+    // スプレッドシート(Google Apps Script)へ送信。text/plainでpreflightを避ける
+    if (window.TIMESALE_ENDPOINT){
+      const payload = Object.assign({account: acct, slots: slots, note: note,
+        pageUrl: location.href}, window.TIMESALE_PRODUCT || {});
+      try {
+        await fetch(window.TIMESALE_ENDPOINT, {method: "POST", mode: "no-cors",
+          headers: {"Content-Type": "text/plain;charset=utf-8"},
+          body: JSON.stringify(payload)});
+      } catch (err) { console.error("送信エラー", err); }
+    }
+    $("done-detail").textContent = `${acct} さん｜希望日程: ${slots.join(" / ")}` + (note ? `｜備考: ${note}` : "");
     $("form-card").style.display = "none";
     $("done").style.display = "block";
     window.scrollTo({top: 0, behavior: "smooth"});
