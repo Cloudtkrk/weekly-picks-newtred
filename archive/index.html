@@ -59,7 +59,10 @@ header .date{color:var(--sub); font-size:13px}
 .info{cursor:help; border-bottom:1px dotted var(--sub)}
 footer{margin-top:44px; color:var(--sub); font-size:12px;
        border-top:1px solid var(--line); padding-top:14px}
-.tabs{display:flex; gap:8px; margin:16px 0 4px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
 .tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
      text-decoration:none; color:var(--sub); background:var(--card);
      border:1px solid var(--line)}
@@ -67,6 +70,19 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active.hot{background:var(--hot)}
 .tab.active.chal{background:var(--chal)}
 .tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
 .filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
          position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
 .chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;

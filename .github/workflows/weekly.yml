@@ -49,8 +49,10 @@ jobs:
 
       - name: Publish preview to /preview/ (commit & push)
         run: |
+          rm -rf preview
           mkdir -p preview
           cp weekly_site/*.html preview/
+          if [ -d weekly_site/shops ]; then cp -r weekly_site/shops preview/shops; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add preview/
@@ -85,12 +87,15 @@ jobs:
         run: |
           cp weekly_site/index.html index.html
           cp weekly_site/challenge.html challenge.html
-          if [ -f weekly_site/recommend.html ]; then cp weekly_site/recommend.html recommend.html; fi
+          for f in recommend.html live.html; do
+            if [ -f "weekly_site/$f" ]; then cp "weekly_site/$f" "$f"; else rm -f "$f"; fi
+          done
+          rm -rf shops
+          if [ -d weekly_site/shops ]; then cp -r weekly_site/shops shops; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -r --ignore-unmatch --quiet preview || true
-          git add index.html challenge.html archive/ data/
-          git add recommend.html 2>/dev/null || true
+          git add -A index.html challenge.html recommend.html live.html shops archive/ data/
           if git diff --cached --quiet; then
             echo "変更なし: コミットをスキップ"
           else

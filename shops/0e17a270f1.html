@@ -1,0 +1,128 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏬 MYTREX OFFICIAL STORE 2026/08/03</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style></head><body>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/03 更新</span></header>
+<div class="tabs"><a class="tab" href="../">🔥 売れ筋（50）</a><a class="tab" href="../challenge.html">🚀 新商品（38）</a><a class="tab" href="../recommend.html">🎁 おすすめ（3661）</a><a class="tab arch" href="../archive/">📅 アーカイブ</a></div>
+<div class="guide"><div class="g-title">🏬 MYTREX OFFICIAL STORE</div>美容・コスメ｜全5件。すべて弊社経由でサンプル相談ができます。</div><a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>
+
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSqD39YqdMv" target="_blank">【公式】MYTREX RAKUNO FIT PLUS 温熱ふくらはぎケア 足裏ケア 3種もみコース 5段階レベル調整 マイトレックス ラクーノ フィット プラス 足 足裏 足先 つま先 足首 ふくらはぎ むくみ 疲れ 空気圧 温熱 Type-C充電式 コードレス ギフト 【正規1年間保証】温熱ふくらはぎケア 3段階温熱 9つのポンプ 3種のもみコース 5段階レベル調整 10分オートOFFタイマー 足裏 足先 つま先 足首 健康 むくみ 疲れ 温熱 空気圧 コードレス</a><div class="stats">価格 <b>¥11,000</b>｜報酬率※ <b class="reward">18%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSqD39YZnPT" target="_blank">【公式】MYTREX RAKUNO FIT 温熱ふくらはぎケア マイトレックス マッサージ ふくらはぎ マッサージ機 足 フットマッサージャー マイトレックス RAKUNO FIT 足 むくみ マッサージ器 マッサージ 足 ふくらはぎ むくみ 疲れ 空気圧 温熱 コードレス 【正規1年間保証】温熱ふくらはぎケア 3種のもみコース 5段階レベル調整 10分オートOFFタイマー ラクーノ フィット 足 ふくらはぎ 健康 むくみ 疲れ 温熱 空気圧 コードレス ギフト</a><div class="stats">価格 <b>¥8,800</b>｜報酬率※ <b class="reward">18%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSqD3CHPnJl" target="_blank">【公式】MYTREX RAKUNO LITE  ふくらはぎケア 足ケア コードレス 超軽量  5段階レベル調整 マイトレックス ポータブルふくらはぎケア ラクーノ ライト 軽量モデル 足 ふくらはぎ むくみ 疲れ 空気圧 パワフル Type-C充電式 コードレス ハイパワー 旅行先 オフィス 運動後 座り仕事 ギフト 【正規1年間保証】ポータブルふくらはぎケア 軽量モデル 足 ふくらはぎ 健康 むくみ 疲れ  5段階レベル調整 10分オートOFFタイマー ハイパワー パワフル 空気圧 コードレス</a><div class="stats">価格 <b>¥7,700〜¥9,328</b>｜報酬率※ <b class="reward">18%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq6lrt69Co" target="_blank">【公式】MYTREX RAKUNO LUMBAR 腰ベルト調節可能  5段レベル ストレッチ スタイルアップ マイトレックス 姿勢矯正ベルト 超軽量腰ベルト ラクーノ ランバー 腰用 コルセット 骨盤矯正 腰痛対策 腰サポーター 骨盤ベルト 骨盤補正 姿勢改善 腰 骨盤 ウエスト スタイルアップ 骨盤サポート 薄型 軽量 姿勢サポート【正規1年間保証】腰ケア ラクーノ ランバー 長時間の座り仕事 立ち仕事 日常使用に最適 旅行先 オフィス 家庭用 MYTREX 男女兼用 プレゼント ギフト 通気性抜群</a><div class="stats">価格 <b>¥6,600</b>｜報酬率※ <b class="reward">18%</b></div></div></div>
+<div class="card"><div class="noimg">no image</div><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSqD3CFlK5M" target="_blank">【公式】MYTREX REBIVE MINI XS2 手圧変動ハンディガン マッサージガン マイトレックス マッサージアウト 売れ筋 relax 筋膜リリースガン 腰痛 マッサージ機 小型 ポスポス 肩凝り解消 血流ケア 疲労回復 肩 首 足 ふくらはぎ 足裏 肩甲骨 腰 フェイス 振動マシン 体のどこでも使える 健康 筋肉 家電 グッズ 静音設計 マッサージャー おすすめ プレゼント ギフト セール</a><div class="stats">価格 <b>¥14,960〜¥22,660</b>｜報酬率※ <b class="reward">18%</b></div></div></div>
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>
