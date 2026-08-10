@@ -1,0 +1,246 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏬 大浜スイーツアカデミー 2026/08/10</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.pill.feat{background:#fee2e2; color:#b91c1c}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style><style>
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px 16px; overflow-y:auto;
+      background:var(--bg); display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .gpv{margin-bottom:14px; text-align:left}
+#gate .gpv-t{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:6px;
+      text-align:center}
+#gate .gpv-i{display:flex; gap:10px; align-items:center; padding:8px;
+      border:1px solid var(--line); border-radius:10px; margin-bottom:6px}
+#gate .gpv-i img,#gate .gpv-i .noimg{width:46px; height:46px; border-radius:8px;
+      object-fit:cover; flex-shrink:0; background:var(--tag-bg); font-size:9px;
+      display:flex; align-items:center; justify-content:center; color:var(--sub)}
+#gate .gpv-n{font-size:12px; font-weight:700; line-height:1.4; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+#gate .gpv-s{font-size:11px; color:var(--sub); margin-top:2px}
+#gate .gpv-more{text-align:center; font-size:11.5px; color:var(--sub); margin-top:2px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+</style></head><body><script>document.documentElement.classList.add("gate-locked")</script><div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+<div class="teaser">🔥 売れ筋 50件　🚀 新商品 56件　🎁 自社サンプル可 3,661件　📺 LIVEタイムセール 566件 を掲載中</div><div class="gpv"><div class="gpv-t">今週の売れ筋 TOP3</div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/3b803f4a199d48728e78fb9289d3f75f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 【3箱同時購入で１箱無料】　2+1chapun シャプン カラコン　齊藤なぎさ　コンタクトレンズ　ワ</div><div class="gpv-s">30日売上 767万円｜報酬率 5%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a4fd3e32235e46f2b183ca03bb935f9f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ MAGINA マギナ 亜鉛 サプリ シトルリン アルギニン 49500mg サプリメント 1袋(約3</div><div class="gpv-s">30日売上 2,185万円｜報酬率 40%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/571822e74c15416091d7e0ff6c9e4859~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ ZEESEA ルースパウダー、皮脂コントロール、22g</div><div class="gpv-s">30日売上 2,486万円｜報酬率 8%</div></div></div><div class="gpv-more">…続きは合言葉を入れてご覧ください</div></div>
+<a class="btn line" href="https://lin.ee/Sv2jDrZ" target="_blank">💬 公式LINEを友だち追加する</a>
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){
+  const SHA="ed775ddbb6f84ee329d8ba195fe096133516a8e96ea69563dbca7ad7cd5aa827", B64="bmV3dHJlbmQyMDI2", KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){
+    if (window.crypto && crypto.subtle && window.isSecureContext){
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+    return null;
+  }
+  function ok(){ root.classList.remove("gate-locked"); gate.remove(); }
+  try { if (localStorage.getItem(KEY) === SHA) return ok(); } catch(e) {}
+  async function submit(){
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){ try{ localStorage.setItem(KEY, SHA); }catch(e){} ok(); }
+    else { document.getElementById("gate-err").textContent="合言葉が違います"; }
+  }
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{ if(e.key==="Enter") submit(); });
+})();
+</script>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/10 更新</span></header>
+<div class="tabs"><a class="tab" href="../">🔥 売れ筋（50）</a><a class="tab" href="../challenge.html">🚀 新商品（56）</a><a class="tab" href="../recommend.html">🎁 おすすめ（3661）</a><a class="tab" href="../live.html">📺 ライブ（566）</a><a class="tab arch" href="../archive/">📅 アーカイブ</a></div>
+<div class="guide"><div class="g-title">🏬 大浜スイーツアカデミー</div>食品｜全56件。すべて弊社経由でサンプル相談ができます。</div><a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>
+
+<div class="card"><img src="/product-images/1734892912289679174.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SIK8VQ" target=_blank>Ami推しセット クッキー 和三盆クッキー 「和讃盆くっきぃ4箱セット」 送料無料 [ 和三盆菓子 和三盆 クッキー お取り寄せ プチギフト 贈り物 詰め合わせ 焼き菓子 ]</a><div class="stats">価格 <b>¥2,740</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734892104172799814.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLZBa72" target=_blank>Ayaの推しセット たい焼き 「どうせなら美味しく食べてね。クロワッサンたい焼きのたい子ちゃん 選べる 4匹セット」 送料無料 [ 鯛焼き クロワッサン生地 たい焼き</a><div class="stats">価格 <b>¥2,160</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1736118121771927366.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39QrEDZk" target=_blank>【ポスト投函での配送】 チーズケーキ 「ブルーチーズ使用!お手軽チーズケーキバー!スターチーズケーキ20本(10本入×2袋)」</a><div class="stats">価格 <b>¥2,124</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1732610996827883334.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMfedL8" target=_blank>【ポスト投函での配送】 チーズケーキ 「ブルーチーズ使用!お手軽チーズケーキバー!スターチーズケーキ20本(10本入×2袋)」</a><div class="stats">価格 <b>¥2,124</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1736151435468310342.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1MxKNhouYP" target=_blank>【ポスト投函での配送】ホールタルト 絶対に後悔させない! 「絶対食べて欲しい。選べるLuxe(リュクス)ホテルタルト6号」 送料無料 [ タルトケーキ タルト ]</a><div class="stats">価格 <b>¥3,798</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735142656973178694.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SIb2Mm" target=_blank>かじるケーキ体験 アイスを超えた、まるで冷たいケーキ 大浜スイーツバー 10本セット(5種×2本) [紅茶シフォン/苺ショート/チーズケーキ/抹茶ガトーショコラ/プリンアイス]</a><div class="stats">価格 <b>¥6,200</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734543171541763910.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TMroEm" target=_blank>たい焼き 「どうせなら美味しく食べてね。クロワッサンたい焼きのたい子ちゃん3匹セット」 送料無料 [ 鯛焼き クロワッサン生地 たい焼き ]</a><div class="stats">価格 <b>¥1,710</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542910842767174.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMZKZIp" target=_blank>たい焼き 「どうせなら美味しく食べてね。クロワッサンたい焼きのたい子ちゃん4匹セット」 送料無料 [ 鯛焼き クロワッサン生地 たい焼き ]</a><div class="stats">価格 <b>¥2,160</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735787692684314438.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39QrV8Gw" target=_blank>アイス 「果氷堂厳選5本セット (清見3本、せとか2本) 」 送料無料  アイスキャンディ みかんアイス お取り寄せ みかん 果物 フルーツアイスバー 砂糖不使用 詰め合わせ</a><div class="stats">価格 <b>¥3,500</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735142985844754246.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLZjdAC" target=_blank>アイス フルーツアイス「果肉いっぱいどきゅんとアイスキャンディ10本セット(5種×2)」 [練乳いちご/オレンジフルーツ/大人のぶどう/アップルフルーツ/常夏マンゴー]</a><div class="stats">価格 <b>¥6,200</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733828968070350662.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TTSyp8" target=_blank>アーモンドパウダー 500g 大浜スイーツアカデミー アーモンドプードル  皮なし 製菓 製パン 業務用 製菓材料</a><div class="stats">価格 <b>¥1,470</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560852914407238.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YewPC1" target=_blank>アーモンドプードル 1kg(500g×2) アーモンドパウダー [ 送料無料 アーモンド 純アーモンドプードル 皮なし 皮無し アーモンド粉末 粉 パウダー ナッツ 製菓 製パン 材料 手作り 業務用 大容量 チャック付き プードル 無添加 ナッツ ]</a><div class="stats">価格 <b>¥2,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560782175438662.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R0qx04" target=_blank>アーモンドプードル 500g アーモンドパウダー [ 送料無料 アーモンド 純アーモンドプードル 皮なし 皮無し アーモンド粉末 粉 パウダー ナッツ 製菓 製パン 材料 手作り 業務用 大容量 子供 チャック付き プードル 無添加 ナッツ ]</a><div class="stats">価格 <b>¥1,380</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733873204253394758.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMndAuY" target=_blank>イチジク 無添加 砂糖不使用 トルコ産 大粒 いちじく ドライいちじく 700g 乾燥果実 高地栽培 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥2,290</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542837604845382.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TE4KLd" target=_blank>クッキー 和三盆クッキー 「和讃盆くっきぃ4箱セット」 送料無料 [ 和三盆菓子 和三盆 クッキー お取り寄せ プチギフト 贈り物 詰め合わせ 焼き菓子 ]</a><div class="stats">価格 <b>¥2,740</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542814622943046.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLcD08H" target=_blank>クッキー 和三盆クッキー 「和讃盆くっきぃ6箱セット」 送料無料 [ 和三盆菓子 和三盆 クッキー お取り寄せ プチギフト 贈り物 詰め合わせ 焼き菓子 ]</a><div class="stats">価格 <b>¥3,930</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734686529507198790.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLaHowE" target=_blank>サニタリーボックス 使い捨て 「 日本製 使い切りサニタリーBOX 15枚入り 」 送料無料</a><div class="stats">価格 <b>¥1,200</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734687013892294470.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SJQGA3" target=_blank>サニタリーボックス 使い捨て 「 日本製 使い切りサニタリーBOX 60枚セット(15枚入り×4) 」 送料無料</a><div class="stats">価格 <b>¥3,990</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734009633110132550.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLb6oZj" target=_blank>サーモン アトランティックサーモン メルティーサーモン 1kg (250g×4) ノルウェー産 生食 海鮮 切り身 フィレ 刺身用 冷凍</a><div class="stats">価格 <b>¥7,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733811209181628230.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TPtMoU" target=_blank>ザッハトルテ（ミルク）200g 大浜スイーツアカデミー 割れチョコ チョコレート スイーツ クリスマス バレンタイン ホワイトデー 母の日 ギフト 本格クーベルチュール使用 訳あり　冷蔵配送</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735592183046244166.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38Yg2e4L" target=_blank>ホールタルト 絶対に後悔させない! 「絶対食べて欲しい。選べるLuxe(リュクス)ホテルタルト6号」 送料無料 [ タルトケーキ タルト ]</a><div class="stats">価格 <b>¥3,798</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542763409901382.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLbw9Gv" target=_blank>マドレーヌ 「可愛いクマちゃんマドレーヌ1箱(6匹×1)」 送料無料 [ プチギフト 贈り物 贈答 祝い ギフト プレゼント 祝い返し 退職 お菓子 プチギフト お礼 お菓子 プレゼント 退職祝い ]</a><div class="stats">価格 <b>¥1,610</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735809646991017798.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YdILZI" target=_blank>マドレーヌ 「可愛いクマちゃんマドレーヌ2箱(6匹×2)」 送料無料 [ プチギフト 贈り物 贈答 祝い プレゼント 退職 お菓子 プチギフト お礼 お菓子 プレゼント 退職祝い ] 楽天スーパーSALE</a><div class="stats">価格 <b>¥3,100</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542797563397958.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SNoxBC" target=_blank>マドレーヌ 「可愛いクマちゃんマドレーヌ2箱(6匹×2)」 送料無料 [ プチギフト 贈り物 贈答 祝い プレゼント 退職 お菓子 プチギフト お礼 お菓子 プレゼント 退職祝い ] 楽天スーパーSALE</a><div class="stats">価格 <b>¥3,100</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735592338611734342.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R1g3Tc" target=_blank>マドレーヌ「瀬戸内レモン香る大浜マドレーヌ 瀬戸内レモンマドレーヌ 8個」 送料無料 [ 焼き菓子 スイーツ 瀬戸内 レモン お取り寄せ 自分用 ランキング 個包装 ]</a><div class="stats">価格 <b>¥2,120</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1736086930110121798.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1NAHxlKiwt" target=_blank>マドレーヌ「瀬戸内レモン香る大浜マドレーヌ 瀬戸内レモンマドレーヌ 8個」 送料無料 [ 焼き菓子 スイーツ 瀬戸内 レモン お取り寄せ 自分用 ランキング 個包装 ]</a><div class="stats">価格 <b>¥2,120</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733963989011826502.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TTk2CP" target=_blank>ミックスナッツ 3種 ナッツ 1kg 徳用 生くるみ 素焼き アーモンド 素焼き カシューナッツ オイル不使用 無塩 無添加 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥2,390</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735561067123607366.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R17uIR" target=_blank>ミックスナッツ 「父母ヶ浜ブランド認定商品!父母ヶ浜の塩と仁尾のたまみドライみかん使用!父母ヶ浜ミックスナッツ 250g」 送料無料 [ アーモンド くるみ カシューナッツ ]</a><div class="stats">価格 <b>¥1,399</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735561223596246854.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YfleyM" target=_blank>ミックスナッツ 「父母ヶ浜ブランド認定商品!父母ヶ浜の塩と仁尾のたまみドライみかん使用!父母ヶ浜ミックスナッツ 500g(250g×2)」 送料無料 [ アーモンド くるみ ]</a><div class="stats">価格 <b>¥3,699</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735561634997634886.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R1P4N1" target=_blank>ミックスナッツ 「父母ヶ浜ブランド認定商品!父母ヶ浜の塩と仁尾のたまみドライみかん使用!父母ヶ浜ミックスナッツ(R)850g」 送料無料 [ アーモンド くるみ カシューナッツ ]</a><div class="stats">価格 <b>¥3,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1732641367866640198.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TNy9pw" target=_blank>ミックスナッツ 「贅沢ベリーの恋するベリーミックスナッツ400g(200g×2)」 送料無料</a><div class="stats">価格 <b>¥2,691</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1732600704093620038.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMfNYwK" target=_blank>ミックスナッツ ナッツ 4種 「愛すべき満足ミックスナッツ(R)700g」 送料無料 ［ 無塩 ミックスナッツ 無添加 アーモンド くるみ カシューナッツ マカダミアナッツ テーブルナッツ 小分け 菓子材料 ナッツ nuts 国内加工 おつまみ セット 1kg より少ない ]</a><div class="stats">価格 <b>¥1,422</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733758921870509894.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMfveyM" target=_blank>レーズン カリフォルニア産 ノンオイルレーズン 1kg 干しぶどう 乾燥果実 無添加 植物油不使用 砂糖不使用 訳あり 無選別 不揃い 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥1,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542617171953478.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SKFOIm" target=_blank>低糖質「小麦粉不使用！美人の秘密は、オートミールの力。健康オートミール100％のハンドメイドオートミールクッキー 1kg 」 送料無料 [ ダイエット ロカボ グルテンフリー  低GI 低糖質クッキー]</a><div class="stats">価格 <b>¥5,990</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734542433378993990.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLbf0cs" target=_blank>低糖質クッキー お試し 「小麦粉不使用！美人の秘密は、オートミールの力。健康オートミール100％のオートミールクッキー 16枚 」 送料無料</a><div class="stats">価格 <b>¥1,680</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735372566474753862.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39QrmLct" target=_blank>冷蔵便配送  ハイカカオチョコ ブラッドオランジェット 720g(180g×4袋) 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥13,760</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734669516937791302.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SJ9Dhg" target=_blank>冷蔵便配送 ハイカカオチョコ ブラッドオランジェット 180g　大浜スイーツアカデミー</a><div class="stats">価格 <b>¥3,440</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734669244201469766.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLa0ksA" target=_blank>冷蔵便配送 ハイカカオチョコ ブラッドオランジェット 360g (180g×2袋) 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥8,760</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735372407353673542.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YdZCdx" target=_blank>冷蔵便配送 大浜スイーツアカデミー ハイカカオチョコ ブラッドオランジェット 540g(180g×3袋)</a><div class="stats">価格 <b>¥11,160</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733803179348035398.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TPLBeK" target=_blank>冷蔵便配送　割れチョコ 1袋(200g入り) 訳あり チョコレート  選べる チョコ スイーツ 大浜スイーツアカデミー</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733805974512895814.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMjmRLG" target=_blank>冷蔵配送 ごろごろアーモンド（ミルク）200g 大浜スイーツアカデミー 割れチョコ チョコレート スイーツ クリスマス バレンタイン ホワイトデー 母の日 ギフト 本格クーベルチュール使用 訳あり</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733803628468930374.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TPcT0y" target=_blank>冷蔵配送 ごろごろカシューナッツ（スイート）200g 大浜スイーツアカデミー 割れチョコ チョコレート スイーツ クリスマス バレンタイン ホワイトデー 母の日 ギフト 本格クーベルチュール使用 訳あり</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733811396569433926.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMk3Vgn" target=_blank>冷蔵配送 ごろごろマカダミア（スイート）200g 大浜スイーツアカデミー 割れチョコ チョコレート スイーツ クリスマス バレンタイン ホワイトデー 母の日 ギフト 本格クーベルチュール使用 訳あり</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733803349674788678.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RMjVUd9" target=_blank>割れチョコ  ショコラオレンジ（スイート）200g 大浜スイーツアカデミー 割れチョコ チョコレート スイーツ クリスマス バレンタイン ホワイトデー 母の日 ギフト 本格クーベルチュール使用 訳あり 冷蔵配送</a><div class="stats">価格 <b>¥2,660</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734475284735100742.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SJyGIB" target=_blank>大浜スイーツアカデミー スイーツ アイス あいすになったくま 18匹入り</a><div class="stats">価格 <b>¥4,800</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560498443421510.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YefZ6J" target=_blank>完売 いちじく ドライフルーツ 「ドライいちじく700g」 送料無料 [ 砂糖不使用 無添加 トルコ産 おすすめ 人気 ランキング いちぢく イチヂク イチジク ドライイチジク 無添加 砂糖不使用 イチジク フィグ 無花果 ]</a><div class="stats">価格 <b>¥1,890</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735143306180200262.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SIs7ZU" target=_blank>幸せを呼ぶレインボーアイス9本セット [ アイス ギフト  贈り物アイスバー 氷菓 プレゼント SNS映え ]</a><div class="stats">価格 <b>¥6,060</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1732610690618853190.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39TNh0Ou" target=_blank>愛すべきナッツ 素焼きアーモンド  食べてキレイ 素焼きアーモンド習慣</a><div class="stats">価格 <b>¥1,377</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560142587266886.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R0IqZk" target=_blank>満足ミックスナッツ700g(無塩) 無塩 ミックスナッツ 無添加 アーモンド くるみ カシューナッツ マカダミアナッツ テーブルナッツ 小分け 菓子材料 ナッツ nuts</a><div class="stats">価格 <b>¥1,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560223363991366.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YeOSRG" target=_blank>焙煎ミックスナッツ500g(無塩) 無塩 ミックスナッツ 無添加 アーモンド くるみ カシューナッツ マカダミアナッツ テーブルナッツ 小分け 菓子材料 ナッツ nuts</a><div class="stats">価格 <b>¥1,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735560378127255366.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39R0ZtFv" target=_blank>父母の塩ミックスナッツ600g(有塩) ミックスナッツ 無添加 アーモンド くるみ カシューナッツ マカダミアナッツ テーブルナッツ 小分け 菓子材料 ナッツ nuts</a><div class="stats">価格 <b>¥1,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735559716339812166.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38YdqJuj" target=_blank>砂糖不使用 軽やか！低脂肪ココアパウダー 500g 送料無料 [ ピュアココア 純 ココア 砂糖不使用 ココアパウダー 無糖ココアパウダー 純ココア]</a><div class="stats">価格 <b>¥1,359</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735559933827909446.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X38Ye7STI" target=_blank>純 ココアパウダー ピュアココア 「純真ココア 1kg (500g×2)」 送料無料 [ ココアパウダー 無糖ココアパウダー おすすめ 高級ココアパウダー 料理用 業務用 純ココアパウダー 通販 ]</a><div class="stats">価格 <b>¥3,195</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735559846826837830.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39Qs3QQh" target=_blank>純 ココアパウダー「砂糖不使用 濃厚！純 ココア パウダー) 500g」 送料無料 [ ピュアココア 純 ココア 砂糖不使用 ココアパウダー 無糖ココアパウダー 純ココア]</a><div class="stats">価格 <b>¥1,599</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734369006789756742.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X0RLbNy69" target=_blank>訳あり チョコレート 割れチョコ 「感動の11種類割れチョコMIX！選べる Go!Go!パック550g」</a><div class="stats">価格 <b>¥7,999</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734324833891485510.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1X39SJhKpJ" target=_blank>食物繊維入り!麺が本気でうまい2種類から麺が選べる讃岐の生パスタ8食分(200g×4)</a><div class="stats">価格 <b>¥1,350</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>
