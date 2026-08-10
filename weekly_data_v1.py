@@ -241,10 +241,10 @@ def discord_header(today: str) -> str:
     if site:
         nav = (f"\n**▼ 全件はこちら（毎週更新）**\n"
                f"🔥 売れ筋・🚀 新商品・🎁 おすすめ・📺 ライブ\n{site}\n")
+        # Discordは登録済みクリエイターのみのチャンネルなので合言葉を直接記載する
         if CONFIG.get("site_passcode"):
-            nav += (f"-# 閲覧には合言葉が必要です。"
-                    + (f"公式LINE（{line}）でお伝えしています\n" if line
-                       else "公式LINEでお伝えしています\n"))
+            nav += (f"🔑 合言葉： **{CONFIG['site_passcode']}**\n"
+                    f"-# 初回のみ入力が必要です（一度入れれば以降そのまま見られます）\n")
     return (
         f"# 📦 今週のおすすめ商品（{today}更新）\n"
         f"⭐ **今週売れてる**＝直近7日も動画で売れている（今から乗っても間に合う）\n"
