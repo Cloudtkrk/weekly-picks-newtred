@@ -233,10 +233,55 @@ def make_embed(r, kind: str) -> dict:
     return {k: v for k, v in embed.items() if v is not None}
 
 
-def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
+def discord_header(today: str) -> str:
+    """Discord冒頭メッセージ。バッジ凡例 + サイトへの導線 (URL・合言葉の入手先)"""
+    site = CONFIG.get("site_url", "") or ""
+    line = CONFIG.get("line_add_url", "") or ""
+    nav = ""
+    if site:
+        nav = (f"\n**▼ 全件はこちら（毎週更新）**\n"
+               f"🔥 売れ筋・🚀 新商品・🎁 おすすめ・📺 ライブ\n{site}\n")
+        if CONFIG.get("site_passcode"):
+            nav += (f"-# 閲覧には合言葉が必要です。"
+                    + (f"公式LINE（{line}）でお伝えしています\n" if line
+                       else "公式LINEでお伝えしています\n"))
+    return (
+        f"# 📦 今週のおすすめ商品（{today}更新）\n"
+        f"⭐ **今週売れてる**＝直近7日も動画で売れている（今から乗っても間に合う）\n"
+        f"🔰 **初心者でも狙いやすい**＝承認ペースが速く成立率も高い、"
+        f"またはフォロワーの少ないクリエイターでも売れている実績あり\n"
+        f"🎁 **自社サンプル可**＝弊社経由でサンプルを渡せる商品（実績ゼロでもまずここから）\n"
+        f"💎 **狙い目（実績者向け）**＝1人あたりの取り分が大きいが、承認には実績や投稿数が必要\n"
+        f"{nav}"
+        f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください\n"
+        f"-# ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ")
+
+
+def discord_footer() -> str:
+    """末尾メッセージ (再度サイトへ誘導)"""
+    site = CONFIG.get("site_url", "") or ""
+    if not site:
+        return ""
+    return (f"-# ここに載せているのは各ジャンルの上位数件です。\n"
+            f"**全件・ショップ別・タイムセール依頼はサイトから** 👉 {site}")
+
+
+def post_discord_embeds(hot, new_tbl, webhook, top_per_cat, preview_path: str | None = None):
+    """preview_path を渡すと送信せず、投稿予定の内容をテキストに書き出す"""
     import time
+    preview_lines = []
 
     def send(content=None, embeds=None):
+        if preview_path is not None:
+            if content:
+                preview_lines.append(content)
+            for e in embeds or []:
+                preview_lines.append(
+                    f"　┌ {e.get('title','')}\n"
+                    + "\n".join("　│ " + l for l in e.get("description", "").split("\n"))
+                    + (f"\n　└ 🔗 {e['url']}" if e.get("url") else "\n　└"))
+            preview_lines.append("")
+            return
         payload = {}
         if content: payload["content"] = content
         if embeds: payload["embeds"] = embeds
@@ -257,15 +302,7 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
 
     # 冒頭のバッジ凡例はWebの「自分に合う商品の選び方」ガイドとフッター注記に合わせる
     today = dt.date.today().strftime("%m/%d")
-    send(content=(
-        f"# 📦 今週のおすすめ商品（{today}更新）\n"
-        f"⭐ **今週売れてる**＝直近7日も動画で売れている（今から乗っても間に合う）\n"
-        f"🔰 **初心者でも狙いやすい**＝承認ペースが速く成立率も高い、"
-        f"またはフォロワーの少ないクリエイターでも売れている実績あり\n"
-        f"🎁 **自社サンプル可**＝弊社経由でサンプルを渡せる商品（実績ゼロでもまずここから）\n"
-        f"💎 **狙い目（実績者向け）**＝1人あたりの取り分が大きいが、承認には実績や投稿数が必要\n"
-        f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください\n"
-        f"-# ⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ"))
+    send(content=discord_header(today))
     for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 新商品", new_tbl, "challenge")]:
         for cat, g in tbl.groupby("ジャンル", sort=False):
             g = g.head(top_per_cat)
@@ -274,6 +311,12 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat):
             for i in range(0, len(embeds), 10):
                 head = f"## {label}｜▼ {cat}" if i == 0 else None
                 send(content=head, embeds=embeds[i:i+10])
+    foot = discord_footer()
+    if foot:
+        send(content=foot)
+    if preview_path is not None:
+        with open(preview_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(preview_lines))
 
 
 def autodetect_inputs(input_dir: str):
@@ -336,6 +379,8 @@ def main():
                     help="フォロワー少クリエイターの上位動画エクスポート (🔰判定の実証データ、任意)")
     ap.add_argument("--out", default=None)
     ap.add_argument("--post", action="store_true", help="Discordにembed形式で投稿")
+    ap.add_argument("--preview-post", metavar="PATH", nargs="?", const="discord_preview.txt",
+                    help="Discordに送らず、投稿予定の内容をテキストに書き出して確認する")
     ap.add_argument("--webhook", default=os.environ.get("DISCORD_WEBHOOK_URL", ""))
     ap.add_argument("--top-per-cat", type=int, default=5,
                     help="Discord投稿時の1カテゴリあたり上限件数")
@@ -467,6 +512,11 @@ def main():
                 f"　単価 {r['単価']}｜報酬率 {r['報酬率']}｜成立率 {r['成立率']}",
                 f"　タグ: {r['タグ'] or 'なし'}", ""]
     print("\n" + "\n".join(lines))
+
+    if args.preview_post:
+        post_discord_embeds(hot, new_tbl, "", args.top_per_cat,
+                            preview_path=args.preview_post)
+        print(f"[info] Discord投稿プレビューを書き出しました (送信はしていません): {args.preview_post}")
 
     if args.post:
         if not args.webhook:

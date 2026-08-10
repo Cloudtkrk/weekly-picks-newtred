@@ -85,6 +85,8 @@ CONFIG = {
     "line_add_url": "https://lin.ee/Sv2jDrZ",
     # ゲート画面に「チラ見せ」する売れ筋の件数 (0で非表示)
     "gate_preview_count": 3,
+    # 公開サイトのURL (Discord投稿の導線に使う)
+    "site_url": "https://weekly-picks-newtred.vercel.app",
     # --- タイムセール依頼フォームの送信先 (Google Apps Scriptのウェブアプリ /exec URL) ---
     #     gas/timesale_webhook.gs の手順でデプロイして取得したURLを貼る。
     #     空のままだと送信されず、完了画面だけ表示される
