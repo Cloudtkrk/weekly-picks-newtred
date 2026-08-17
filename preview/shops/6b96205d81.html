@@ -1,0 +1,227 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏬 海と大地のおかず屋さん東華商事 2026/08/17</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.pill.feat{background:#fee2e2; color:#b91c1c}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style><style>
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px 16px; overflow-y:auto;
+      background:var(--bg); display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .gpv{margin-bottom:14px; text-align:left}
+#gate .gpv-t{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:6px;
+      text-align:center}
+#gate .gpv-i{display:flex; gap:10px; align-items:center; padding:8px;
+      border:1px solid var(--line); border-radius:10px; margin-bottom:6px}
+#gate .gpv-i img,#gate .gpv-i .noimg{width:46px; height:46px; border-radius:8px;
+      object-fit:cover; flex-shrink:0; background:var(--tag-bg); font-size:9px;
+      display:flex; align-items:center; justify-content:center; color:var(--sub)}
+#gate .gpv-n{font-size:12px; font-weight:700; line-height:1.4; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+#gate .gpv-s{font-size:11px; color:var(--sub); margin-top:2px}
+#gate .gpv-more{text-align:center; font-size:11.5px; color:var(--sub); margin-top:2px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+</style></head><body><script>document.documentElement.classList.add("gate-locked")</script><div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+<div class="teaser">🔥 売れ筋 50件　🚀 新商品 18件　🎁 自社サンプル可 3,661件　📺 LIVEタイムセール 566件 を掲載中</div><div class="gpv"><div class="gpv-t">今週の売れ筋 TOP3</div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/16ff6220d8e549f8ad6ad2dca38db8ba~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 新発売記念 YETE アイスクリーム脱毛器 サファイア10℃冷却ケア 28.8J大エネルギー ダブル</div><div class="gpv-s">30日売上 2万円｜報酬率 15%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4a9c097686794e5e84f78d557b6d2423~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 【公式】 ELLISS-エルリス シャイニングショット シャインマスカット風味 30包</div><div class="gpv-s">30日売上 2,782円｜報酬率 10%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/d5d7747032e24673a0a3f374c4a51565~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 【爆売れ】ナノガラス ムダ毛ケア｜角質ケア対応｜やさしい使い心地 電源不要 敏感肌OK 全身ケア 男</div><div class="gpv-s">30日売上 1,315円｜報酬率 8%</div></div></div><div class="gpv-more">…続きは合言葉を入れてご覧ください</div></div>
+<a class="btn line" href="https://lin.ee/Sv2jDrZ" target="_blank">💬 公式LINEを友だち追加する</a>
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){
+  const SHA="ed775ddbb6f84ee329d8ba195fe096133516a8e96ea69563dbca7ad7cd5aa827", B64="bmV3dHJlbmQyMDI2", KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){
+    if (window.crypto && crypto.subtle && window.isSecureContext){
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+    return null;
+  }
+  function ok(){ root.classList.remove("gate-locked"); gate.remove(); }
+  try { if (localStorage.getItem(KEY) === SHA) return ok(); } catch(e) {}
+  async function submit(){
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){ try{ localStorage.setItem(KEY, SHA); }catch(e){} ok(); }
+    else { document.getElementById("gate-err").textContent="合言葉が違います"; }
+  }
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{ if(e.key==="Enter") submit(); });
+})();
+</script>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/17 更新</span></header>
+<div class="tabs"><a class="tab" href="../">🔥 売れ筋（50）</a><a class="tab" href="../challenge.html">🚀 新商品（18）</a><a class="tab" href="../recommend.html">🎁 おすすめ（3661）</a><a class="tab" href="../live.html">📺 ライブ（566）</a><a class="tab arch" href="../archive/">📅 アーカイブ</a></div>
+<div class="guide"><div class="g-title">🏬 海と大地のおかず屋さん東華商事</div>食品｜全37件。すべて弊社経由でサンプル相談ができます。</div><a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>
+
+<div class="card"><img src="/product-images/1734615585166820493.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQVylvSQ" target=_blank>いかつぼ抜き（マツイカ） 5枚入 レシピ 簡単 作り方 アレンジ おつまみ 保存 冷凍 通販 文化祭 模擬店 メニュー 食材 業務用 大量調理 仕入れ 卸 縁日 出店 屋台人気 イベント 食材 調達 お祭り グルメ 子供向け おすすめ メニュー ゲソ レシピ 処理 アレンジ おつまみ 冷凍</a><div class="stats">価格 <b>¥2,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734615244307989645.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDtMttM" target=_blank>ホタルイカ唐揚げ 500ｇ レシピ 簡単 作り方 アレンジ おつまみ 保存 冷凍 通販 文化祭 模擬店 メニュー 食材 業務用 大量調理 仕入れ 卸 縁日 出店 屋台人気 イベント 食材 調達 お祭り グルメ 子供向け おすすめ メニュー ゲソ レシピ 処理 アレンジ おつまみ 冷凍</a><div class="stats">価格 <b>¥5,180</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734417440881673357.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCK1d0s" target=_blank>帆立フライ（ベビーホタテ） 青森県 陸奥湾産ベビーホタテ使用 20粒入/300ｇ 業務用 冷凍食品 帆立 おかず おつまみ お弁当 冷凍 食品 冷食 弁当 お惣菜 揚げ物 ホタテフライ フライ ホタテ 惣菜 つまみ 貝 貝柱 総菜</a><div class="stats">価格 <b>¥3,480〜¥5,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625195198350477.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQcx2szx" target=_blank>華いか 1kg  簡単 作り方 アレンジ おつまみ 塩辛パスタ 保存 冷凍 通販 文化祭 模擬店 メニュー 食材 業務用 大量調理 仕入れ 卸 縁日 出店 屋台人気 イベント 食材 調達 お祭り グルメ 子供向け おすすめ メニュー ゲソ レシピ 処理 アレンジ おつまみ 塩辛 冷凍</a><div class="stats">価格 <b>¥2,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733918679271113869.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUp0EhP" target=_blank>鮭フレーク 500g/1kg/1.5kg/2.5kg 鮭 ごはん ふりかけ お弁当 業務用 自然解凍 さけ サケフレーク しゃけフレーク シャケフレーク 冷凍 食品 冷食 おかず 弁当 お惣菜 惣菜 おつまみ ご飯のお供</a><div class="stats">価格 <b>¥2,499〜¥4,999</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734210545258431629.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbMbEcG" target=_blank>BAP 海老フリッター （1個500g入り) えび フリッター 冷凍食品 総菜 お弁当 エビチリ 海老マヨ 天むす 解凍 | 冷凍 食品 冷食 おかず 弁当 惣菜 ギフト 海鮮 魚 魚介類</a><div class="stats">価格 <b>¥2,680〜¥5,555</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733758566798951565.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZQ65b8rKc" target=_blank>【50%OFFクーポン】まぐろ 竜田揚げ 大容量1kg~2kg マグロ おつまみ 揚げ物 鮪 冷凍食品 総菜 解凍後 冷凍 おかず お弁当 時短 夕飯 ギフト 海鮮</a><div class="stats">価格 <b>¥5,960〜¥8,980</b>｜報酬率※ <b class="reward">12%</b></div></div></div>
+<div class="card"><img src="/product-images/1733758439888880781.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUoj1O2" target=_blank>【50%OFFクーポン】骨取り アジフライ しそ入 1kg 鰺 あじ 魚 骨無し 骨なし  骨抜き 20g×50匹 おつまみ 酒の肴 お取り寄せ グルメ お弁当 時短 献立 揚げ物 和風 鮭 鯖 海鮮 ギフト 簡単 時短 冷凍 惣菜 冷凍食品</a><div class="stats">価格 <b>¥5,960〜¥8,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734209745488741517.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUsZgyq" target=_blank>【なくなり次第終了】BAP 尾なし海老フライ 15ｇ(20尾入)×２パック 計40尾 ー BAP認証 えび フライ エビ 総菜 お弁当 冷凍食品 尾なし 業務用 パーティー 冷凍 食品 冷食 おかず お惣菜 海老 海老フライ エビフライ えびふらい 揚げ物 おつまみ ごちそう 弁当 惣</a><div class="stats">価格 <b>¥2,999</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734584896697500813.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbN9FLM" target=_blank>【クーポンで50％OFF】イカ下足唐揚げ 1kg するめいか スルメイカ 下足 イカゲソ 唐揚げ 業務用 お徳用 おつまみ お酒 冷凍食品 冷凍 冷食 おかず 惣菜 ゲソ 揚げ物 魚介類 いか 酒のつまみ 酒の肴 お弁当 いかげそ からあげ から揚げ つまみ 海鮮 烏賊 するめ</a><div class="stats">価格 <b>¥7,880</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734581378821031053.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbMsHkt" target=_blank>【クーポン配布中】新春 海鮮 福袋 2026 豪華 海千（帆立フライ 300g、まぐろの竜田揚げ 1kg、BAP 尾なし海老フライ 300ｇ、鯵紫蘇フライ 1kg）仕送り メガ盛り プレゼント ギフト 時短 お手軽 大容量 詰め合わせ 冷凍 海鮮 惣菜 ふくぶくろ</a><div class="stats">価格 <b>¥17,620</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625337884771469.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDtuv8O" target=_blank>【ケース販売】らくチン海老天ぷら26/30 40尾入り業務用 海老天ぷら 海老天 エビ えび天 40尾入り 天ぷら 冷凍食品 総菜 お徳用|天丼 温めるだけ 揚げ物 エビ天ぷら 冷凍 エビ天 お惣菜 弁当 冷食 惣菜 おかず 海老 まとめ買い 業務用 業務用惣菜 冷凍えび天 てんぷら フライ</a><div class="stats">価格 <b>¥20,400</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625700312614029.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQW6kQ5L" target=_blank>【ケース販売】ホタテと海老の海鮮かき揚げ80g（5枚入）青森県陸奥湾産 ほたて かきあげ 揚げ物 総菜 丼 海鮮 えび |天丼 冷凍食品 おかず おつまみ かき揚げ 天ぷら 冷凍 冷凍かき揚げ 酒の肴 冷食 帆立 業務用 惣菜 エビ お惣菜 具 具材 ホタテ 業務用惣菜 冷凍総菜 フライ</a><div class="stats">価格 <b>¥13,200</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734600439653631117.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUtwuDS" target=_blank>【更に最安値挑戦】ほたて 貝柱 1kg フレーク 大容量 ホタテ 帆立貝柱 生 かいばしら 冷凍 刺身用 玉冷 バター１焼き フライ 大容量 メガ盛り 海鮮 ギフト オホーツク 北海道 送料無料 ホタテ</a><div class="stats">価格 <b>¥6,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734608025675662477.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbS6FmU" target=_blank>まぐろカツレツ 60ｇ 10枚入 おつまみ 揚げ物 鮪 冷凍食品 総菜 解凍後 冷凍 おかず お弁当 時短 夕飯 魚 海鮮 敬老 こども 子供 サイコロステーキ</a><div class="stats">価格 <b>¥3,480</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734210019305227405.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCJkX0u" target=_blank>アジフライ 骨無し 骨なし 骨取り 骨抜き 塩 こうじ漬け 45ｇ×5枚 海鮮 おかず 鯵 冷凍 食品 惣菜 レンジ おかず おつまみ お取り寄せ グルメ 揚げ物 和風 敬老の日 海鮮 ギフト 食べ物 レンジで簡単 大容量 詰め合わせ 冷凍</a><div class="stats">価格 <b>¥1,999〜¥5,997</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734417358363985037.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUsqqqD" target=_blank>ホタテと海老の海鮮かき揚げ８０ｇ（５枚入） 青森県陸奥湾産ほたて バナメイエビ かきあげ 揚げ物 総菜 丼 おつまみ 海鮮 えび 和食 |かき揚げ 冷凍 天ぷら てんぷら 天麩羅 冷凍天ぷら 揚物 簡単調理 天丼 弁当 お弁当</a><div class="stats">価格 <b>¥3,480〜¥10,440</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733918610148131981.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCJCbkr" target=_blank>新春 2026 福袋 えびオールスター4種 総重量1.7kg超え セット（かきあげ 海老フライ えびの天ぷら エビフリッター）仕送り メガ盛り プレゼント ギフト 時短 お手軽 食べ物 レンジ 大容量 冷凍 食品 訳あり 海鮮</a><div class="stats">価格 <b>¥11,040</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734207961658918029.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbITPmI" target=_blank>新春 海鮮 福袋 2026 豪華 海千（帆立フライ 300g、まぐろの竜田揚げ 1kg、BAP 尾なし海老フライ 300ｇ、鯵紫蘇フライ 1kg）仕送り メガ盛り プレゼント ギフト 時短 お手軽 大容量 詰め合わせ 冷凍 海鮮 惣菜 ふくぶくろ</a><div class="stats">価格 <b>¥6,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734583425735623821.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUt7rZo" target=_blank>新春 福袋 2026 山千 ごちそう福袋 (野菜かき揚げ 80ｇ×5枚 ホタテと海老の海鮮かき揚げ 80g×5枚 真鱈の天ぷら 約25g×10個 海老 天ぷら 35g×8尾）仕送り メガ盛り プレゼント ギフト 時短 大容量 冷凍</a><div class="stats">価格 <b>¥4,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735137614419559565.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDwff4r" target=_blank>福袋 2026 えびオールスター 福袋 3種 総重量1.2kg超え セット かきあげ 海老フライ エビフリッター仕送り メガ盛り ギフト 時短 お手軽  食品 御歳暮 魚介類 お歳暮 ギフト 海鮮 魚 魚介類 御歳暮 おせいぼ</a><div class="stats">価格 <b>¥8,888</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735137504744998029.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQd1iWn2" target=_blank>調理加工済みエビフライ35ｇ（1袋10尾 2袋20尾 3袋30尾) えび フライ エビ 総菜 お弁当 冷凍食品 業務用 パーティー 冷食 おかず お惣菜 揚げ物 おつまみ 弁当 2026 ギフト 海鮮 魚 魚介類</a><div class="stats">価格 <b>¥2,580〜¥3,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734614986303046797.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQUy4lCA" target=_blank>青森県産真鱈の天ぷら 250g（10個入り）×3個 たら 天ぷら 真鱈 簡単調理 惣菜 おかず 天丼 お弁当 オードブル 白身 魚 時短 さかな タラ 揚げ物 お取り寄せ グルメ 晩酌 酒の肴</a><div class="stats">価格 <b>¥5,999</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625327566062733.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQd0cNZc" target=_blank>青森県産真鱈の天ぷら 250g（10個入り）たら 天ぷら 真鱈 簡単調理 惣菜 おかず 天丼 お弁当 オードブル 白身 魚 時短 さかな タラ 揚げ物 お取り寄せ グルメ 晩酌 酒の肴</a><div class="stats">価格 <b>¥1,999</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734614998001747085.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCLOqep" target=_blank>【今だけおまけ付き！】十三湖産しじみ 450g (3袋×150g) 十三湖産 味噌汁 ヤマトシジミ 健康 大容量 肝臓 二日酔い 冷凍 冷凍食品 ビタミン 亜鉛 鉄分 アミノ酸 カルシウム 食べ物 和食 つまみ 贈り物 お茶漬け お吸い物 手軽 お徳 家庭用</a><div class="stats">価格 <b>¥2,480〜¥5,480</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734607860636812429.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCL7p1z" target=_blank>BAP 海老天ぷら 38ｇ(10尾入) ×3 30尾 エビ 海老天 揚げ物 天丼 えび天 うどん 冷凍食品 冷凍 冷食 おかず お惣菜 海老 エビ天ぷら 天ぷら お弁当 えび天ぷら 冷凍天ぷら てんぷら 弁当 蕎麦 業務用 惣菜 天むす</a><div class="stats">価格 <b>¥9,900</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734584218620036237.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCKIh80" target=_blank>BAP 海老天ぷら 38ｇ(10尾入) ×５PC 50尾 エビ 海老天 揚げ物 天丼 えび天 うどん 冷凍食品 冷凍 おかず お惣菜 そば エビ天 エビ天ぷら 天ぷら えび天ぷら 冷凍天ぷら てんぷら 弁当 業務用 惣菜 天むす</a><div class="stats">価格 <b>¥15,000</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625318692226189.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQVzaxlI" target=_blank>【ケース販売】ぶ厚い海鮮かき揚げ１５０ｇ厚みのあるかき揚げ えび コウイカ トッピング そば・うどん 丼 揚げ物 |天丼 冷凍食品 かきあげ おかず つまみ 海鮮かき揚げ かき揚げ丼 天ぷら 冷凍 冷凍天ぷら 海老天ぷら えび天ぷら いか天 いか天ぷら 冷凍かき揚げ 冷凍エビ天</a><div class="stats">価格 <b>¥8,400</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625295684109453.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDtdszx" target=_blank>【ケース販売】四角い野菜かき揚げ80ｇ（45枚入） 野菜かき揚げ そば うどん 丼 業務用 冷凍食品 | おかず おつまみ かき揚げ丼 冷凍 天ぷら 天丼 かきあげ かき揚げ 冷凍天ぷら お弁当 揚げ物 天麩羅 冷凍かき揚げ 冷食 惣菜 蕎麦 業務用惣菜 野菜 冷凍惣菜</a><div class="stats">価格 <b>¥6,000</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625562780402829.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQd0tRAi" target=_blank>【ケース販売】海老たっぷりかき揚げ100ｇ そば うどん 丼 かきあげ丼 えび おかず 揚げ物 総菜 エビ 海老 かき揚げ 海鮮 レンチン 天丼 かきあげ | 冷凍 冷凍食品 えび天ぷら 天ぷら てんぷら 冷食 まとめ買い 業務用 惣菜 揚げるだけ 具 鍋 業務用惣菜 野菜 冷凍総菜</a><div class="stats">価格 <b>¥17,500</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625688079139981.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDuBzB1" target=_blank>【ケース販売】野菜かき揚げ80ｇ（5枚入） 野菜かき揚げ そば うどん 丼 業務用 冷凍食品 おかず おつまみ かき揚げ丼 冷凍 天ぷら 天丼 かきあげ かき揚げ 冷凍天ぷら お弁当 揚げ物 天麩羅 冷凍かき揚げ 冷食 惣菜</a><div class="stats">価格 <b>¥7,900</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1735039967315657869.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQW71PLg" target=_blank>【父の日早割1,000円OFF】 天ぷら かきあげ えび天 海老天 冬ギフト 更科 蕎麦 プレゼント 高級 食べ物 お取り寄せ グルメ 二八そば 生 冷凍 4人前 お祝い 内祝 酒の肴 チョコ以外 職場 2026 誕生日 詰め合わせ お酒 甘いものが苦手 父 男性 つまみ</a><div class="stats">価格 <b>¥3,980〜¥6,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625366099461261.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQW3Alat" target=_blank>ぶ厚い海鮮かき揚げ１５０ｇ（５枚入） 厚みのあるかき揚げ えび コウイカ トッピング そば・うどん 丼 揚げるのみ かきあげ かき揚げ 冷凍 天ぷら てんぷら 冷凍天ぷら 揚げ物 揚物 天丼 弁当</a><div class="stats">価格 <b>¥2,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733918640724083853.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQbICNab" target=_blank>ホタテと海老の海鮮かき揚げ 80ｇ（10枚入） 青森県陸奥湾産ほたて バナメイエビ かきあげ 揚げ物 そば 総菜 丼 おつまみに えび 和食 かき揚げ 天ぷら てんぷら 天麩羅 お歳暮 2026 ギフト 海鮮 魚介類</a><div class="stats">価格 <b>¥3,490</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1733918684974515341.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeCJTfFl" target=_blank>尾海老 天ぷら35ｇ (4尾×4 16尾セット) エビ えび 天ぷら 年末年始　年越し 蕎麦 うどん 天丼 和食 和風 おかず 一品 食べ物 そば 年越しそば 簡単調理 冷凍 業務用 天麩羅 天ぷらそば お取り寄せグルメ 食品</a><div class="stats">価格 <b>¥5,480</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625782148531341.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZeDuTBaW" target=_blank>爆盛ミニ野菜のかき揚げ 2kｇ (20g×100枚入)野菜かきあげ 揚げ物 総菜 丼 うどん おつまみ 和食 | 冷凍 食品 冷食 おかず 弁当 お惣菜 惣菜 かき揚げ 冷凍食品 天ぷら 天丼 冷凍かき揚げ お弁当 業務用 酒の肴 具</a><div class="stats">価格 <b>¥14,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<div class="card"><img src="/product-images/1734625772163073165.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1ZZQd1ANfu" target=_blank>野菜かき揚げ80ｇ（5枚入） 野菜かき揚げ そば・うどんに 丼に 業務用 冷凍食品 天ぷら 天麩羅 てんぷら かき揚げ かきあげ 野菜 やさい 冷凍 簡単調理 揚げ物 天丼 惣菜 総菜 お弁当 弁当 おかず かき揚げそば かき揚げ丼 玉ねぎ 冷食 揚物 つまみ おつまみ 冷凍かき揚げ</a><div class="stats">価格 <b>¥1,980</b>｜報酬率※ <b class="reward">8%</b></div></div></div>
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>
