@@ -230,6 +230,15 @@ def is_featured(row: dict) -> bool:
     return _flag_on(row.get("表示"))
 
 
+def find_col_prefix(df: pd.DataFrame, prefix: str) -> str | None:
+    """列名が prefix で始まる列を返す (部分一致だと「平均取引金額」「1000視聴回数取引金額」等の
+    別列を拾ってしまうため、合計GMVのように前方一致で特定すべき列に使う)"""
+    for col in df.columns:
+        if str(col).strip().startswith(prefix):
+            return col
+    return None
+
+
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
     """カラム名の揺れに対応した検索 (部分一致)"""
     for cand in candidates:
@@ -245,7 +254,7 @@ def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
 def load_videos(path: str) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name=0)
     col_product = find_col(df, ["商品名"])
-    col_gmv = find_col(df, ["取引金額"])
+    col_gmv = find_col_prefix(df, "取引金額") or find_col(df, ["取引金額"])
     col_posted = find_col(df, ["投稿日"])
     col_gpm = find_col(df, ["1000視聴"])
     col_ad_ratio = find_col(df, ["広告視聴率"])
@@ -289,8 +298,9 @@ def load_videos(path: str) -> pd.DataFrame:
 def load_products(path: str) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name=0)
     col_name = find_col(df, ["商品名称", "商品名", "商品情報"])
-    col_gmv = find_col(df, ["取引金額 (", "取引金額("])          # 合計GMV (平均/ライブ/動画と区別)
-    col_gmv = "取引金額 (¥)" if "取引金額 (¥)" in df.columns else col_gmv
+    # 合計GMV。「平均取引金額」「ライブ取引金額」「動画取引金額」と区別するため前方一致で特定する
+    # (エクスポートの通貨表記は週により「取引金額 (¥)」「取引金額 (円)」と揺れる)
+    col_gmv = find_col_prefix(df, "取引金額") or find_col(df, ["取引金額"])
     col_growth = find_col(df, ["成長率"])
     col_units = find_col(df, ["販売数", "販売件数"])
     col_rating = find_col(df, ["商品レビュー", "商品評価", "評価"])
