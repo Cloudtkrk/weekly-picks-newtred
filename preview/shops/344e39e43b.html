@@ -1,0 +1,201 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏬 colorkey_jp 2026/08/24</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.pill.feat{background:#fee2e2; color:#b91c1c}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style><style>
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px 16px; overflow-y:auto;
+      background:var(--bg); display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .gpv{margin-bottom:14px; text-align:left}
+#gate .gpv-t{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:6px;
+      text-align:center}
+#gate .gpv-i{display:flex; gap:10px; align-items:center; padding:8px;
+      border:1px solid var(--line); border-radius:10px; margin-bottom:6px}
+#gate .gpv-i img,#gate .gpv-i .noimg{width:46px; height:46px; border-radius:8px;
+      object-fit:cover; flex-shrink:0; background:var(--tag-bg); font-size:9px;
+      display:flex; align-items:center; justify-content:center; color:var(--sub)}
+#gate .gpv-n{font-size:12px; font-weight:700; line-height:1.4; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+#gate .gpv-s{font-size:11px; color:var(--sub); margin-top:2px}
+#gate .gpv-more{text-align:center; font-size:11.5px; color:var(--sub); margin-top:2px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+</style></head><body><script>document.documentElement.classList.add("gate-locked")</script><div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+<div class="teaser">🔥 売れ筋 38件　🚀 新商品 22件　🎁 自社サンプル可 3,661件　📺 LIVEタイムセール 566件 を掲載中</div><div class="gpv"><div class="gpv-t">今週の売れ筋 TOP3</div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4a9c097686794e5e84f78d557b6d2423~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 【公式】 ELLISS-エルリス シャイニングショット シャインマスカット風味 30包</div><div class="gpv-s">30日売上 2,756円｜報酬率 10%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b5bcdd59027b4917aa185b51c54359ce~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">WOSADO ソフトマグネット式つけまつげ 夏おすすめ new life sale 3秒まつ毛ふさふ</div><div class="gpv-s">30日売上 4,817円｜報酬率 8%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a4fd3e32235e46f2b183ca03bb935f9f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">MAGINA マギナ 亜鉛 サプリ シトルリン アルギニン 49500mg サプリメント 1袋(約3</div><div class="gpv-s">30日売上 3,667円｜報酬率 40%</div></div></div><div class="gpv-more">…続きは合言葉を入れてご覧ください</div></div>
+<a class="btn line" href="https://lin.ee/Sv2jDrZ" target="_blank">💬 公式LINEを友だち追加する</a>
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){
+  const SHA="ed775ddbb6f84ee329d8ba195fe096133516a8e96ea69563dbca7ad7cd5aa827", B64="bmV3dHJlbmQyMDI2", KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){
+    if (window.crypto && crypto.subtle && window.isSecureContext){
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+    return null;
+  }
+  function ok(){ root.classList.remove("gate-locked"); gate.remove(); }
+  try { if (localStorage.getItem(KEY) === SHA) return ok(); } catch(e) {}
+  async function submit(){
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){ try{ localStorage.setItem(KEY, SHA); }catch(e){} ok(); }
+    else { document.getElementById("gate-err").textContent="合言葉が違います"; }
+  }
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{ if(e.key==="Enter") submit(); });
+})();
+</script>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/24 更新</span></header>
+<div class="tabs"><a class="tab" href="../">🔥 売れ筋（38）</a><a class="tab" href="../challenge.html">🚀 新商品（22）</a><a class="tab" href="../recommend.html">🎁 おすすめ（3661）</a><a class="tab" href="../live.html">📺 ライブ（566）</a><a class="tab arch" href="../archive/">📅 アーカイブ</a></div>
+<div class="guide"><div class="g-title">🏬 colorkey_jp</div>美容・コスメ｜全11件。すべて弊社経由でサンプル相談ができます。</div><a class="more back" href="../recommend.html">← 🎁 おすすめ一覧に戻る</a>
+
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733629973524088294.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nSIr2Kk" target=_blank>【New】Colorkeyシャインラッカー＆色持ち艶感＆保湿＆ベージュ リップ＆水光感たっぷりリップ｜エクストラシャイン リップラッカー</a><div class="stats">価格 <b>¥1,574</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733630386976556518.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nSJ898P" target=_blank>【New】Colorkeyリップチーク｜シルキーマットリップチーク｜チューイング グロウポット｜リップグロス｜マッド仕上がり｜マットリップ</a><div class="stats">価格 <b>¥1,708</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733630029267961318.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nQqO5n6" target=_blank>【New】【送料無料】2点セットColorkeyシャインラッカー｜色持ち艶感＆保湿｜バズるリップ｜カップにつかない色持ち｜水光感たっぷりリップ｜エクストラシャイン リップラッカー</a><div class="stats">価格 <b>¥3,148</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733630377167848934.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nskZtqK" target=_blank>【New】【送料無料】2点セットColorkeyリップチーク｜シルキーマットリップチーク｜自然な血感色｜リップグロス｜マッド仕上がり｜マットリップ</a><div class="stats">価格 <b>¥3,416</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1732836188471723494.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nSIJ1Xx" target=_blank>【ティント】Colorkeyティントウォーターミストリップ｜8時間落ちないリップ｜pytリップ｜リップティント｜トリデン リップ｜リップグロス｜チェリーピンク｜plumping lip gloss｜デューティント</a><div class="stats">価格 <b>¥1,574</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1732884261507335654.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nQppvwe" target=_blank>【ティントなし】2点セットリキッドリップColorkeyマットウォーターミスト｜落ちにくいリップ｜保湿｜自然な血感リップ｜低彩度｜リップグロス｜マット仕上がり</a><div class="stats">価格 <b>¥3,148</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1732836131725149670.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nsjkkvo" target=_blank>【ティントなし】Colorkeyリキッドリップウォーターミストリキッドリップ｜落ちにくいリップ｜保湿｜自然な血感リップ｜低彩度｜リップグロス｜マット仕上がりリップ</a><div class="stats">価格 <b>¥1,574</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733357396341458406.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nQq714A" target=_blank>【人気】【ティント】2点セットColorkeyティントウォーターミストリップ｜8時間落ちないリップ｜保湿｜リップティント｜自然な血感リップ｜リップグロス｜マッド仕上がりリップ</a><div class="stats">価格 <b>¥3,148</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733330578313414118.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nsk1d4q" target=_blank>【人気】【ティント】Colorkeyティントウォーターミストリップ｜8時間落ちないリップ｜保湿｜リップティント｜自然な血感リップ｜リップグロス｜マッド仕上がりリップ</a><div class="stats">価格 <b>¥1,574</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733357480517141990.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nskIhaZ" target=_blank>【人気】【ティントなし】2点セット｜リキッドリップColorkeyマットウォーターミスト｜落ちにくいリップ｜保湿｜自然な血感リップ｜低彩度｜リップグロス｜マット仕上がり</a><div class="stats">価格 <b>¥3,148</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<div class="card"><img src="https://newtrend.entercommerce.co.jp/product-images/1733330703074362854.jpeg" loading="lazy" alt="" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div class="body"><div class="pills"><span class="pill own">🎁 自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AKSq4nSIa5yz" target=_blank>【人気】【ティントなし】Colorkeyリキッドリップウォーターミスト｜落ちにくいリップ｜保湿｜自然な血感リップ｜低彩度｜リップグロス｜マット仕上がりリップ</a><div class="stats">価格 <b>¥1,574</b>｜報酬率※ <b class="reward">20%</b></div></div></div>
+<footer>※ 報酬率は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+サンプル希望・質問は担当者まで。リンクは弊社のアフィリエイトリンクです。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>

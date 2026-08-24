@@ -1,0 +1,226 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🚀 新商品 週次おすすめ商品 2026/08/24</title><style>
+:root{
+  --ink:#17181c; --sub:#6b7080; --line:#e8e9ee; --bg:#f6f7f9; --card:#ffffff;
+  --hot:#e8384f; --chal:#10a37f; --accent:#25f4ee; --tag-bg:#f0f1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+     background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55}
+.wrap{max-width:860px; margin:0 auto; padding:28px 16px 60px}
+header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+       border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+header h1{font-size:22px; font-weight:800; letter-spacing:.02em}
+header .date{color:var(--sub); font-size:13px}
+.counts{margin:10px 0 26px; color:var(--sub); font-size:13px}
+.counts b{color:var(--ink)}
+.section-h{display:flex; align-items:center; gap:10px; margin:34px 0 6px}
+.section-h .bar{width:6px; height:22px; border-radius:3px}
+.section-h h2{font-size:17px; font-weight:800}
+.section-h .note{color:var(--sub); font-size:12px}
+.cat{margin:18px 0 4px; font-size:13px; font-weight:700; color:var(--sub);
+     text-transform:none; letter-spacing:.04em}
+.cat b{color:var(--ink); font-size:14px}
+.card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:8px 0}
+.card img{width:76px; height:76px; object-fit:cover; border-radius:8px;
+          background:var(--tag-bg); flex-shrink:0}
+.card .noimg{width:76px; height:76px; border-radius:8px; background:var(--tag-bg);
+             display:flex; align-items:center; justify-content:center;
+             color:var(--sub); font-size:11px; flex-shrink:0}
+.body{min-width:0; flex:1}
+.name{font-weight:700; font-size:14px; margin-bottom:4px; display:block;
+      color:var(--ink); text-decoration:none; overflow:hidden;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.name:hover{text-decoration:underline}
+.stats{color:var(--sub); font-size:12.5px; margin-bottom:2px}
+.stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.reward{color:var(--hot); font-weight:700}
+.tags{margin-top:6px; display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:11px; padding:2px 8px; border-radius:99px; background:var(--tag-bg);
+     color:var(--sub); font-weight:600}
+.tag.camp{background:#fff3d6; color:#8a6100}
+.tag.yakki{background:#ffe4e8; color:#a1233a}
+.rec{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+     color:#fff; background:linear-gradient(90deg,#ff5f3d,#e8384f);
+     padding:3px 10px; border-radius:99px}
+.pills{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:800;
+      padding:3px 10px; border-radius:99px}
+.pill.easy{background:#dcf5e5; color:#116932}
+.pill.gem{background:#ede4fd; color:#5b21b6}
+.pill.own{background:#ffe8d2; color:#9a3412}
+.guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
+.guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:7px}
+.guide li{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.info{cursor:help; border-bottom:1px dotted var(--sub)}
+footer{margin-top:44px; color:var(--sub); font-size:12px;
+       border-top:1px solid var(--line); padding-top:14px}
+.tabs{display:flex; gap:8px; margin:16px 0 4px; overflow-x:auto;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap; flex-shrink:0}
+.tab{padding:9px 18px; border-radius:10px; font-weight:800; font-size:14px;
+     text-decoration:none; color:var(--sub); background:var(--card);
+     border:1px solid var(--line)}
+.tab.active{color:#fff; border-color:transparent}
+.tab.active.hot{background:var(--hot)}
+.tab.active.chal{background:var(--chal)}
+.tab.active.own{background:#f97316}
+.tab.active.live{background:#7c3aed}
+.pill.live{background:#ede9fe; color:#5b21b6}
+.pill.feat{background:#fee2e2; color:#b91c1c}
+.shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+        margin:20px 0 4px; padding-top:6px; border-top:1px solid var(--line)}
+.shop-name{font-weight:800; font-size:14.5px}
+.shop-n{color:var(--sub); font-size:12px; white-space:nowrap}
+.shoplink{color:var(--sub); text-decoration:none; border-bottom:1px dotted var(--sub)}
+.shoplink:hover{color:var(--ink)}
+.more{display:block; text-align:center; padding:10px; margin:6px 0 4px;
+      background:var(--card); border:1px solid var(--line); border-radius:10px;
+      font-size:12.5px; font-weight:700; color:var(--own-ink); text-decoration:none}
+.more:hover{border-color:var(--own)}
+.more.back{margin:10px 0 0; color:var(--sub)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 6px;
+         position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5}
+.chip{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+      background:var(--card); border:1px solid var(--line); color:var(--sub);
+      cursor:pointer; user-select:none}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catgrp.hidden{display:none}
+.tab.arch{font-size:12.5px; padding:9px 12px}
+.arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
+           border-radius:10px; font-size:12.5px}
+.arch-note a{color:inherit; font-weight:700}
+@media(max-width:640px){
+  /* スマホ: カテゴリ選択チップを折り返さず横スクロール1行に (画面を占有しない) */
+  .filters{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+           scrollbar-width:none; margin-left:-16px; margin-right:-16px;
+           padding-left:16px; padding-right:16px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap; flex-shrink:0}
+}
+@media(max-width:520px){.card img,.card .noimg{width:60px;height:60px}}
+</style><style>
+html.gate-locked, html.gate-locked body{overflow:hidden; height:100%}
+html.gate-locked body>.wrap{display:none}
+#gate{position:fixed; inset:0; z-index:9999; padding:20px 16px; overflow-y:auto;
+      background:var(--bg); display:flex; align-items:center; justify-content:center}
+#gate .teaser{background:var(--tag-bg); color:var(--sub); border-radius:10px;
+      padding:9px 10px; font-size:12px; font-weight:700; margin-bottom:14px; line-height:1.7}
+#gate .gpv{margin-bottom:14px; text-align:left}
+#gate .gpv-t{font-size:12px; font-weight:800; color:var(--sub); margin-bottom:6px;
+      text-align:center}
+#gate .gpv-i{display:flex; gap:10px; align-items:center; padding:8px;
+      border:1px solid var(--line); border-radius:10px; margin-bottom:6px}
+#gate .gpv-i img,#gate .gpv-i .noimg{width:46px; height:46px; border-radius:8px;
+      object-fit:cover; flex-shrink:0; background:var(--tag-bg); font-size:9px;
+      display:flex; align-items:center; justify-content:center; color:var(--sub)}
+#gate .gpv-n{font-size:12px; font-weight:700; line-height:1.4; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+#gate .gpv-s{font-size:11px; color:var(--sub); margin-top:2px}
+#gate .gpv-more{text-align:center; font-size:11.5px; color:var(--sub); margin-top:2px}
+#gate .box{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:26px 22px; max-width:380px; width:100%; text-align:center}
+#gate h1{font-size:19px; font-weight:800; margin-bottom:6px}
+#gate .lead{color:var(--sub); font-size:13px; line-height:1.7; margin-bottom:16px}
+#gate input{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px;
+      font-size:15px; text-align:center; font-family:inherit}
+#gate .btn{display:block; width:100%; padding:13px; border-radius:11px; border:none;
+      font-weight:800; font-size:15px; cursor:pointer; margin-top:10px;
+      text-decoration:none; box-sizing:border-box}
+#gate .btn.go{background:var(--ink); color:#fff}
+#gate .btn.line{background:#06c755; color:#fff; margin-bottom:14px}
+#gate .err{color:var(--hot); font-size:12.5px; margin-top:10px; min-height:1em}
+#gate .note{color:var(--sub); font-size:11.5px; margin-top:14px; line-height:1.6}
+</style></head><body><script>document.documentElement.classList.add("gate-locked")</script><div id="gate"><div class="box">
+<h1>📦 週次おすすめ商品</h1>
+<p class="lead">このページは<b>公式LINE登録者限定</b>です。<br>
+LINEでお伝えしている合言葉を入力してください。</p>
+<div class="teaser">🔥 売れ筋 38件　🚀 新商品 22件　🎁 自社サンプル可 3,661件　📺 LIVEタイムセール 566件 を掲載中</div><div class="gpv"><div class="gpv-t">今週の売れ筋 TOP3</div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4a9c097686794e5e84f78d557b6d2423~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">⭐ 【公式】 ELLISS-エルリス シャイニングショット シャインマスカット風味 30包</div><div class="gpv-s">30日売上 2,756円｜報酬率 10%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b5bcdd59027b4917aa185b51c54359ce~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">WOSADO ソフトマグネット式つけまつげ 夏おすすめ new life sale 3秒まつ毛ふさふ</div><div class="gpv-s">30日売上 4,817円｜報酬率 8%</div></div></div><div class="gpv-i"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a4fd3e32235e46f2b183ca03bb935f9f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" alt="" loading="lazy" onerror="this.outerHTML='<div class=noimg>no image</div>'"><div><div class="gpv-n">MAGINA マギナ 亜鉛 サプリ シトルリン アルギニン 49500mg サプリメント 1袋(約3</div><div class="gpv-s">30日売上 3,667円｜報酬率 40%</div></div></div><div class="gpv-more">…続きは合言葉を入れてご覧ください</div></div>
+<a class="btn line" href="https://lin.ee/Sv2jDrZ" target="_blank">💬 公式LINEを友だち追加する</a>
+<input type="password" id="gate-pass" placeholder="合言葉" autocomplete="off" inputmode="text">
+<button class="btn go" id="gate-go">閲覧する</button>
+<div class="err" id="gate-err"></div>
+<p class="note">合言葉がわからない方は公式LINEにお問い合わせください。</p>
+</div></div>
+<script>
+(function(){
+  const SHA="ed775ddbb6f84ee329d8ba195fe096133516a8e96ea69563dbca7ad7cd5aa827", B64="bmV3dHJlbmQyMDI2", KEY="wp_gate";
+  const root=document.documentElement, gate=document.getElementById("gate");
+  async function hash(v){
+    if (window.crypto && crypto.subtle && window.isSecureContext){
+      const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+    return null;
+  }
+  function ok(){ root.classList.remove("gate-locked"); gate.remove(); }
+  try { if (localStorage.getItem(KEY) === SHA) return ok(); } catch(e) {}
+  async function submit(){
+    const v=document.getElementById("gate-pass").value.trim();
+    const h=await hash(v);
+    const match = h ? h===SHA : btoa(unescape(encodeURIComponent(v)))===B64;
+    if (match){ try{ localStorage.setItem(KEY, SHA); }catch(e){} ok(); }
+    else { document.getElementById("gate-err").textContent="合言葉が違います"; }
+  }
+  document.getElementById("gate-go").addEventListener("click", submit);
+  document.getElementById("gate-pass").addEventListener("keydown", e=>{ if(e.key==="Enter") submit(); });
+})();
+</script>
+<div class="wrap">
+<header><h1>📦 週次おすすめ商品</h1><span class="date">2026/08/24 更新</span></header><div class="arch-note">🧪 プレビュー版です。この内容で公開してよければ GitHub Actions の「Weekly Picks」→ Run workflow を実行してください（Web公開とDiscord投稿が行われます）</div>
+<div class="tabs"><a class="tab" href="./">🔥 売れ筋（38）</a><a class="tab active chal" href="./challenge.html">🚀 新商品（22）</a><a class="tab" href="./recommend.html">🎁 おすすめ（3661）</a><a class="tab" href="./live.html">📺 ライブ（566）</a><a class="tab arch" href="./archive/">📅 アーカイブ</a></div>
+
+<div class="filters"><span class="chip on" data-cat="all">すべて</span><span class="chip" data-cat="美容">美容</span><span class="chip" data-cat="食品">食品</span><span class="chip" data-cat="家電ガジェット">家電ガジェット</span><span class="chip" data-cat="その他">その他</span></div>
+<div class="catgrp" data-cat="美容">
+<div class="cat">▼ <b>美容</b>（8件）</div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c9939790db2e4c37aac9ad1c24ba1fdc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c9939790db2e4c37aac9ad1c24ba1fdc~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736866733958137248?region=JP&amp;locale=en" target="_blank">【#10秒リップタトゥー】 シルバーヴェール ティッシュオフリップタトゥー 6種</a><div class="stats">30日売上 <b>1,599円</b>｜単価 1,599円｜報酬率※ <b class="reward">10%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b0c15e3c8c5f49dca0abb1dd0a58e1b0~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b0c15e3c8c5f49dca0abb1dd0a58e1b0~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736103666082350693?region=JP&amp;locale=en" target="_blank">【公式】FOODOLOGY(フードオロジー) コレオロジーカットゼリー ザクロ味 10本</a><div class="stats">30日売上 <b>2,685円</b>｜単価 2,685円｜報酬率※ <b class="reward">7%</b></div><div class="tags"><span class="tag yakki">薬機法注意</span><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/5510937c6a264601899cef0c1241370a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/5510937c6a264601899cef0c1241370a~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736662846477206785?region=JP&amp;locale=en" target="_blank">【GIFT終了！！！】 マミーケア  EMSブイセラ (江南エステ導入 / 二重あご / 輪郭 / </a><div class="stats">30日売上 <b>8,714円</b>｜単価 8,714円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag yakki">薬機法注意</span><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/45f9110410d540fcbcfa83501a65e9c6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/45f9110410d540fcbcfa83501a65e9c6~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736447374006847239?region=JP&amp;locale=en" target="_blank">Grace Mystique 練り香水 ムスク ベルガモット パルファム 香り長持ち メンズ 香水</a><div class="stats">30日売上 <b>3,307円</b>｜単価 3,307円｜報酬率※ <b class="reward">10%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b3a3d5b2291345bdbaf4a778f9f988f1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b3a3d5b2291345bdbaf4a778f9f988f1~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736753361527211709?region=JP&amp;locale=en" target="_blank">【LumiPlus公式】冷ミストストレートアイロン、ヘアアイロン、冷ミストによる保湿ケア、3段階の温</a><div class="stats">30日売上 <b>6,717円</b>｜単価 6,717円｜報酬率※ <b class="reward">10%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4cd17853d83e4291a0017fb238f549e4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4cd17853d83e4291a0017fb238f549e4~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1735957482017424929?region=JP&amp;locale=en" target="_blank">【INOPRO】ホワイトニングシート 14枚（7回分）過酸化物フリー 天然由来成分配合 エナメル質対</a><div class="stats">30日売上 <b>3,942円</b>｜単価 3,942円｜報酬率※ <b class="reward">40%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a7c4725e4d78444fa6d95a1eb5ca931f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a7c4725e4d78444fa6d95a1eb5ca931f~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736801115992131312?region=JP&amp;locale=en" target="_blank">【公式】FOMOMY MAGIC 1DAY カラコン 10枚入り 人気カラー 回らない水光レンズ 軸</a><div class="stats">30日売上 <b>1,483円</b>｜単価 1,483円｜報酬率※ <b class="reward">12%</b></div><div class="tags"><span class="tag">季節</span><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/fcc4b03083184eb49e0d7f5a7a812e9b~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/fcc4b03083184eb49e0d7f5a7a812e9b~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1735171418360022675?region=JP&amp;locale=en" target="_blank">【夜通し絡む】ARfredi アルフレディ モテフェロモン香水 メンズ 練り香水 30g 調香師×イ</a><div class="stats">30日売上 <b>2,288円</b>｜単価 2,288円｜報酬率※ <b class="reward">15%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+</div>
+<div class="catgrp" data-cat="食品">
+<div class="cat">▼ <b>食品</b>（3件）</div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/260458f59e304a1d8da9b95b0e1545d8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/260458f59e304a1d8da9b95b0e1545d8~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736665753631032962?region=JP&amp;locale=en" target="_blank">R7.栃木県産 とちぎの星 精米</a><div class="stats">30日売上 <b>2,038円</b>｜単価 2,038円｜報酬率※ <b class="reward">9%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9424a65756a344a3937870fbf99255c3~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9424a65756a344a3937870fbf99255c3~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736856476403860643?region=JP&amp;locale=en" target="_blank">北海道旭川産　白いとうもろこし　1箱5kg(13本前後) 　ホワイトショコラ</a><div class="stats">30日売上 <b>4,571円</b>｜単価 4,571円｜報酬率※ <b class="reward">9%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ac6ec42ab9434710afa07c5788308072~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ac6ec42ab9434710afa07c5788308072~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736661777484122014?region=JP&amp;locale=en" target="_blank">【牛すじ大容量1kg/500g】特別50％OFFクーポン | 和牛・国産牛ミックス 牛すじ（ボイル済</a><div class="stats">30日売上 <b>5,418円</b>｜単価 5,418円｜報酬率※ <b class="reward">5%</b></div><div class="tags"><span class="tag camp">🎫キャンペーン中</span><span class="tag">LIVE向き</span></div></div></div>
+</div>
+<div class="catgrp" data-cat="家電ガジェット">
+<div class="cat">▼ <b>家電ガジェット</b>（3件）</div>
+<div class="card"><img src="https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/55dda2719e91486684785ab3fdbb4f90~tplv-o3syd03w52-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/55dda2719e91486684785ab3fdbb4f90~tplv-o3syd03w52-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736685825765836150?region=JP&amp;locale=en" target="_blank">マット MagSafe対応 iPhoneケース iPhone 14/15/16/17 Pro/Pro</a><div class="stats">30日売上 <b>746円</b>｜単価 746円｜報酬率※ <b class="reward">11%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/51575f2cc2294e1c92f8dbd4d3e956b6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/51575f2cc2294e1c92f8dbd4d3e956b6~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736735917833750506?region=JP&amp;locale=en" target="_blank">EXCEPTION 【期間限定価格】自動ゴミ収集コードレス掃除機 2年保証付き 自動充電スタンド付き</a><div class="stats">30日売上 <b>1万円</b>｜単価 1万円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/1d5b5f40f4d04642b83b7a1db35b3dd6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/1d5b5f40f4d04642b83b7a1db35b3dd6~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736872389633476586?region=JP&amp;locale=en" target="_blank">EXCEPTION 【快適良品限定価格】自動ゴミ収集コードレス掃除機 2年保証付き 自動充電スタンド</a><div class="stats">30日売上 <b>2万円</b>｜単価 2万円｜報酬率※ <b class="reward">5%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+</div>
+<div class="catgrp" data-cat="その他">
+<div class="cat">▼ <b>その他</b>（8件）</div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/39101d43a88b416d9b72b5670a828e1e~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/39101d43a88b416d9b72b5670a828e1e~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="pill easy">🔰初心者でも狙いやすい</span></div><a class="name" href="https://shop.tiktok.com/view/product/1736805203574294011?region=JP&amp;locale=en" target="_blank">半袖パーカー 男女兼用 カジュアルトップス ゆったりシルエット 無地 シンプル デイリー 通勤 通学</a><div class="stats">30日売上 <b>3,363円</b>｜単価 3,363円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">動画向き</span><span class="tag">広告主導</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/842d981fea1e45c4b2c75fa929c08b82~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/842d981fea1e45c4b2c75fa929c08b82~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="pill easy">🔰初心者でも狙いやすい</span></div><a class="name" href="https://shop.tiktok.com/view/product/1737016764168832908?region=JP&amp;locale=en" target="_blank">期間限定割引 — 今すぐご注文を！夏レディースハイウエストスーツパンツ／カジュアルパンツ／レディース</a><div class="stats">30日売上 <b>4,020円</b>｜単価 4,020円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag camp">🎫キャンペーン中</span><span class="tag">季節</span><span class="tag">動画向き</span><span class="tag">オーガニック</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/cdfcf2586d164cc9a574ba35f8f64162~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/cdfcf2586d164cc9a574ba35f8f64162~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736667136034505988?region=JP&amp;locale=en" target="_blank">南国風レトロポップ バックプリント半袖Tシャツ レディース メンズ ユニセックス 綿100％ オーバ</a><div class="stats">30日売上 <b>999円</b>｜単価 999円｜報酬率※ <b class="reward">10%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/31d5aed3ad0a4e8b9ace883106f83aaa~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/31d5aed3ad0a4e8b9ace883106f83aaa~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736762918447974139?region=JP&amp;locale=en" target="_blank">クッキープリンッリーズ taonini クッキープリンッリーズ 泥のような質感、手作り・無毒、食品グ</a><div class="stats">30日売上 <b>2,800円</b>｜単価 2,800円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/75ff9c34c1204b2e8cca715d5dbec819~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/75ff9c34c1204b2e8cca715d5dbec819~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736769331475678353?region=JP&amp;locale=en" target="_blank">ブラトップ チューブトップ レディース リブ生地 厚手カップ 盛れる ベアトップ 美背 落ちない 背</a><div class="stats">30日売上 <b>2,785円</b>｜単価 2,785円｜報酬率※ <b class="reward">13%</b></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/79f3e2f749d64de399a63c226e18da44~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/79f3e2f749d64de399a63c226e18da44~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736736814014367122?region=JP&amp;locale=en" target="_blank">ユーモア和文メッセージ風バックプリント半袖Tシャツ ユニセックス 綿100% オーバーサイズ クルー</a><div class="stats">30日売上 <b>914円</b>｜単価 914円｜報酬率※ <b class="reward">7%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0770cb9fbae74e999a7d95362bd7e272~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0770cb9fbae74e999a7d95362bd7e272~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736952049359947570?region=JP&amp;locale=en" target="_blank">プリーツロングスカート ウエストゴム　偏光カラー ロング スカート フレアスカート プリーツスカート</a><div class="stats">30日売上 <b>3,057円</b>｜単価 3,057円｜報酬率※ <b class="reward">9%</b></div><div class="tags"><span class="tag">LIVE向き</span></div></div></div>
+<div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a80fa9a46bf642928224717ec2e4fd46~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg" data-alt="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a80fa9a46bf642928224717ec2e4fd46~tplv-aphluv4xwc-resize-webp:800:800.webp" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><a class="name" href="https://shop.tiktok.com/view/product/1736802520621614577?region=JP&amp;locale=en" target="_blank">レディース ショルダーバッグ 斜めがけ リュック 肩掛け シヨルダー 2way 斜めがけバッグ 大き</a><div class="stats">30日売上 <b>7,851円</b>｜単価 7,851円｜報酬率※ <b class="reward">10%</b></div><div class="tags"><span class="tag">動画向き</span></div></div></div>
+</div>
+<footer>⭐ <b>今週売れてる</b>＝直近7日間に投稿動画から売上が発生している商品（今から乗っても売れやすい）<br>
+🔰 <b>初心者でも狙いやすい</b>＝参画ペース50人/月以上 × 成立率40%以上 × ⭐今週売れてる、またはフォロワーの少ないクリエイターの動画で直近7日に売上実績あり ／ 💎 <b>狙い目（実績者向け）</b>＝1人あたりGMV10万円以上 × 成立率30%以上 ／ 🎁 <b>自社サンプル可</b>＝弊社取扱ブランドの商品<br><b>参画ペース</b>＝参画クリエイター数÷掲載月数（承認の速さの目安）。<b>1人あたりGMV</b>＝30日売上÷参画クリエイター数（1人あたりの取り分の目安）<br><b>成立率</b>＝その商品に参画したクリエイターのうち、実際に売上を出した人の割合。高いほど「乗れば売れる」商品です<br><br>
+※ 報酬率・1件あたり報酬目安は取得時点の<b>参考値</b>です。実際の料率・条件は必ず各案件のアフィリエイトセンターで確認してください。<br>
+⚠️ 薬機法注意タグの商品は投稿前に表現チェック相談へ。売上等の数値は独自集計の参考値です。</footer>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const v = c.dataset.cat;
+  document.querySelectorAll('.catgrp').forEach(g =>
+    g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
+}));
+</script></body></html>
