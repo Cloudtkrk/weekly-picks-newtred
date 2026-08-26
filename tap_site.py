@@ -106,12 +106,12 @@ def _payload(prods, camps):
     P = [{
         "n": r["name"], "s": r["shop"], "c": r["category"], "k": r["campaign"],
         "r": _num(r["rate"]), "p": r["price"], "u": r["aff"], "i": r["image"],
-        "l": 1 if r.get("live") else 0,
+        "d": r.get("start", ""),
     } for r in prods]
     C = [{
         "k": r["campaign"], "s": r["shop"], "n": int(r["products"] or 0),
         "lo": _num(r["rate_min"]), "hi": _num(r["rate_max"]),
-        "rl": r["rate_label"], "cat": r["categories"],
+        "rl": r["rate_label"], "cat": r["categories"], "d": r.get("latest", ""),
     } for r in camps]
     return P, C
 
@@ -157,6 +157,7 @@ def write_tap_page(out_path="tap.html", root=".", today=None,
 <div class="sortrow">
   <span class="hits" id="hits"></span>
   <select id="sort">
+    <option value="new">新着順</option>
     <option value="rate">料率が高い順</option>
     <option value="price">価格が安い順</option>
     <option value="name">名前順</option>
@@ -193,7 +194,7 @@ def write_tap_page(out_path="tap.html", root=".", today=None,
 TAP_JS = r"""
 (function(){
   var P=DATA.P, C=DATA.C, PAGE=40;
-  var st={v:'p', q:'', cat:'', min:0, sort:'rate', camp:'', shown:PAGE};
+  var st={v:'p', q:'', cat:'', min:0, sort:'new', camp:'', shown:PAGE};
   var $=function(id){return document.getElementById(id)};
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
@@ -210,8 +211,9 @@ TAP_JS = r"""
         if(st.min&&c.hi<st.min) continue;
         if(st.cat&&String(c.cat).indexOf(st.cat)<0) continue;
         out.push(c);}
-      out.sort(st.sort==='name'?function(a,b){return a.k.localeCompare(b.k,'ja')}
-        :function(a,b){return b.hi-a.hi||b.n-a.n});
+      if(st.sort==='name') out.sort(function(a,b){return a.k.localeCompare(b.k,'ja')});
+      else if(st.sort==='new') out.sort(function(a,b){return (b.d||'').localeCompare(a.d||'')||b.hi-a.hi});
+      else out.sort(function(a,b){return b.hi-a.hi||b.n-a.n});
       return out;
     }
     for(var j=0;j<P.length;j++){var p=P[j];
@@ -222,6 +224,7 @@ TAP_JS = r"""
       out.push(p);}
     if(st.sort==='price') out.sort(function(a,b){return priceNum(a.p)-priceNum(b.p)});
     else if(st.sort==='name') out.sort(function(a,b){return a.n.localeCompare(b.n,'ja')});
+    else if(st.sort==='new') out.sort(function(a,b){return (b.d||'').localeCompare(a.d||'')||b.r-a.r});
     else out.sort(function(a,b){return b.r-a.r});
     return out;
   }
@@ -234,7 +237,7 @@ TAP_JS = r"""
       '<div class="pname">'+esc(p.n)+'</div>'+
       '<div class="pmeta"><span class="prate">'+p.r+'%</span>'+
       '<span class="pprice">'+esc(p.p)+'</span>'+
-      (p.l?'<span class="tag">📺 LIVE可</span>':'')+'</div></div></a>';
+      (p.d?'<span class="tag">'+esc(p.d.slice(5).replace("-","/"))+'〜</span>':'')+'</div></div></a>';
   }
   function ccard(c){
     var rate=c.lo===c.hi?c.lo+'%':c.lo+'%〜'+c.hi+'%';
@@ -242,6 +245,7 @@ TAP_JS = r"""
       '<div class="ch"><div class="cname">'+esc(c.k)+'</div><div class="crate">'+rate+'</div></div>'+
       '<div class="cmeta">'+esc(c.s)+'</div>'+
       '<div class="cbar"><span class="tag">商品 '+c.n+'件</span>'+
+      (c.d?'<span class="tag">'+esc(c.d.replace(/-/g,'/'))+' 開始</span>':'')+
       (c.cat?'<span class="tag">'+esc(c.cat).split('／').join('</span><span class="tag">')+'</span>':'')+
       '</div></div>';
   }
@@ -257,7 +261,7 @@ TAP_JS = r"""
     $('af').innerHTML=st.camp?('<div class="active-filter">🏷 '+esc(st.camp)+
       ' の商品を表示中<button id="clr">解除</button></div>'):'';
     var s=$('sort');
-    s.options[1].hidden = st.v==='c';
+    s.options[2].hidden = st.v==='c';
     var sel=document.querySelectorAll('#sort option');
     if(st.v==='c'&&st.sort==='price'){st.sort='rate'; s.value='rate'}
   }

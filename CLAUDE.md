@@ -122,55 +122,66 @@ python weekly_data_v1.py --auto input/ --html
 ## デプロイ
 
 - リポジトリ: `Cloudtkrk/weekly-picks-newtred` (public) → Vercel自動デプロイ
-- 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋) と `/challenge.html`、`/archive/` (過去週一覧)
+- 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋)、`/challenge.html` (新商品)、
+  `/tap.html` (TAP案件)、`/archive/` (過去週一覧)
+- タブ構成: 🔥売れ筋 / 🚀新商品 / 🤝案件 / 📅アーカイブ
 - プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下、
   および Actionsの入力となる `input/*.xlsx` (privateリポジトリのためコミットOK)。
   生成物の `weekly_data_*.xlsx` と `.img_cache/` はコミットしない (.gitignore済)
 
-## 自社案件リスト (own_list.csv / 🎁おすすめ・📺ライブページ)
+## 自社案件リスト (own_list.csv)
 
 - 元データはGoogleスプレッドシート「統合商品リスト」
-  (ID: `1F7745gKhylgqM1AOBcJWwpZ93ibAPMfa7ubPMit1YYY`、3,661件・164ショップ。
-  列: No. / 出典 / 統合カテゴリー / 元カテゴリー / サブカテゴリー / ブランド・店舗名 / 商品名 /
-  価格 / 最低価格 / 最高価格 / 成果報酬率(%) / アフィリエイトURL / 商品URL / 商品ID / 重複)。
+  (ID: `1F7745gKhylgqM1AOBcJWwpZ93ibAPMfa7ubPMit1YYY`、3,661件・164ショップ)。
   リポジトリの `own_list.csv` はそのスナップショット (Actionsが直接Googleにアクセスできないため)
 - **同期方法**: ユーザーが「リスト同期して」等と言ったら、Google Driveコネクタの
   `download_file_content` (exportMimeType=text/csv) でシートを取得し、
   `own_list.csv` (列: カテゴリ/ショップ/商品名/価格/報酬率/アフィリエイトリンク/商品ID/画像/出典/ライブ/表示)
-  を再生成してコミット。`read_file_content` は大きいシートで途中までしか返らないので使わないこと。
-  シートの行が増えていればそのまま商品追加になる (画像は下記の規則で自動設定)
-- **シートの「表示」列**: 値がある商品は各ショップの先頭に並び ⭐イチオシ ピルが付く
-- **シートの「LIVE」列**: 値 (⚪︎ / 一部可 / 一部可能 など) がある商品は 📺ライブタブに載る。
-  「一部」を含む値はピルが「📺 LIVEタイムセール一部可能」になる
-- **商品画像**: `own_list.csv` の画像列。`product-images/<商品ID>.jpeg` がリポジトリにあれば
-  それを (Vercelが静的配信)、無ければ `https://newtrend.entercommerce.co.jp/product-images/<商品ID>.jpeg`。
-  Offbeat TAPリスト(xlsx)の埋め込み画像3,300枚は抽出済みで同梱。新規商品の画像は
-  同じ命名で `product-images/` に置くか、自社ホストにアップロードすれば自動で表示される
-- 生成時の動作 (`weekly_data_v1.py` / `report_html.py`):
-  1. 売れ筋/新商品の掲載商品と**商品IDで突合** (同名・別IDの再出品は正規化商品名でフォールバック)。
-     一致した商品はカードの遷移先を**アフィリエイトリンクに差し替え** + 🎁バッジ付与
-  2. `recommend.html` (🎁おすすめタブ): **ショップごとに代表 `OWN_TOP_N`(=5) 件**を掲載し、
-     6件以上あるショップには「このショップの全N件を見る →」リンクを出す
-  3. `shops/<ハッシュ>.html`: ショップごとの全商品ページ。ファイル名はショップ名のmd5先頭10桁で、
-     週次再生成でもURLが変わらない (配布済みリンクが切れない)
-  4. `live.html` (📺ライブタブ): CSVの**「ライブ」列に値がある商品**だけを集めたページ。
-     列が空/無い週はページもタブも生成されない。**カードの遷移先は商品ページではなく
-     `timesale/<商品ID>.html`** (タイムセール設定依頼ページ) で、1クッション挟む
-  4b. `timesale/<商品ID>.html`: LIVE商品ごとの設定依頼ページ。①ショーケース追加ボタン
-     (アフィリエイトリンク) ②3日間単位×最大3枠のカレンダー (本日から2日間は選択不可)
-     ③TikTokアカウント名 ④備考(任意)。冒頭・フッター・完了画面に
-     **「LIVEの実施には審査があります」** の注記を必ず入れる
-  4c. 送信内容は `CONFIG["timesale_webhook_url"]` (Google Apps Scriptのウェブアプリ /exec URL) へ
-     POSTしてスプレッドシートに自動格納する。GASのコードと設置手順は `gas/timesale_webhook.gs`、
-     格納先シートは「タイムセール設定依頼_受付」
-     (ID: `1LpMX46K7PMveKiT92UqD6nor8NFxqSSNB0UPDOxAB4g`)。
-     URLが空の場合は送信せず完了画面だけ出す (CORS回避のため text/plain + no-cors で送るので
-     フロントからは成否を検知できない。疎通確認はウェブアプリURLをブラウザで開いて
-     `{"ok":true,"ping":true}` が返るかで行う)
-  5. アーカイブには `shops/` を複製せず、`archive/<日付>/recommend.html` から本サイトの
-     `/shops/` を参照する (毎週164ページ複製するとリポジトリが肥大化するため)
-  6. `own_list.csv` が無い場合はおすすめ/ライブタブ非表示・差し替えなしの従来動作
-- タブ構成: 🔥売れ筋 / 🚀新商品 / 🎁おすすめ / 📺ライブ(該当時のみ) / 📅アーカイブ
+  を再生成してコミット。`read_file_content` は大きいシートで途中までしか返らないので使わないこと
+- **用途 (2026-08以降)**: 🎁自社サンプル可バッジの付与と、売れ筋/新商品カードの遷移先を
+  アフィリエイトリンクへ差し替えるためだけに使う。商品IDで突合し、同名・別IDの再出品は
+  正規化商品名でフォールバック
+- **廃止済み**: 🎁おすすめページ (`recommend.html`)、ショップ別ページ (`shops/`)、
+  📺ライブページ (`live.html`)、タイムセール依頼ページ (`timesale/`) は
+  2026-08に削除した (🤝案件ページに集約)。`report_html.write_site` / `archive_site` からも
+  生成呼び出しを外してある。復活させる場合は `_own_page` / `_shop_pages` / `_live_page` /
+  `_timesale_pages` が残っているので呼び出しを戻せばよい
+- **商品画像**: `product-images/<商品ID>.jpeg` がリポジトリにあればそれを (Vercelが静的配信)、
+  無ければ `https://newtrend.entercommerce.co.jp/product-images/<商品ID>.jpeg`
+
+## 🤝 TAP案件ページ (tap.html)
+
+TikTok Shop パートナーセンターの**パートナーコラボ (TAP案件)** を検索できるページ。
+弊社とセラーが直接結んだ案件で、料率は所属クリエイター向けの確定値。
+
+- **元データ**: Googleスプレッドシート「TAP一覧」
+  (ID: `1ua3NwL1IbQI6MD3kpCShF80t_-a9enigc8S9L3y564o`)。1案件=1シート、
+  料率が分かれる案件は「〇〇様（12%）」のように複数シートに分割されている。
+  シート「案件一覧」に案件単位のサマリーがある
+- **リポジトリ側のスナップショット**:
+  - `tap_list.csv` — 商品単位 (632件)。列: campaign / campaign_id / shop / category /
+    cat_src / name / price / rate / aff / product_id / image / start / end / live
+  - `tap_campaigns.csv` — 案件単位 (59件)。列: campaign / campaign_id / shop / products /
+    rate_min / rate_max / rate_label / rate_detail / categories / started / latest
+- **生成**: `python build_tap.py` → `tap.html` を出力し、既存ページのタブに「🤝 案件」を差し込む
+- **UI** (`tap_site.py`): 「🛍 商品で探す」/「🏷 案件で探す」の2ビュー。検索窓・カテゴリーチップ・
+  料率チップ・並び替え (**既定は新着順** / 料率が高い順 / 価格が安い順 / 名前順)。
+  案件カードをタップするとその案件の商品だけに絞り込む。データはページ内埋め込みJSONで
+  サーバー不要、40件ずつ「もっと見る」で描画
+- **新着の判定**: TikTokの「Product effective start time」を `start` として持つ。
+  案件の `latest` = その案件で最も新しい商品の開始日。新着順はこれで並ぶ。
+  カードには「08/24〜」「2026/08/24 開始」を表示する
+- **カテゴリー判定** (`cats.py`): 確度の高い順に
+  ①own_list商品ID一致 → ②own_list商品名一致 → ③`SHOP_CAT` の手動指定 →
+  ④own_list内でそのショップの70%以上を占めるカテゴリー → ⑤`RULES` のキーワード → ⑥その他。
+  カテゴリーは 美容・コスメ / 食品 / ファッション・アパレル / 生活・雑貨 / キッズ・ベビー /
+  家電 / スポーツ / ペット の8つ。
+  **キーワードは部分一致で誤爆しやすい** (「パンツ」が「パン」に、「クリップ」が「リップ」に
+  ヒットする類)。語を足すときは必ず長めの語で書き、`cat_src` 列で判定根拠を確認すること
+- **同一商品が複数案件に載る場合**は料率が高い方を採用する (698行 → 632商品)
+- **更新手順**: TAP一覧に新しいシートが増えたら、各シートのxlsxから
+  `mkdata.py` 相当の処理で `tap_list.csv` / `tap_campaigns.csv` を作り直し、
+  埋め込み画像を `product-images/<商品ID>.jpeg` として書き出してから `build_tap.py` を実行する
 
 ## 閲覧ゲート (公式LINE登録者限定)
 

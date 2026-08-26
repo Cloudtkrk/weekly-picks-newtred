@@ -378,10 +378,6 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
                 f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
     if TAP_TAB_N:
         tabs += f'<a class="tab" href="./tap.html">🤝 案件（{TAP_TAB_N}）</a>'
-    if n_own:
-        tabs += f'<a class="tab" href="./recommend.html">🎁 おすすめ（{n_own}）</a>'
-    if n_live:
-        tabs += f'<a class="tab" href="./live.html">📺 ライブ（{n_live}）</a>'
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     guide = ""
     if kind == "hot":
@@ -479,9 +475,6 @@ def _own_tabs(active: str, n_hot: int, n_chal: int, n_own: int, n_live: int,
          f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>')
     if TAP_TAB_N:
         t += f'<a class="{cls("tap","tap")}" href="{prefix}tap.html">🤝 案件（{TAP_TAB_N}）</a>'
-    t += f'<a class="{cls("own","own")}" href="{prefix}recommend.html">🎁 おすすめ（{n_own}）</a>' 
-    if n_live:
-        t += f'<a class="{cls("live","live")}" href="{prefix}live.html">📺 ライブ（{n_live}）</a>'
     t += f'<a class="tab arch" href="{prefix}archive/">📅 アーカイブ</a>'
     return t
 
@@ -830,8 +823,6 @@ def _set_teaser(n_hot: int, n_chal: int, n_own: int, n_live: int):
     parts = [f"🔥 売れ筋 {n_hot}件", f"🚀 新商品 {n_chal}件"]
     if n_own:
         parts.append(f"🎁 自社サンプル可 {n_own:,}件")
-    if n_live:
-        parts.append(f"📺 LIVEタイムセール {n_live}件")
     GATE_TEASER = "　".join(parts) + " を掲載中"
 
 
@@ -850,14 +841,8 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
           embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
           embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
-    if own_rows:
-        _own_page(own_rows, os.path.join(out_dir, "recommend.html"),
-                  today, len(hot), len(new_tbl), n_live)
-        _shop_pages(own_rows, out_dir, today, len(hot), len(new_tbl), n_live)
-        if live_rows:
-            _live_page(live_rows, os.path.join(out_dir, "live.html"),
-                       today, len(hot), len(new_tbl), n_own)
-            _timesale_pages(live_rows, out_dir, today)
+    # 🎁おすすめ / 📺ライブ ページは廃止 (2026-08、🤝案件ページに集約)。
+    # own_list.csv 自体は 🎁自社サンプル可バッジ・アフィリンク差し替えに引き続き使う。
 
 
 # ============================================================
@@ -890,16 +875,7 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
           None, today, len(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
           None, today, len(hot), len(new_tbl), n_own, n_live)
-    pages = ["index.html", "challenge.html"]
-    if own_rows:
-        # ショップページ本体はアーカイブに複製せず本サイト側 (/shops/) を参照する
-        _own_page(own_rows, os.path.join(arch_dir, "recommend.html"),
-                  today, len(hot), len(new_tbl), n_live, shop_prefix="/")
-        pages.append("recommend.html")
-        if live_rows:
-            _live_page(live_rows, os.path.join(arch_dir, "live.html"),
-                       today, len(hot), len(new_tbl), n_own, shop_prefix="/")
-            pages.append("live.html")
+    pages = ["index.html", "challenge.html"]   # 🎁おすすめ / 📺ライブ は廃止
     for fn in pages:
         p = os.path.join(arch_dir, fn)
         with open(p, encoding="utf-8") as f:
