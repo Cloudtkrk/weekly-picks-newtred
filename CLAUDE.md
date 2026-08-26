@@ -123,8 +123,8 @@ python weekly_data_v1.py --auto input/ --html
 
 - リポジトリ: `Cloudtkrk/weekly-picks-newtred` (public) → Vercel自動デプロイ
 - 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋)、`/challenge.html` (新商品)、
-  `/tap.html` (TAP案件)、`/archive/` (過去週一覧)
-- タブ構成: 🔥売れ筋 / 🚀新商品 / 🤝案件 / 📅アーカイブ
+  `/tap.html` (NewTrend商品一覧)、`/archive/` (過去週一覧)
+- タブ構成: 🔥売れ筋 / 🚀新商品 / 🤝NewTrend商品一覧 / 📅アーカイブ
 - プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下、
   および Actionsの入力となる `input/*.xlsx` (privateリポジトリのためコミットOK)。
   生成物の `weekly_data_*.xlsx` と `.img_cache/` はコミットしない (.gitignore済)
@@ -149,9 +149,10 @@ python weekly_data_v1.py --auto input/ --html
 - **商品画像**: `product-images/<商品ID>.jpeg` がリポジトリにあればそれを (Vercelが静的配信)、
   無ければ `https://newtrend.entercommerce.co.jp/product-images/<商品ID>.jpeg`
 
-## 🤝 TAP案件ページ (tap.html)
+## 🤝 NewTrend商品一覧 (tap.html)
 
 TikTok Shop パートナーセンターの**パートナーコラボ (TAP案件)** を検索できるページ。
+タブ名・ページタイトルは「NewTrend商品一覧」（クリエイター向けの呼び名。内部ではTAP案件と呼ぶ）。
 弊社とセラーが直接結んだ案件で、料率は所属クリエイター向けの確定値。
 
 - **元データ**: Googleスプレッドシート「TAP一覧」
@@ -162,12 +163,17 @@ TikTok Shop パートナーセンターの**パートナーコラボ (TAP案件)
   - `tap_list.csv` — 商品単位 (632件)。列: campaign / campaign_id / shop / category /
     cat_src / name / price / rate / aff / product_id / image / start / end / live
   - `tap_campaigns.csv` — 案件単位 (59件)。列: campaign / campaign_id / shop / products /
-    rate_min / rate_max / rate_label / rate_detail / categories / started / latest
-- **生成**: `python build_tap.py` → `tap.html` を出力し、既存ページのタブに「🤝 案件」を差し込む
-- **UI** (`tap_site.py`): 「🛍 商品で探す」/「🏷 案件で探す」の2ビュー。検索窓・カテゴリーチップ・
+    rate_min / rate_max / rate_label / rate_detail / categories / started / latest /
+    shop_count / rep_image / rep_name
+- **生成**: `python build_tap.py` → `tap.html` を出力し、既存ページのタブに「🤝 NewTrend商品一覧」を差し込む
+- **UI** (`tap_site.py`): 「🛍 商品で探す」/「🏪 ショップで探す」の2ビュー。検索窓・カテゴリーチップ・
   料率チップ・並び替え (**既定は新着順** / 料率が高い順 / 価格が安い順 / 名前順)。
-  案件カードをタップするとその案件の商品だけに絞り込む。データはページ内埋め込みJSONで
-  サーバー不要、40件ずつ「もっと見る」で描画
+  ショップカードをタップするとそのショップ(案件)の商品だけに絞り込む。データはページ内埋め込み
+  JSONでサーバー不要、40件ずつ「もっと見る」で描画
+- **ショップカードの見せ方**: 見出しは**キャンペーン名ではなくショップ名**。
+  代表商品1点の画像 (`rep_image` = 画像がある商品のうち料率最高) をサムネイルに出す。
+  複数ショップにまたがる案件 (`shop_count`>1、LIVE用特別料率キャンペーン等) だけは
+  見出しにキャンペーン名を使い、サブに「複数ショップ（N店舗）」を出す
 - **新着の判定**: TikTokの「Product effective start time」を `start` として持つ。
   案件の `latest` = その案件で最も新しい商品の開始日。新着順はこれで並ぶ。
   カードには「08/24〜」「2026/08/24 開始」を表示する

@@ -377,7 +377,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
                 f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
     if TAP_TAB_N:
-        tabs += f'<a class="tab" href="./tap.html">🤝 案件（{TAP_TAB_N}）</a>'
+        tabs += f'<a class="tab" href="./tap.html">🤝 NewTrend商品一覧（{TAP_TAB_N}）</a>'
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     guide = ""
     if kind == "hot":
@@ -414,7 +414,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
     _write(out_path, doc)
 
 
-TAP_TAB_N = 0          # 🤝 案件タブの件数 (0ならタブ非表示。tap_site が設定)
+TAP_TAB_N = 0          # 🤝 NewTrend商品一覧タブの件数 (0ならタブ非表示。tap_site が設定)
 OWN_TOP_N = 5          # おすすめページでショップごとに表示する代表件数
 
 
@@ -474,7 +474,7 @@ def _own_tabs(active: str, n_hot: int, n_chal: int, n_own: int, n_live: int,
     t = (f'<a class="{cls("hot","hot")}" href="{prefix or "./"}">🔥 売れ筋（{n_hot}）</a>'
          f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>')
     if TAP_TAB_N:
-        t += f'<a class="{cls("tap","tap")}" href="{prefix}tap.html">🤝 案件（{TAP_TAB_N}）</a>'
+        t += f'<a class="{cls("tap","tap")}" href="{prefix}tap.html">🤝 NewTrend商品一覧（{TAP_TAB_N}）</a>'
     t += f'<a class="tab arch" href="{prefix}archive/">📅 アーカイブ</a>'
     return t
 

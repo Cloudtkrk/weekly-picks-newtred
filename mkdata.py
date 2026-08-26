@@ -66,18 +66,28 @@ with open('/home/claude/wp/tap_list.csv','w',newline='',encoding='utf-8') as f:
 
 # campaign csv
 crows=[]
-agg=collections.defaultdict(lambda: dict(n=0, cats=collections.Counter(), rates=[], starts=[]))
+agg=collections.defaultdict(lambda: dict(n=0, cats=collections.Counter(), rates=[], starts=[],
+                                         shops=collections.Counter(), reps=[]))
 for x in out:
     a=agg[x['campaign_id']]; a['n']+=1; a['cats'][x['category']]+=1; a['rates'].append(x['rate'])
     if x['start']: a['starts'].append(x['start'])
+    a['shops'][x['shop']]+=1
+    if x['image']: a['reps'].append(x)
 for cid,c in camps.items():
-    a=agg.get(cid, dict(n=0,cats=collections.Counter(),rates=[],starts=[]))
+    a=agg.get(cid, dict(n=0,cats=collections.Counter(),rates=[],starts=[],
+                        shops=collections.Counter(),reps=[]))
+    # 代表商品 = 画像があるもののうち料率が最も高い商品
+    rep=max(a['reps'], key=lambda x:(x['rate'], x['start'])) if a['reps'] else None
+    shops=a['shops']
     crows.append(dict(campaign=c['name'], campaign_id=cid, shop=c['shop'], products=c['n'],
         rate_min=min(a['rates']) if a['rates'] else 0, rate_max=max(a['rates']) if a['rates'] else 0,
         rate_label=c['rate'], rate_detail=c['detail'],
         categories='／'.join(k for k,_ in a['cats'].most_common(3)),
         started=min(a['starts']) if a['starts'] else '',
-        latest=max(a['starts']) if a['starts'] else ''))
+        latest=max(a['starts']) if a['starts'] else '',
+        shop_count=len(shops),
+        rep_image=rep['image'] if rep else '',
+        rep_name=rep['name'] if rep else ''))
 crows.sort(key=lambda x:(x['latest'] or '', x['products']), reverse=True)
 with open('/home/claude/wp/tap_campaigns.csv','w',newline='',encoding='utf-8') as f:
     w=csv.DictWriter(f, fieldnames=list(crows[0].keys())); w.writeheader(); w.writerows(crows)

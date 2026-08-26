@@ -1,0 +1,741 @@
+[
+ {
+  "name": "王子製薬",
+  "shop": "OUJISHOP 王子製薬",
+  "cid": "7671148890171574024",
+  "n": 2,
+  "rate": "9%",
+  "detail": "9%×2件",
+  "sheets": [
+   "王子製薬"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "SaiKuCo様 x EnterCommerce株式会社",
+  "shop": "複数ショップ（2店舗）",
+  "cid": "7675983715751872274",
+  "n": 11,
+  "rate": "17%〜22%",
+  "detail": "22%×7件｜17%×4件",
+  "sheets": [
+   "SaiKuCo様 x EnterCommerce株式会社（17%）",
+   "SaiKuCo様 x EnterCommerce株式会社（22%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "LeoClie様 x EnterCommerce株式会社",
+  "shop": "【公式】LeoClieオンラインショップ",
+  "cid": "7675946517380515592",
+  "n": 3,
+  "rate": "1%",
+  "detail": "1%×3件",
+  "sheets": [
+   "LeoClie様 x EnterCommerce株式会社"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "26/08以降 Beelicious様 × EnterCommerce",
+  "shop": "BeeliciousOfficial",
+  "cid": "7675207249816684306",
+  "n": 4,
+  "rate": "15%",
+  "detail": "15%×4件",
+  "sheets": [
+   "26/08以降 Beelicious様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "XBJ様 x EnterCommerce株式会社",
+  "shop": "XBJ",
+  "cid": "7677442233972295431",
+  "n": 3,
+  "rate": "13%",
+  "detail": "13%×3件",
+  "sheets": [
+   "XBJ様 x EnterCommerce株式会社"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "26/07月以降atRise様 x EnterCommerce",
+  "shop": "atRise（アットライズ）",
+  "cid": "7663391742758536968",
+  "n": 14,
+  "rate": "12%",
+  "detail": "12%×14件",
+  "sheets": [
+   "26/07月以降atRise様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "松屋様 x EnterCommerce",
+  "shop": "【公式】松屋オンラインショップ",
+  "cid": "7662600653923993362",
+  "n": 3,
+  "rate": "5%",
+  "detail": "5%×3件",
+  "sheets": [
+   "松屋様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "FALAMI様 x EnterCommerce",
+  "shop": "Falami",
+  "cid": "7660287214173292295",
+  "n": 8,
+  "rate": "12%",
+  "detail": "12%×8件",
+  "sheets": [
+   "FALAMI様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "NOVARCA様 × EnterCommerce",
+  "shop": "複数ショップ（2店舗）",
+  "cid": "7662202298835994375",
+  "n": 3,
+  "rate": "12%〜17%",
+  "detail": "17%×2件｜12%×1件",
+  "sheets": [
+   "NOVARCA様 × EnterCommerce（17%）",
+   "NOVARCA様 × EnterCommerce（12%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "バッカス様 x EnterCommerce",
+  "shop": "株式会社バッカス",
+  "cid": "7661931626558244626",
+  "n": 4,
+  "rate": "35%",
+  "detail": "35%×4件",
+  "sheets": [
+   "バッカス様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "ダニ捕りロボ様 x EnterCommerce",
+  "shop": "ダニ捕りロボ",
+  "cid": "7659253415869187847",
+  "n": 1,
+  "rate": "15%",
+  "detail": "15%×1件",
+  "sheets": [
+   "ダニ捕りロボ様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "下町バームクーヘン様 x EnterCommerce",
+  "shop": "下町バームクーヘン",
+  "cid": "7657843788182112018",
+  "n": 6,
+  "rate": "7%",
+  "detail": "7%×6件",
+  "sheets": [
+   "下町バームクーヘン様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "若翔様 x EnterCommerce",
+  "shop": "若翔",
+  "cid": "7655199501419136786",
+  "n": 2,
+  "rate": "9%",
+  "detail": "9%×2件",
+  "sheets": [
+   "若翔様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "MerachJP様 x EnterCommerce",
+  "shop": "Merach.Japan",
+  "cid": "7654860512728090375",
+  "n": 13,
+  "rate": "10%",
+  "detail": "10%×13件",
+  "sheets": [
+   "MerachJP様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "NETSEA Farm様 x EnterCommerce",
+  "shop": "NETSEA Farm｜産直市場",
+  "cid": "7654816690622711559",
+  "n": 6,
+  "rate": "9%",
+  "detail": "9%×6件",
+  "sheets": [
+   "NETSEA Farm様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "NOID様 x EnterCommerce",
+  "shop": "NOID",
+  "cid": "7653006225491805970",
+  "n": 2,
+  "rate": "8%",
+  "detail": "8%×2件",
+  "sheets": [
+   "NOID様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "水産・港海鮮様 x EnterCommerce",
+  "shop": "水産・港海鮮",
+  "cid": "7652957966413891335",
+  "n": 5,
+  "rate": "12%〜13%",
+  "detail": "13%×1件｜12%×4件",
+  "sheets": [
+   "水産・港海鮮様 x EnterCommerce（12%）",
+   "水産・港海鮮様 x EnterCommerce（13%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "宮城・老舗さとう精肉店様 x EnterCommerce",
+  "shop": "宮城・老舗さとう精肉店",
+  "cid": "7652621321972926226",
+  "n": 4,
+  "rate": "12%",
+  "detail": "12%×4件",
+  "sheets": [
+   "宮城・老舗さとう精肉店様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "マクロジ様 x EnterCommerce",
+  "shop": "MOGO",
+  "cid": "7649652564456785672",
+  "n": 1,
+  "rate": "20%",
+  "detail": "20%×1件",
+  "sheets": [
+   "マクロジ様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "リンガーハット様 x EnterCommerce",
+  "shop": "リンガーハット公式ショップ",
+  "cid": "7649379078894749448",
+  "n": 5,
+  "rate": "5%",
+  "detail": "5%×5件",
+  "sheets": [
+   "リンガーハット様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "大分慶珉様 x EnterCommerce",
+  "shop": "大分慶珉",
+  "cid": "7647404934125471506",
+  "n": 3,
+  "rate": "10%",
+  "detail": "10%×3件",
+  "sheets": [
+   "大分慶珉様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "PETHROOM様",
+  "shop": "PETHROOM Japan",
+  "cid": "7675982549403256583",
+  "n": 17,
+  "rate": "15%",
+  "detail": "15%×17件",
+  "sheets": [
+   "PETHROOM様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "26/7月以降 Nature In様",
+  "shop": "Nature In【公式】",
+  "cid": "7659194072054630152",
+  "n": 7,
+  "rate": "10%〜22%",
+  "detail": "22%×1件｜20%×5件｜10%×1件",
+  "sheets": [
+   "26/7月以降 Nature In様（22%）",
+   "26/7月以降 Nature In様（20%）",
+   "26/7月以降 Nature In様（10%）"
+  ],
+  "nsheets": 3
+ },
+ {
+  "name": "PHOEBE BEAUTY UP様",
+  "shop": "PHOEBE BEAUTY UP",
+  "cid": "7657644188943533842",
+  "n": 7,
+  "rate": "13%〜35%",
+  "detail": "35%×1件｜25%×1件｜22%×1件｜18%×3件｜13%×1件",
+  "sheets": [
+   "PHOEBE BEAUTY UP様（13%）",
+   "PHOEBE BEAUTY UP様（18%）",
+   "PHOEBE BEAUTY UP様（22%）",
+   "PHOEBE BEAUTY UP様（25%）",
+   "PHOEBE BEAUTY UP様（35%）"
+  ],
+  "nsheets": 5
+ },
+ {
+  "name": "ヤスカ様",
+  "shop": "ヤスカ",
+  "cid": "7654446343429310226",
+  "n": 2,
+  "rate": "12%",
+  "detail": "12%×2件",
+  "sheets": [
+   "ヤスカ様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "AXXIZIA様 × EnterCommerce",
+  "shop": "アクシージア 公式ショップ",
+  "cid": "7646728191182112520",
+  "n": 6,
+  "rate": "14%",
+  "detail": "14%×6件",
+  "sheets": [
+   "AXXIZIA様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "チホサポ × EnterCommerce",
+  "shop": "複数ショップ（2店舗）",
+  "cid": "7646244736915195666",
+  "n": 7,
+  "rate": "15%〜25%",
+  "detail": "25%×1件｜15%×6件",
+  "sheets": [
+   "チホサポ × EnterCommerce（25%）",
+   "チホサポ × EnterCommerce（15%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "ごちチョク様",
+  "shop": "ごちチョク",
+  "cid": "7643765244359575304",
+  "n": 1,
+  "rate": "14%",
+  "detail": "14%×1件",
+  "sheets": [
+   "ごちチョク様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "Vision様 × EnterCommerce",
+  "shop": "ビジョンショップ（ＶＩＳＩＯＮ）",
+  "cid": "7643695731309741832",
+  "n": 5,
+  "rate": "8%〜10%",
+  "detail": "10%×4件｜8%×1件",
+  "sheets": [
+   "Vision様 × EnterCommerce（10%）",
+   "Vision様 × EnterCommerce（8%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "Wavytalk様 × EnterCommerce",
+  "shop": "Wavytalk JP",
+  "cid": "7642245656379180807",
+  "n": 3,
+  "rate": "9%",
+  "detail": "9%×3件",
+  "sheets": [
+   "Wavytalk様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "WHIP SPICE様 × EnterCommerce",
+  "shop": "WHIP SPICE",
+  "cid": "7641603382482929416",
+  "n": 4,
+  "rate": "11%〜12%",
+  "detail": "12%×3件｜11%×1件",
+  "sheets": [
+   "WHIP SPICE様 × EnterCommerce（12%）",
+   "WHIP SPICE様 × EnterCommerce（11%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "ETOA様 x EnterCommerce",
+  "shop": "ETOA SHOP",
+  "cid": "7641470290214799112",
+  "n": 2,
+  "rate": "10%",
+  "detail": "10%×2件",
+  "sheets": [
+   "ETOA様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "一風堂様 × EnterCommerce",
+  "shop": "博多一風堂【公式】",
+  "cid": "7641119281443997448",
+  "n": 23,
+  "rate": "7%",
+  "detail": "7%×23件",
+  "sheets": [
+   "一風堂様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "Teddyshop様 × EnterCommerce",
+  "shop": "TeddyShop-",
+  "cid": "7639649635410740999",
+  "n": 23,
+  "rate": "12%",
+  "detail": "12%×23件",
+  "sheets": [
+   "Teddyshop様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "Eddy's Homemade kitchen様",
+  "shop": "Eddy's Homemade Kitchen",
+  "cid": "7639627475554797319",
+  "n": 1,
+  "rate": "11%",
+  "detail": "11%×1件",
+  "sheets": [
+   "Eddy's Homemade kitchen様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "changefit",
+  "shop": "changefit 公式",
+  "cid": "7639354762450634503",
+  "n": 2,
+  "rate": "10%",
+  "detail": "10%×2件",
+  "sheets": [
+   "changefit"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "LASIEM × EnterCommerce",
+  "shop": "LASIEM｜ラシエム",
+  "cid": "7639298701227935506",
+  "n": 90,
+  "rate": "12%",
+  "detail": "12%×90件",
+  "sheets": [
+   "LASIEM × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "（10%用）フルッタフルッタ様",
+  "shop": "フルッタフルッタ",
+  "cid": "7639236329373992712",
+  "n": 3,
+  "rate": "9%",
+  "detail": "9%×3件",
+  "sheets": [
+   "（10%用）フルッタフルッタ様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "NINGJP様 × EnterCommerce",
+  "shop": "NING JP",
+  "cid": "7638416173198493448",
+  "n": 5,
+  "rate": "23%",
+  "detail": "23%×5件",
+  "sheets": [
+   "NINGJP様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "UGREEN様 × EnterCommerce",
+  "shop": "UGREEN Japan 公式",
+  "cid": "7637461299044321042",
+  "n": 13,
+  "rate": "11%〜12%",
+  "detail": "12%×12件｜11%×1件",
+  "sheets": [
+   "UGREEN様 × EnterCommerce（12%）",
+   "UGREEN様 × EnterCommerce（11%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "かわうそ市場様 × EnterCommerce",
+  "shop": "高知かわうそ市場",
+  "cid": "7636339543226861332",
+  "n": 1,
+  "rate": "7%",
+  "detail": "7%×1件",
+  "sheets": [
+   "かわうそ市場様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "NEO Lifestyle様 × EnterCommerce",
+  "shop": "NEO lifestyle 暮らしを便利に",
+  "cid": "7634476363039262484",
+  "n": 5,
+  "rate": "15%",
+  "detail": "15%×5件",
+  "sheets": [
+   "NEO Lifestyle様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "三京商会",
+  "shop": "三京商会｜Leather Gallery",
+  "cid": "7629985068739593991",
+  "n": 13,
+  "rate": "11%〜12%",
+  "detail": "12%×10件｜11%×3件",
+  "sheets": [
+   "三京商会（12%）",
+   "三京商会（11%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "CICIBELLA × EnterCommerce",
+  "shop": "【公式】CICIBELLA",
+  "cid": "7629325921251641109",
+  "n": 5,
+  "rate": "8%",
+  "detail": "8%×5件",
+  "sheets": [
+   "CICIBELLA × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "SOWAN x Entercommerce",
+  "shop": "SOWAN（ソワン）",
+  "cid": "7626657769202960146",
+  "n": 116,
+  "rate": "15%",
+  "detail": "15%×116件",
+  "sheets": [
+   "SOWAN x Entercommerce（1）",
+   "SOWAN x Entercommerce（2）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "宅麺ドットコム様",
+  "shop": "宅麺ドットコム",
+  "cid": "7626638611432310535",
+  "n": 19,
+  "rate": "12%",
+  "detail": "12%×19件",
+  "sheets": [
+   "宅麺ドットコム様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "MBX様(im meme) x Entercommerce",
+  "shop": "I'm meme アイムミミ",
+  "cid": "7625493089433011976",
+  "n": 2,
+  "rate": "25%",
+  "detail": "25%×2件",
+  "sheets": [
+   "MBX様(im meme) x Entercommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "MBX様(nooni) x Entercommerce",
+  "shop": "nooni ヌニ",
+  "cid": "7625468962940487442",
+  "n": 1,
+  "rate": "25%",
+  "detail": "25%×1件",
+  "sheets": [
+   "MBX様(nooni) x Entercommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "POTENIA SHOP様 × EnterCommerce",
+  "shop": "【公式】POTENIA SHOP",
+  "cid": "7623764209734027015",
+  "n": 1,
+  "rate": "15%",
+  "detail": "15%×1件",
+  "sheets": [
+   "POTENIA SHOP様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "ADVANCED CLINICALS様",
+  "shop": "【日本公式】ADVANCED CLINICALS",
+  "cid": "7623697700903077650",
+  "n": 8,
+  "rate": "12%",
+  "detail": "12%×8件",
+  "sheets": [
+   "ADVANCED CLINICALS様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "コメライフ様 × EnterCommerce",
+  "shop": "コメライフ",
+  "cid": "7618100002677737223",
+  "n": 4,
+  "rate": "2%",
+  "detail": "2%×4件",
+  "sheets": [
+   "コメライフ様 × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "TheOniku × EnterCommerce",
+  "shop": "TheOniku",
+  "cid": "7617841097436382984",
+  "n": 3,
+  "rate": "7%",
+  "detail": "7%×3件",
+  "sheets": [
+   "TheOniku × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "LANEIGE × EnterCommerce",
+  "shop": "LANEIGE Japan",
+  "cid": "7616580403298502408",
+  "n": 1,
+  "rate": "20%",
+  "detail": "20%×1件",
+  "sheets": [
+   "LANEIGE × EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "toriko love chocolate",
+  "shop": "toriko love chocolate",
+  "cid": "7616089228853888786",
+  "n": 2,
+  "rate": "15%〜20%",
+  "detail": "20%×1件｜15%×1件",
+  "sheets": [
+   "toriko love chocolate（20%）",
+   "toriko love chocolate（15%）"
+  ],
+  "nsheets": 2
+ },
+ {
+  "name": "タングルティーザー様",
+  "shop": "タングルティーザージャパン",
+  "cid": "7615906035946718994",
+  "n": 1,
+  "rate": "13%",
+  "detail": "13%×1件",
+  "sheets": [
+   "タングルティーザー様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "レキット様 x EnterCommerce",
+  "shop": "【公式】レキットベンキーザー・ジャパン株式会社",
+  "cid": "7615455043024324359",
+  "n": 17,
+  "rate": "6%",
+  "detail": "6%×17件",
+  "sheets": [
+   "レキット様 x EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "TIRTIR様×EnterCommerce",
+  "shop": "tirtir.jp",
+  "cid": "7612865217580959495",
+  "n": 19,
+  "rate": "30%",
+  "detail": "30%×19件",
+  "sheets": [
+   "TIRTIR様×EnterCommerce"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "Colorkey様",
+  "shop": "colorkey_jp",
+  "cid": "7610363706031965960",
+  "n": 7,
+  "rate": "25%",
+  "detail": "25%×7件",
+  "sheets": [
+   "Colorkey様"
+  ],
+  "nsheets": 1
+ },
+ {
+  "name": "LIVE用特別料率キャンペーン",
+  "shop": "複数ショップ（12店舗）",
+  "cid": "7604793940868908807",
+  "n": 151,
+  "rate": "3%〜27%",
+  "detail": "27%×5件｜22%×4件｜17%×35件｜15%×52件｜12%×26件｜11%×10件｜10%×2件｜7%×13件｜6%×2件｜3%×2件",
+  "sheets": [
+   "LIVE特別料率（18%群→15%）",
+   "LIVE特別料率（15%群→12%）",
+   "LIVE特別料率（15/3群→10%）",
+   "LIVE特別料率（10%群→7%）",
+   "LIVE特別料率（10/3群→6%）",
+   "LIVE特別料率（8%群→7%）",
+   "LIVE特別料率（30%群→27%）",
+   "LIVE特別料率（25%群→22%）",
+   "LIVE特別料率（20%群→17%）",
+   "LIVE特別料率（14%群→11%）",
+   "LIVE特別料率（6%群→3%）",
+   "LIVE特別料率2（30%群→27%）",
+   "LIVE特別料率2（15%群→12%）",
+   "LIVE特別料率2（8%群→7%）",
+   "LIVE特別料率2（18%群→15%）",
+   "LIVE特別料率2（20%群→17%）"
+  ],
+  "nsheets": 16
+ }
+]

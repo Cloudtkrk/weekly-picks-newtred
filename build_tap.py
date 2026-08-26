@@ -25,8 +25,8 @@ def main():
     print(f"tap.html 生成: {n}商品 / {len(camps)}案件")
 
     # 既存ページのタブ行に 🤝案件 を差し込む (再生成せずHTMLを直接パッチ)
-    tab = (f'<a class="tab" href="./tap.html">🤝 案件（{n}）</a>')
-    tab_sub = (f'<a class="tab" href="../tap.html">🤝 案件（{n}）</a>')
+    tab = (f'<a class="tab" href="./tap.html">🤝 NewTrend商品一覧（{n}）</a>')
+    tab_sub = (f'<a class="tab" href="../tap.html">🤝 NewTrend商品一覧（{n}）</a>')
     pat = re.compile(r'(<a class="tab[^"]*" href="(?:\./|\.\./)?challenge\.html">🚀 新商品（\d+）</a>)')
     targets = ["index.html", "challenge.html", "recommend.html", "live.html"] \
               + sorted(glob.glob("shops/*.html"))
