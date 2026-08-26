@@ -17,8 +17,10 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
    - `--auto` がファイルを自動判別: `Kalodata_Video_*.xlsx` → 動画 (2つあれば行数が多い方が通常動画、
      少ない方がフォロワー少動画)。`Kalodata_Product_*.xlsx` ×2 は「アップロード時間」が
      全行45日以内の方が新商品、もう一方が売れ筋。判別できない場合はエラーで停止
-2. 生成成功後、直下の `index.html` / `challenge.html` を更新し `archive/`・`data/` と一緒に
-   bot名義でコミット (`[skip ci]`、`preview/` はこの時点で削除) → Vercelが自動デプロイ
+2. 生成成功後、直下の `index.html` / `challenge.html` を更新し、**`python build_tap.py` を実行して
+   `tap.html` の再生成と 🤝タブの差し込み**を行う (これを忘れると🤝タブが消える)。
+   `archive/`・`data/` と一緒に bot名義でコミット (`[skip ci]`、`preview/` はこの時点で削除)
+   → Vercelが自動デプロイ
 3. Discordに1ジャンル上位3件のembedカードを投稿 (webhookは repoのSecret `DISCORD_WEBHOOK_URL`)
 4. 生成が失敗した場合はDiscord投稿もサイト更新も行われず、ジョブが失敗する
 
@@ -165,7 +167,11 @@ TikTok Shop パートナーセンターの**パートナーコラボ (TAP案件)
   - `tap_campaigns.csv` — 案件単位 (59件)。列: campaign / campaign_id / shop / products /
     rate_min / rate_max / rate_label / rate_detail / categories / started / latest /
     shop_count / rep_image / rep_name
-- **生成**: `python build_tap.py` → `tap.html` を出力し、既存ページのタブに「🤝 NewTrend商品一覧」を差し込む
+- **生成**: `python build_tap.py` → `tap.html` を出力し、既存ページのタブに「🤝 NewTrend商品一覧」を差し込む。
+  引数にディレクトリを渡すとそこを差し込み対象にできる (`python build_tap.py preview` → `preview/` の
+  ページに `../tap.html` へのタブを入れる)。**週次生成 (`weekly_data_v1.py`) はタブを知らないので、
+  index.html / challenge.html を作り直したら必ず build_tap.py を実行すること**
+  (Actionsのpreview/publish両ジョブに組み込み済み)
 - **UI** (`tap_site.py`): 「🛍 商品で探す」/「🏪 ショップで探す」の2ビュー。検索窓・カテゴリーチップ・
   料率チップ・並び替え (**既定は新着順** / 料率が高い順 / 価格が安い順 / 名前順)。
   ショップカードをタップするとそのショップ(案件)の商品だけに絞り込む。データはページ内埋め込み

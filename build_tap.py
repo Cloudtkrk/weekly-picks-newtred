@@ -15,7 +15,11 @@ def counts(path="index.html"):
             g(r"🎁 おすすめ（(\d+)）"), g(r"📺 ライブ（(\d+)）"))
 
 def main():
-    n_hot, n_chal, n_own, n_live = counts()
+    # 引数でタブを差し込む対象ディレクトリを指定できる (既定は直下)。
+    # 例: python build_tap.py preview → preview/index.html などに ../tap.html のタブを差し込む
+    patch_dir = sys.argv[1] if len(sys.argv) > 1 else "."
+    n_hot, n_chal, n_own, n_live = counts(
+        os.path.join(patch_dir, "index.html") if patch_dir != "." else "index.html")
     prods, camps = tap_site.load_tap(".")
     if not prods:
         print("tap_list.csv が無いのでスキップ"); return
@@ -28,8 +32,11 @@ def main():
     tab = (f'<a class="tab" href="./tap.html">🤝 NewTrend商品一覧（{n}）</a>')
     tab_sub = (f'<a class="tab" href="../tap.html">🤝 NewTrend商品一覧（{n}）</a>')
     pat = re.compile(r'(<a class="tab[^"]*" href="(?:\./|\.\./)?challenge\.html">🚀 新商品（\d+）</a>)')
-    targets = ["index.html", "challenge.html", "recommend.html", "live.html"] \
-              + sorted(glob.glob("shops/*.html"))
+    if patch_dir == ".":
+        targets = ["index.html", "challenge.html", "recommend.html", "live.html"] \
+                  + sorted(glob.glob("shops/*.html"))
+    else:   # サブディレクトリ (preview/ 等) は tap.html を1つ上に見に行く
+        targets = [os.path.join(patch_dir, f) for f in ("index.html", "challenge.html")]
     patched = 0
     for f in targets:
         if not os.path.exists(f): continue

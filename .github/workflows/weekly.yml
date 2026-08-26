@@ -52,9 +52,8 @@ jobs:
           rm -rf preview
           mkdir -p preview
           cp weekly_site/*.html preview/
-          for d in shops timesale; do
-            if [ -d "weekly_site/$d" ]; then cp -r "weekly_site/$d" "preview/$d"; fi
-          done
+          # 🤝 NewTrend商品一覧タブを差し込む (プレビューからは ../tap.html を参照)
+          python build_tap.py preview
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add preview/
@@ -89,17 +88,12 @@ jobs:
         run: |
           cp weekly_site/index.html index.html
           cp weekly_site/challenge.html challenge.html
-          for f in recommend.html live.html; do
-            if [ -f "weekly_site/$f" ]; then cp "weekly_site/$f" "$f"; else rm -f "$f"; fi
-          done
-          rm -rf shops timesale
-          for d in shops timesale; do
-            if [ -d "weekly_site/$d" ]; then cp -r "weekly_site/$d" "$d"; fi
-          done
+          # tap.html を最新の件数で作り直し、売れ筋/新商品のタブに 🤝 を差し込む
+          python build_tap.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -r --ignore-unmatch --quiet preview || true
-          git add -A index.html challenge.html recommend.html live.html shops timesale archive/ data/
+          git add -A index.html challenge.html tap.html archive/ data/
           if git diff --cached --quiet; then
             echo "変更なし: コミットをスキップ"
           else
