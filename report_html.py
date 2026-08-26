@@ -76,6 +76,7 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
 .tab.active.chal{background:var(--chal)}
 .tab.active.own{background:#f97316}
 .tab.active.live{background:#7c3aed}
+.tab.active.tap{background:#0ea5e9}
 .pill.live{background:#ede9fe; color:#5b21b6}
 .pill.feat{background:#fee2e2; color:#b91c1c}
 .shop-h{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
@@ -375,6 +376,8 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         title, color_cls = "🚀 新商品", "chal"
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
                 f'<a class="tab active chal" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
+    if TAP_TAB_N:
+        tabs += f'<a class="tab" href="./tap.html">🤝 案件（{TAP_TAB_N}）</a>'
     if n_own:
         tabs += f'<a class="tab" href="./recommend.html">🎁 おすすめ（{n_own}）</a>'
     if n_live:
@@ -415,6 +418,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
     _write(out_path, doc)
 
 
+TAP_TAB_N = 0          # 🤝 案件タブの件数 (0ならタブ非表示。tap_site が設定)
 OWN_TOP_N = 5          # おすすめページでショップごとに表示する代表件数
 
 
@@ -472,8 +476,10 @@ def _own_tabs(active: str, n_hot: int, n_chal: int, n_own: int, n_live: int,
     def cls(name, extra=""):
         return f'tab active {extra}' if active == name else 'tab'
     t = (f'<a class="{cls("hot","hot")}" href="{prefix or "./"}">🔥 売れ筋（{n_hot}）</a>'
-         f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>'
-         f'<a class="{cls("own","own")}" href="{prefix}recommend.html">🎁 おすすめ（{n_own}）</a>')
+         f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>')
+    if TAP_TAB_N:
+        t += f'<a class="{cls("tap","tap")}" href="{prefix}tap.html">🤝 案件（{TAP_TAB_N}）</a>'
+    t += f'<a class="{cls("own","own")}" href="{prefix}recommend.html">🎁 おすすめ（{n_own}）</a>' 
     if n_live:
         t += f'<a class="{cls("live","live")}" href="{prefix}live.html">📺 ライブ（{n_live}）</a>'
     t += f'<a class="tab arch" href="{prefix}archive/">📅 アーカイブ</a>'
