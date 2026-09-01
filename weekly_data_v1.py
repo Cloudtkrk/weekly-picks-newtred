@@ -14,26 +14,49 @@ import requests
 
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
-                          fmt_money, pct_rank, load_own_list, find_col_prefix, CONFIG)
+                          fmt_money, pct_rank, load_own_list, load_tap_list,
+                          find_col_prefix, CONFIG)
 
 
-def apply_own_list(tbl: pd.DataFrame, own_by_id: dict,
-                   own_by_name: dict | None = None) -> tuple[pd.DataFrame, int]:
-    """自社案件リストと突合し、一致した商品は遷移先をアフィリエイトリンクに
+def index_own_rows(rows: list[dict]) -> tuple[dict, dict]:
+    """案件リストの行を (商品ID→行, 正規化商品名→行) の2つの辞書に索引する。
+    名前側は先に出てきた行を優先 (リスト内の重複商品名で上書きしない)"""
+    from weekly_picks import norm_name
+    by_id, by_name = {}, {}
+    for r in rows:
+        pid = str(r.get("商品ID", "")).strip()
+        if pid:
+            by_id.setdefault(pid, r)
+        by_name.setdefault(norm_name(str(r.get("商品名", ""))), r)
+    return by_id, by_name
+
+
+def apply_own_list(tbl: pd.DataFrame, sources: list[tuple[str, dict, dict]]
+                   ) -> tuple[pd.DataFrame, dict]:
+    """案件リストと突合し、一致した商品は遷移先をアフィリエイトリンクに
     差し替え + 🎁自社サンプル可バッジを付与。商品IDで一致が最優先、
-    同名・別IDの再出品にも当たるよう正規化商品名でもフォールバック突合する"""
+    同名・別IDの再出品にも当たるよう正規化商品名でもフォールバック突合する。
+
+    sources は (リスト名, 商品ID索引, 商品名索引) を優先度順に並べたリスト。
+    先に一致したリストのリンクを採用するので、TAP案件のように「そのリンクを
+    使ってほしい」ものを先頭に置く。戻り値の内訳はリスト名ごとの一致件数"""
     import re
     from weekly_picks import norm_name
-    if not own_by_id:
-        return tbl, 0
-    links, badges, n = [], [], 0
+    sources = [s for s in sources if s[1] or s[2]]
+    if not sources:
+        return tbl, {}
+    links, badges = [], []
+    n = {name: 0 for name, _, _ in sources}
     for link, badge, name in zip(tbl["商品リンク"], tbl["バッジ"], tbl["商品名"]):
         m = re.search(r"/product/(\d+)", str(link))
-        row = own_by_id.get(m.group(1)) if m else None
-        if row is None and own_by_name:
-            row = own_by_name.get(norm_name(str(name)))
+        pid, key = (m.group(1) if m else None), norm_name(str(name))
+        row = None
+        for src_name, by_id, by_name in sources:
+            row = (by_id.get(pid) if pid else None) or by_name.get(key)
+            if row:
+                n[src_name] += 1
+                break
         if row:
-            n += 1
             links.append(row["アフィリエイトリンク"])
             if "🎁" not in badge:
                 badge = (badge + "・" if badge else "") + "🎁自社サンプル可"
@@ -458,16 +481,19 @@ def main():
     hot = hot.drop(columns=drop)
     new_tbl = new_tbl.drop(columns=[c for c in drop if c in new_tbl.columns])
 
-    # 自社案件リスト (own_list.csv): 一致商品のリンク差し替え + 🎁付与
-    from weekly_picks import norm_name
+    # 案件リストと突合して一致商品のリンク差し替え + 🎁付与。
+    # TAP一覧 (tap_list.csv) を先に見るので、🤝タブに載っている商品は
+    # 必ずそのTAP案件のアフィリエイトリンクに揃う
+    tap_rows = load_tap_list()
     own_rows = load_own_list()
-    own_by_id = {r["商品ID"]: r for r in own_rows}
-    own_by_name = {norm_name(r["商品名"]): r for r in own_rows}
-    hot, n_own_hot = apply_own_list(hot, own_by_id, own_by_name)
-    new_tbl, n_own_new = apply_own_list(new_tbl, own_by_id, own_by_name)
-    if own_rows:
-        print(f"[info] 自社案件リスト {len(own_rows)}件 / "
-              f"リンク差替 売れ筋{n_own_hot}件・新商品{n_own_new}件")
+    sources = [("TAP一覧", *index_own_rows(tap_rows)),
+               ("自社案件リスト", *index_own_rows(own_rows))]
+    hot, n_hot = apply_own_list(hot, sources)
+    new_tbl, n_new = apply_own_list(new_tbl, sources)
+    for label, total in (("TAP一覧", len(tap_rows)), ("自社案件リスト", len(own_rows))):
+        if total:
+            print(f"[info] {label} {total}件 / リンク差替 "
+                  f"売れ筋{n_hot.get(label, 0)}件・新商品{n_new.get(label, 0)}件")
 
     # ジャンルサマリー (件数と売上合計)
     def cat_summary(tbl, gmv_raw):

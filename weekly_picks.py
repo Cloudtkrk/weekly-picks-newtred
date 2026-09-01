@@ -209,6 +209,30 @@ def load_own_list(path: str = "own_list.csv") -> list[dict]:
     return rows
 
 
+def load_tap_list(path: str = "tap_list.csv") -> list[dict]:
+    """TAP案件リスト (Googleシート「TAP一覧」のスナップショット tap_list.csv) を読み、
+    own_list と同じキー名に正規化して返す。tap.html の生成元と同じファイルなので、
+    🤝タブに載っている商品 = ここで突合できる商品になる。ファイルがなければ空リスト"""
+    import csv
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    out = []
+    for r in rows:
+        if not str(r.get("aff", "")).strip():
+            continue                     # アフィリエイトリンクがない行は差し替えられない
+        out.append({
+            "カテゴリ": r.get("category", ""), "ショップ": r.get("shop", ""),
+            "商品名": r.get("name", ""), "価格": r.get("price", ""),
+            "報酬率": r.get("rate", ""), "アフィリエイトリンク": r["aff"].strip(),
+            "商品ID": str(r.get("product_id", "")).strip(),
+            "画像": r.get("image", ""), "ライブ": r.get("live", ""),
+            "案件名": r.get("campaign", ""),
+        })
+    return out
+
+
 def _flag_on(v) -> bool:
     v = str(v or "").strip().lower()
     return bool(v) and v not in ("0", "false", "no", "×", "x", "-")
