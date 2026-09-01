@@ -5,7 +5,9 @@ GitHub Actions (`.github/workflows/weekly.yml`) が **プレビューだけ** �
 (`/preview/` で確認可。本番ページとDiscordはまだ更新されない)。
 
 - `Kalodata_Product_*.xlsx` ×2 (売れ筋/新商品は「アップロード時間」で自動判別)
-- `Kalodata_Video_*.xlsx` ×1〜2 (2つある場合は行数が多い方が通常動画)
+- `Kalodata_Video_*.xlsx` ×1〜2 (2つある場合は行数が多い方が通常動画。
+  同じ件数でエクスポートした週は行数で判別できないため、GMV中央値が低い方を
+  フォロワー少動画とみなす)
 
 翌週は古いファイルを削除して新しいエクスポートに置き換えること。
 
