@@ -14,7 +14,7 @@ import requests
 
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
-                          fmt_money, pct_rank, load_own_list, CONFIG)
+                          fmt_money, pct_rank, load_own_list, find_col_prefix, CONFIG)
 
 
 def apply_own_list(tbl: pd.DataFrame, own_by_id: dict,
@@ -354,11 +354,28 @@ def autodetect_inputs(input_dir: str):
                  "--products/--new を明示指定してください")
 
     if len(vids) == 2:
-        rows = [len(pd.read_excel(v)) for v in vids]
-        if rows[0] == rows[1]:
-            sys.exit(f"[error] --auto: 動画2ファイルが同じ行数({rows[0]})で判別できません。"
-                     "--videos/--videos-small を明示指定してください")
-        main_v, small_v = (vids[0], vids[1]) if rows[0] > rows[1] else (vids[1], vids[0])
+        dfs = [pd.read_excel(v) for v in vids]
+        rows = [len(d) for d in dfs]
+        if rows[0] != rows[1]:
+            bigger = 0 if rows[0] > rows[1] else 1
+        else:
+            # 同じ件数でエクスポートされた場合 (例: 100件×2) は行数で判別できないので、
+            # 動画GMVの中央値で判別する。どちらも売上高降順の上位N件なので、
+            # フォロワー少クリエイターに絞った方が必ず低くなる
+            meds = []
+            for v, d in zip(vids, dfs):
+                col = find_col_prefix(d, "取引金額")
+                if col is None:
+                    sys.exit(f"[error] --auto: {v} に「取引金額」列がありません。"
+                             "--videos/--videos-small を明示指定してください")
+                meds.append(pd.to_numeric(d[col], errors="coerce").median())
+            if not (meds[0] > meds[1]) and not (meds[1] > meds[0]):
+                sys.exit(f"[error] --auto: 動画2ファイルを行数({rows[0]}件)でもGMV中央値でも"
+                         "判別できません。--videos/--videos-small を明示指定してください")
+            bigger = 0 if meds[0] > meds[1] else 1
+            print(f"[info] --auto: 動画2ファイルが同じ行数({rows[0]}件)のため"
+                  f"GMV中央値で判別しました ({meds[0]:,.0f} / {meds[1]:,.0f})")
+        main_v, small_v = vids[bigger], vids[1 - bigger]
     else:
         main_v, small_v = vids[0], None
 
