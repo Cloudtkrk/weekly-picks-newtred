@@ -19,3 +19,6 @@ GitHub Actions (`.github/workflows/weekly.yml`) が **プレビューだけ** �
 
 Actionsの自動トリガーは `input/**` 配下の変更のみ。コミットメッセージに `[skip ci]` を
 含めるとプレビュー生成をスキップできる。
+
+2026-09-07 分から 🎁自社サンプル可 の個別例外は `CONFIG["own_overrides"]` (商品ID→指定) で管理する。
+案件リストのCSVはGoogleシートのスナップショットなので直接編集しないこと。
