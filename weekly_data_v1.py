@@ -42,26 +42,37 @@ def apply_own_list(tbl: pd.DataFrame, sources: list[tuple[str, dict, dict]]
     使ってほしい」ものを先頭に置く。戻り値の内訳はリスト名ごとの一致件数"""
     import re
     from weekly_picks import norm_name
+    overrides = CONFIG.get("own_overrides", {})
     sources = [s for s in sources if s[1] or s[2]]
-    if not sources:
+    if not sources and not overrides:
         return tbl, {}
     links, badges = [], []
     n = {name: 0 for name, _, _ in sources}
+    n["手動指定"] = 0
     for link, badge, name in zip(tbl["商品リンク"], tbl["バッジ"], tbl["商品名"]):
         m = re.search(r"/product/(\d+)", str(link))
         pid, key = (m.group(1) if m else None), norm_name(str(name))
         row = None
-        for src_name, by_id, by_name in sources:
-            row = (by_id.get(pid) if pid else None) or by_name.get(key)
-            if row:
-                n[src_name] += 1
-                break
+        if pid in overrides:            # CONFIGの手動指定はリストより優先
+            url = overrides[pid]
+            if url:
+                n["手動指定"] += 1
+                row = {"アフィリエイトリンク": url}
+        else:
+            for src_name, by_id, by_name in sources:
+                row = (by_id.get(pid) if pid else None) or by_name.get(key)
+                if row:
+                    n[src_name] += 1
+                    break
         if row:
             links.append(row["アフィリエイトリンク"])
             if "🎁" not in badge:
                 badge = (badge + "・" if badge else "") + "🎁自社サンプル可"
         else:
             links.append(link)
+            if pid in overrides and "🎁" in badge:
+                # 取り下げ指定。own_sample_brands 等で付いた🎁も外す
+                badge = "・".join(p for p in badge.split("・") if "🎁" not in p)
         badges.append(badge)
     tbl = tbl.copy()
     tbl["商品リンク"] = links
@@ -490,7 +501,8 @@ def main():
                ("自社案件リスト", *index_own_rows(own_rows))]
     hot, n_hot = apply_own_list(hot, sources)
     new_tbl, n_new = apply_own_list(new_tbl, sources)
-    for label, total in (("TAP一覧", len(tap_rows)), ("自社案件リスト", len(own_rows))):
+    for label, total in (("TAP一覧", len(tap_rows)), ("自社案件リスト", len(own_rows)),
+                         ("手動指定", len(CONFIG.get("own_overrides", {})))):
         if total:
             print(f"[info] {label} {total}件 / リンク差替 "
                   f"売れ筋{n_hot.get(label, 0)}件・新商品{n_new.get(label, 0)}件")
