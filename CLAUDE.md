@@ -8,6 +8,9 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 **ステージ1 (自動): `input/` のエクスポートを新しい3〜4ファイルに置き換えてコミット&プッシュ**
 → Actions (`.github/workflows/weekly.yml` の `preview` ジョブ) がプレビューを生成し、
 `preview/` にコミットする。**本番ページ・Discordには一切触らない**。
+`input/` に変更がないプッシュ (publish/ やコードだけ) ではプレビュー生成をスキップする
+(生成日だけが変わった差分をpushしてしまい、無駄なコミットと競合の元になるため)。
+両ジョブのpushは、生成中に別のプッシュがmainに入った場合に備えてリベース再試行する。
 プレビューURL: `https://<Vercelドメイン>/preview/` (売れ筋) と `/preview/challenge.html`。
 プレビューには🧪バナーが付く。
 

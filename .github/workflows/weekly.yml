@@ -30,18 +30,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # publish/ やコードだけを触ったプッシュでプレビューを作り直しても中身は同じで、
+      # 生成日だけが変わった差分をpushしてしまう (=無駄なコミットと競合の元)
+      - name: Check whether input/ changed
+        id: scope
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            files=$(git diff --name-only "$BEFORE" "$AFTER")
+          else
+            files=$(git show --name-only --pretty=format: "$AFTER")
+          fi
+          echo "変更ファイル:"; echo "$files"
+          if grep -q '^input/' <<< "$files"; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "input/ に変更がないためプレビュー生成をスキップします"
+          fi
 
       - uses: actions/setup-python@v5
+        if: steps.scope.outputs.run == 'true'
         with:
           python-version: "3.12"
 
       - name: Install dependencies
+        if: steps.scope.outputs.run == 'true'
         run: pip install -r requirements.txt
 
       - name: Generate preview (no archive, no Discord)
+        if: steps.scope.outputs.run == 'true'
         run: python weekly_data_v1.py --auto input/ --html --no-archive
 
       - name: Add preview banner
+        if: steps.scope.outputs.run == 'true'
         run: |
           python - <<'EOF'
           import glob
@@ -49,12 +76,14 @@ jobs:
               s = open(f, encoding="utf-8").read()
               s = s.replace("</header>", "</header>"
                   '<div class="arch-note">🧪 プレビュー版です。この内容で公開してよければ '
-                  'GitHub Actions の「Weekly Picks」→ Run workflow を実行してください'
+                  'Claudeに「公開して」と伝えるか、GitHub Actions の「Weekly Picks」→ '
+                  'Run workflow を実行してください'
                   '（Web公開とDiscord投稿が行われます）</div>', 1)
               open(f, "w", encoding="utf-8").write(s)
           EOF
 
       - name: Publish preview to /preview/ (commit & push)
+        if: steps.scope.outputs.run == 'true'
         run: |
           rm -rf preview
           mkdir -p preview
@@ -68,7 +97,14 @@ jobs:
             echo "変更なし: コミットをスキップ"
           else
             git commit -m "chore: プレビュー更新 $(date -u +%Y-%m-%d) [skip ci]"
-            git push
+            # 生成中に別のプッシュがmainに入ると fetch first で弾かれるので、
+            # リベースして数回まで再試行する
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push失敗 ($i/3)。リベースして再試行します"
+              git pull --rebase origin main
+            done
+            echo "3回試しても push できませんでした"; exit 1
           fi
 
   # ---- ステージ2: 本公開 + Discord投稿 ----
@@ -112,5 +148,10 @@ jobs:
             echo "変更なし: コミットをスキップ"
           else
             git commit -m "chore: 週次サイト更新 $(date -u +%Y-%m-%d) [skip ci]"
-            git push
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push失敗 ($i/3)。リベースして再試行します"
+              git pull --rebase origin main
+            done
+            echo "3回試しても push できませんでした"; exit 1
           fi
