@@ -11,7 +11,13 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 プレビューURL: `https://<Vercelドメイン>/preview/` (売れ筋) と `/preview/challenge.html`。
 プレビューには🧪バナーが付く。
 
-**ステージ2 (手動承認): プレビューを確認してOKなら、Actionsタブ「Weekly Picks」→ Run workflow**
+**ステージ2 (手動承認): プレビューを確認してOKなら、次のどちらかで本公開する**
+- **(a) Actionsタブ「Weekly Picks」→ Run workflow** (workflow_dispatch)
+- **(b) `publish/REQUEST.md` の公開ログに1行足し、コミットメッセージを `publish:` で始めてプッシュ**
+  → Actions画面を開けない環境 (Claudeのリモートセッション等) から公開するための経路。
+  Claudeからの `workflow_dispatch` はAPI権限がなく `403 Resource not accessible by integration`
+  で弾かれるため、この経路を用意してある
+
 → `publish` ジョブが本生成を実行:
 1. `python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3`
    - `--auto` がファイルを自動判別: `Kalodata_Video_*.xlsx` → 動画 (2つあれば行数が多い方が通常動画、
@@ -25,7 +31,12 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 4. 生成が失敗した場合はDiscord投稿もサイト更新も行われず、ジョブが失敗する
 
 Claudeセッション経由の場合: xlsxを添付してもらい `input/` を差し替えてプッシュ→プレビューURLを案内→
-ユーザーのOK後に workflow_dispatch を実行 (GitHub MCPの `actions_run_trigger`) して本公開する。
+ユーザーのOK後に上記(b)の `publish:` プッシュで本公開する。
+
+**メッセージが `publish:` で始まるプッシュはプレビューを飛ばしていきなり本公開する**ので、
+`input/` の差し替えコミットのメッセージを `publish:` で始めないこと。公開は必ず別コミットで行う。
+(判定が「含む」ではなく「で始まる」なのは、本文で公開手順に言及しただけのコミットが
+誤って公開してしまうのを防ぐため)
 
 ### ローカル手動実行 (フォールバック)
 

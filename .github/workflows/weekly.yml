@@ -1,12 +1,16 @@
 # 週次おすすめ商品の2段階配信:
 #  1) input/ にKalodataエクスポートをプッシュ → プレビューを /preview/ に自動生成 (公開・Discordなし)
-#  2) プレビュー確認後、Actionsタブ「Weekly Picks」→ Run workflow → 本公開 + Discord投稿
+#  2) プレビュー確認後、本公開 + Discord投稿。次のどちらでもよい:
+#       a) Actionsタブ「Weekly Picks」→ Run workflow (手動)
+#       b) publish/REQUEST.md を更新し、コミットメッセージを publish: で始めてプッシュ
+#          (Actions画面を開けない環境から公開するための経路)
 name: Weekly Picks
 
 on:
   push:
     paths:
       - "input/**"
+      - "publish/**"
   workflow_dispatch:
 
 permissions:
@@ -18,8 +22,11 @@ concurrency:
 
 jobs:
   # ---- ステージ1: プレビュー生成 (input/ 更新で自動。本番には触らない) ----
+  #      publish: で始まるプッシュは公開のリクエストなので、プレビューは作らない
   preview:
-    if: github.event_name == 'push'
+    if: >-
+      github.event_name == 'push'
+      && !startsWith(github.event.head_commit.message, 'publish:')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,9 +71,16 @@ jobs:
             git push
           fi
 
-  # ---- ステージ2: 本公開 + Discord投稿 (Run workflow の手動実行のみ) ----
+  # ---- ステージ2: 本公開 + Discord投稿 ----
+  #      Run workflow の手動実行、または publish: で始まるコミットのプッシュで走る。
+  #      「含む」ではなく「で始まる」なのは、本文で [publish] に言及しただけの
+  #      コミットが誤って公開してしまうのを防ぐため
+  #      通常のプッシュ (プレビュー生成やコード修正) では絶対に走らない
   publish:
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event_name == 'push'
+          && startsWith(github.event.head_commit.message, 'publish:'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
