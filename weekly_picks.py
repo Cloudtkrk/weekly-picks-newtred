@@ -265,6 +265,29 @@ def is_featured(row: dict) -> bool:
     return _flag_on(row.get("表示"))
 
 
+#: Kalodataの入力として受け付ける拡張子。エクスポート(.xlsx)のほか、
+#: 画面から取得した表をCSV/TSVに起こしたものも同じ列名なら投入できる
+INPUT_EXTS = (".xlsx", ".xls", ".csv", ".tsv")
+
+
+def read_table(path: str) -> pd.DataFrame:
+    """Kalodataの表を拡張子に応じて読む。列名さえ揃っていれば
+    エクスポートのxlsxでも、画面から起こしたCSV/TSVでも同じように扱える"""
+    ext = os.path.splitext(path)[1].lower()
+    if ext in (".xlsx", ".xls"):
+        return pd.read_excel(path, sheet_name=0)
+    if ext in (".csv", ".tsv"):
+        sep = "\t" if ext == ".tsv" else ","
+        # Excelが書き出すCP932やBOM付きUTF-8でも読めるよう順に試す
+        for enc in ("utf-8-sig", "cp932", "utf-8"):
+            try:
+                return pd.read_csv(path, sep=sep, encoding=enc)
+            except UnicodeDecodeError:
+                continue
+        return pd.read_csv(path, sep=sep, encoding="utf-8", errors="replace")
+    raise ValueError(f"対応していない入力形式です: {path} (対応: {', '.join(INPUT_EXTS)})")
+
+
 def find_col_prefix(df: pd.DataFrame, prefix: str) -> str | None:
     """列名が prefix で始まる列を返す (部分一致だと「平均取引金額」「1000視聴回数取引金額」等の
     別列を拾ってしまうため、合計GMVのように前方一致で特定すべき列に使う)"""
@@ -287,7 +310,7 @@ def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
 # 1. 動画データの集計 (過去7日エクスポート)
 # ============================================================
 def load_videos(path: str) -> pd.DataFrame:
-    df = pd.read_excel(path, sheet_name=0)
+    df = read_table(path)
     col_product = find_col(df, ["商品名"])
     col_gmv = find_col_prefix(df, "取引金額") or find_col(df, ["取引金額"])
     col_posted = find_col(df, ["投稿日"])
@@ -331,7 +354,7 @@ def load_videos(path: str) -> pd.DataFrame:
 # 2. 商品データの読み込み (商品タブエクスポート)
 # ============================================================
 def load_products(path: str) -> pd.DataFrame:
-    df = pd.read_excel(path, sheet_name=0)
+    df = read_table(path)
     col_name = find_col(df, ["商品名称", "商品名", "商品情報"])
     # 合計GMV。「平均取引金額」「ライブ取引金額」「動画取引金額」と区別するため前方一致で特定する
     # (エクスポートの通貨表記は週により「取引金額 (¥)」「取引金額 (円)」と揺れる)

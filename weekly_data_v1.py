@@ -15,7 +15,7 @@ import requests
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
                           fmt_money, pct_rank, load_own_list, load_tap_list,
-                          find_col_prefix, CONFIG)
+                          find_col_prefix, read_table, INPUT_EXTS, CONFIG)
 
 
 def index_own_rows(rows: list[dict]) -> tuple[dict, dict]:
@@ -359,17 +359,21 @@ def autodetect_inputs(input_dir: str):
     - Kalodata_Product_*.xlsx ×2: 「アップロード時間」が全行45日以内の方が新商品
     - Kalodata_Video_*.xlsx ×1〜2: 2つある場合は行数が多い方が通常動画、少ない方がフォロワー少動画"""
     import glob
-    prods = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Product_*.xlsx")))
-    vids = sorted(glob.glob(os.path.join(input_dir, "Kalodata_Video_*.xlsx")))
+    def find(kind):
+        hits = []
+        for ext in INPUT_EXTS:
+            hits += glob.glob(os.path.join(input_dir, f"Kalodata_{kind}_*{ext}"))
+        return sorted(hits)
+    prods, vids = find("Product"), find("Video")
     if len(prods) != 2:
-        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_*.xlsx が2ファイル必要です "
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_* が2ファイル必要です "
                  f"(検出 {len(prods)}件: {prods})")
     if not 1 <= len(vids) <= 2:
-        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Video_*.xlsx が1〜2ファイル必要です "
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Video_* が1〜2ファイル必要です "
                  f"(検出 {len(vids)}件: {vids})")
 
     def all_recent(path: str, days: int = 45) -> bool:
-        df = pd.read_excel(path)
+        df = read_table(path)
         if "アップロード時間" not in df.columns:
             sys.exit(f"[error] --auto: {path} に「アップロード時間」列がありません")
         ts = pd.to_datetime(df["アップロード時間"], errors="coerce").dropna()
@@ -388,7 +392,7 @@ def autodetect_inputs(input_dir: str):
                  "--products/--new を明示指定してください")
 
     if len(vids) == 2:
-        dfs = [pd.read_excel(v) for v in vids]
+        dfs = [read_table(v) for v in vids]
         rows = [len(d) for d in dfs]
         if rows[0] != rows[1]:
             bigger = 0 if rows[0] > rows[1] else 1
