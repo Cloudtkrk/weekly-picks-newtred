@@ -196,6 +196,24 @@ def fix_image_url(u):
     return u, u
 
 
+#: 商品IDから画像を引くときの自社ホスト。リポジトリ同梱が無い商品のフォールバック
+PRODUCT_IMAGE_BASE = "https://newtrend.entercommerce.co.jp/product-images"
+
+
+def product_image_url(link) -> str:
+    """商品URL (TikTokリンク) から商品IDを取り出して画像URLを組み立てる。
+    Kalodataの画面取得データには「画像リンク」列が無いためのフォールバック。
+    リポジトリ同梱 (product-images/<商品ID>.jpeg) があればそれを優先し、
+    無ければ自社ホストを指す (どちらにも無ければ onerror で no image 表示になる)"""
+    m = re.search(r"/product/(\d+)", str(link or ""))
+    if not m:
+        return ""
+    pid = m.group(1)
+    if os.path.exists(os.path.join("product-images", f"{pid}.jpeg")):
+        return f"/product-images/{pid}.jpeg"
+    return f"{PRODUCT_IMAGE_BASE}/{pid}.jpeg"
+
+
 def fix_category(name: str, category: str) -> str:
     """CONFIG["category_overrides"] による商品名ベースのカテゴリ誤り補正"""
     if not isinstance(name, str):
@@ -405,6 +423,13 @@ def load_products(path: str) -> pd.DataFrame:
                         if find_col(df, ["画像リンク"]) else ""),
         "kalodata_link": df[col_kalo_link] if col_kalo_link else "",
     })
+    # 画像リンクが取れていない行 (画面取得データには「画像リンク」列が無い) は
+    # 商品IDから自社ホストの画像を引く。列はあるが空、というセルも同じ扱い
+    if col_tt_link:
+        usable = out["image_link"].astype(str).str.startswith(("http", "/"))
+        out["image_link"] = out["image_link"].where(
+            usable, out["tiktok_link"].map(product_image_url))
+
     # カテゴリ誤り補正 (is_yakki判定や表示グループ化の前に適用)
     out["category"] = [fix_category(n, c) for n, c in
                        zip(out["product_name"], out["category"])]

@@ -129,10 +129,19 @@ jobs:
         run: pip install -r requirements.txt
 
       # 生成が失敗した場合はここで止まり、Discord投稿もサイト更新も行われない
+      # コミットメッセージに [no-discord] を入れると投稿せずサイトだけ作り直す
+      # (公開後に表示の不具合を直して出し直す場合に、二重通知を避けるため)
       - name: Generate site and post to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: python weekly_data_v1.py --auto input/ --html --post --top-per-cat 3
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          POST=--post
+          if printf '%s' "$COMMIT_MSG" | grep -qF '[no-discord]'; then
+            POST=
+            echo "[info] [no-discord] 指定のため Discord投稿はスキップします"
+          fi
+          python weekly_data_v1.py --auto input/ --html $POST --top-per-cat 3
 
       - name: Publish site (commit & push)
         run: |

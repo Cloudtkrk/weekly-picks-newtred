@@ -257,7 +257,9 @@ def _tag_html(tags: str) -> str:
 
 def _img_src(r, embed_fn=None) -> str:
     """embed_fn があれば base64 data URI、なければ通常URL"""
-    url = r["画像"] if isinstance(r["画像"], str) and r["画像"].startswith("http") else ""
+    # "/product-images/..." はリポジトリ同梱画像 (Vercelが静的配信する)
+    url = (r["画像"] if isinstance(r["画像"], str)
+           and r["画像"].startswith(("http", "/")) else "")
     if not url:
         return ""
     if embed_fn:
@@ -271,7 +273,7 @@ def _card(r, kind: str, embed_fn=None) -> str:
     if embed_fn:
         img = (f'<img src="{src_val}" alt="">' if src_val
                else '<div class="noimg">no image</div>')
-    elif isinstance(r["画像"], str) and r["画像"].startswith("http"):
+    elif isinstance(r["画像"], str) and r["画像"].startswith(("http", "/")):
         alt = r.get("画像alt", "")
         alt_attr = _h.escape(alt) if isinstance(alt, str) and alt.startswith("http") else ""
         img = (f'<img src="{_h.escape(r["画像"])}" data-alt="{alt_attr}" loading="lazy" '
@@ -347,12 +349,21 @@ def make_embed_fn():
         if not os.path.exists(cpath):
             ok = False
             for u in [url, alt]:
-                if not (isinstance(u, str) and u.startswith("http")):
+                if not isinstance(u, str):
                     continue
                 try:
-                    r = rq.get(u, timeout=10, headers=headers)
-                    r.raise_for_status()
-                    im = PILImage.open(BytesIO(r.content)).convert("RGB")
+                    if u.startswith("/"):
+                        # リポジトリ同梱画像 ("/product-images/...") はローカルから読む
+                        local = u.lstrip("/")
+                        if not os.path.exists(local):
+                            continue
+                        im = PILImage.open(local).convert("RGB")
+                    elif u.startswith("http"):
+                        r = rq.get(u, timeout=10, headers=headers)
+                        r.raise_for_status()
+                        im = PILImage.open(BytesIO(r.content)).convert("RGB")
+                    else:
+                        continue
                     im.thumbnail((144, 144))
                     im.save(cpath, "JPEG", quality=80)
                     ok = True
