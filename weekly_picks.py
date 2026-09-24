@@ -59,6 +59,13 @@ CONFIG = {
         (["腕カバー"], "ファッション小物 > アームカバー"),
         (["ワイドパンツ", "メンズ"], "メンズウェア・下着 > パンツ"),
         (["ワイドパンツ"], "レディースウェア・インナー > パンツ"),
+        # 2026-09-24: 衣料品が家電ガジェット/キッチン・ホーム用品に出ていたので補正。
+        # 部分一致の誤爆を避けるため長めの語で書くこと (「パンツ」等の短い語は使わない)
+        (["ショートパンツ", "メンズ"], "メンズウェア・下着 > パンツ"),
+        (["ショートパンツ"], "レディースウェア・インナー > パンツ"),
+        (["スウェットシャツ"], "レディースウェア・インナー > トップス"),
+        (["レインコート"], "レディースウェア・インナー > アウター"),
+        (["レインポンチョ"], "レディースウェア・インナー > アウター"),
     ],
     # --- 5ジャンル固定構成: Kalodata大分類 → ジャンル (未定義は「その他」) ---
     "genre_map": {
@@ -323,9 +330,11 @@ def load_videos(path: str) -> pd.DataFrame:
         "product_name": df[col_product],
         "video_gmv": df[col_gmv].map(parse_money),
         "posted_at": pd.to_datetime(df[col_posted], errors="coerce"),
-        "gpm": pd.to_numeric(df[col_gpm], errors="coerce").fillna(0),
+        # 画面から取得した表は「807円」「584.23万」のような表示書式で来るため、
+        # to_numeric では全行0になってしまう。parse_money は生の数値もそのまま通す
+        "gpm": df[col_gpm].map(parse_money),
         "ad_ratio": df[col_ad_ratio].map(parse_pct),
-        "views": pd.to_numeric(df[col_views], errors="coerce").fillna(0),
+        "views": df[col_views].map(parse_money),
     })
 
     today = pd.Timestamp.now().normalize()
