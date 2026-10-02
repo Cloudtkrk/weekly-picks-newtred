@@ -15,7 +15,7 @@ import requests
 sys.path.insert(0, ".")
 from weekly_picks import (load_videos, load_products, tag_and_filter,
                           fmt_money, pct_rank, load_own_list, load_tap_list,
-                          find_col_prefix, read_table, INPUT_EXTS, CONFIG)
+                          find_col_prefix, find_col, read_table, INPUT_EXTS, CONFIG)
 
 
 def index_own_rows(rows: list[dict]) -> tuple[dict, dict]:
@@ -374,11 +374,15 @@ def autodetect_inputs(input_dir: str):
 
     def all_recent(path: str, days: int = 45) -> bool:
         df = read_table(path)
-        if "アップロード時間" not in df.columns:
-            sys.exit(f"[error] --auto: {path} に「アップロード時間」列がありません")
-        ts = pd.to_datetime(df["アップロード時間"], errors="coerce").dropna()
+        # 掲載日の列名はエクスポートの版で変わる (アップロード時間 → 登録日)
+        col = find_col(df, ["アップロード時間", "登録日", "掲載日"])
+        if col is None:
+            sys.exit(f"[error] --auto: {path} に掲載日の列 "
+                     f"(アップロード時間 / 登録日 / 掲載日) がありません。"
+                     f"検出された列: {list(df.columns)}")
+        ts = pd.to_datetime(df[col], errors="coerce").dropna()
         if ts.empty:
-            sys.exit(f"[error] --auto: {path} の「アップロード時間」を日付として読めません")
+            sys.exit(f"[error] --auto: {path} の「{col}」を日付として読めません")
         return bool((ts >= pd.Timestamp.now() - pd.Timedelta(days=days)).all())
 
     recent = [all_recent(p) for p in prods]

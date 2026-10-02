@@ -322,6 +322,33 @@ def find_col_prefix(df: pd.DataFrame, prefix: str) -> str | None:
     return None
 
 
+def find_col_except(df: pd.DataFrame, candidates: list[str],
+                    exclude: tuple[str, ...] = ()) -> str | None:
+    """find_col と同じだが、exclude のいずれかを含む列名は候補から外す。
+    「視聴回数」が「1000視聴回数売上高」に当たるような誤マッチを防ぐ"""
+    for cand in candidates:
+        for col in df.columns:
+            name = str(col)
+            if cand in name and not any(x in name for x in exclude):
+                return col
+    return None
+
+
+def find_gmv_col(df: pd.DataFrame) -> str | None:
+    """合計GMVの列を特定する。エクスポートの表記は
+    「取引金額 (¥)」→「取引金額 (円)」→「売上高 (円)」と変わってきており、
+    さらに「平均取引金額」「平均販売価格」「ライブ売上高」「動画売上高」
+    「商品カード売上高」「売上高成長率」「1000視聴回数売上高」といった
+    紛らわしい列が同じ表に並ぶ。前方一致 + 除外語で確実に合計GMVだけを取る"""
+    for prefix in ("取引金額", "売上高"):
+        for col in df.columns:
+            name = str(col).strip()
+            if name.startswith(prefix) and not any(
+                    x in name for x in ("成長率", "平均", "ライブ", "動画", "商品カード")):
+                return col
+    return None
+
+
 def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
     """カラム名の揺れに対応した検索 (部分一致)"""
     for cand in candidates:
@@ -337,11 +364,18 @@ def find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
 def load_videos(path: str) -> pd.DataFrame:
     df = read_table(path)
     col_product = find_col(df, ["商品名"])
-    col_gmv = find_col_prefix(df, "取引金額") or find_col(df, ["取引金額"])
+    col_gmv = find_gmv_col(df)
     col_posted = find_col(df, ["投稿日"])
-    col_gpm = find_col(df, ["1000視聴"])
+    col_gpm = find_col(df, ["1000視聴", "1000再生"])        # 新: 1000再生あたり売上額
     col_ad_ratio = find_col(df, ["広告視聴率"])
-    col_views = find_col(df, ["視聴回数"])
+    col_views = find_col_except(df, ["視聴回数", "視聴数"],   # 新: 視聴数
+                                exclude=("1000", "率"))
+
+    _missing = [label for label, col in (("商品名", col_product), ("売上高", col_gmv))
+                if col is None]
+    if _missing:
+        sys.exit(f"[error] {path}: 動画エクスポートに必要な列が見つかりません: "
+                 f"{', '.join(_missing)}\n        検出された列: {list(df.columns)}")
 
     out = pd.DataFrame({
         "product_key": df[col_product].map(norm_name),
@@ -385,20 +419,32 @@ def load_products(path: str) -> pd.DataFrame:
     col_name = find_col(df, ["商品名称", "商品名", "商品情報"])
     # 合計GMV。「平均取引金額」「ライブ取引金額」「動画取引金額」と区別するため前方一致で特定する
     # (エクスポートの通貨表記は週により「取引金額 (¥)」「取引金額 (円)」と揺れる)
-    col_gmv = find_col_prefix(df, "取引金額") or find_col(df, ["取引金額"])
+    col_gmv = find_gmv_col(df)
     col_growth = find_col(df, ["成長率"])
     col_units = find_col(df, ["販売数", "販売件数"])
     col_rating = find_col(df, ["商品レビュー", "商品評価", "評価"])
     col_price = find_col(df, ["平均取引金額", "価格(¥)", "価格 (¥)", "平均販売価格"])  # 実売単価を優先
-    col_commission = find_col(df, ["報酬率", "コミッション"])
+    col_commission = find_col(df, ["報酬率", "コミッション"])  # 新: コミッション率
     col_creators = find_col(df, ["クリエイター数"])
-    col_cvr = find_col(df, ["クリエイター取引成立率"])
-    col_listed = find_col(df, ["アップロード時間", "掲載日"])
+    col_cvr = find_col(df, ["クリエイター取引成立率", "クリエイターコンバージョン率",
+                            "コンバージョン率"])
+    col_listed = find_col(df, ["アップロード時間", "登録日", "掲載日"])
     col_category = find_col(df, ["カテゴリー", "カテゴリ"])
-    col_live = find_col(df, ["ライブ取引金額"])
-    col_video = find_col(df, ["動画取引金額"])
+    col_live = find_col(df, ["ライブ取引金額", "ライブ売上高"])
+    col_video = find_col(df, ["動画取引金額", "動画売上高"])
     col_tt_link = find_col(df, ["TikTokリンク"])
     col_kalo_link = find_col(df, ["Kalodata詳細リンク"])
+
+    # 列名が変わったのに気づかず壊れた数値を出すのが一番まずい (2026-08に実際に起きた)。
+    # バッジ・並び順・判別に直結する列は、取れなかったら黙って0で埋めずに止める
+    _need = [("商品名", col_name), ("合計GMV", col_gmv), ("報酬率", col_commission),
+             ("掲載日", col_listed), ("成立率", col_cvr)]
+    _missing = [label for label, col in _need if col is None]
+    if _missing:
+        sys.exit(f"[error] {path}: 必要な列が見つかりません: {', '.join(_missing)}\n"
+                 f"        検出された列: {list(df.columns)}\n"
+                 f"        エクスポートの列名が変わった可能性があります。"
+                 f"weekly_picks.py の find_col 候補に追加してください")
 
     out = pd.DataFrame({
         "product_key": df[col_name].map(norm_name),
