@@ -360,6 +360,10 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
   document.querySelectorAll('.catgrp').forEach(g =>
     g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
 }));
+document.querySelectorAll('.tgl').forEach(t => {
+  document.body.classList.add('hide-tap');  // 既定は隠す
+  t.textContent = '🤝 NewTrend取扱を表示';
+});
 document.querySelectorAll('.tgl').forEach(t => t.addEventListener('click', () => {
   const off = document.body.classList.toggle('hide-tap');
   t.textContent = off ? '🤝 NewTrend取扱を表示' : '🤝 NewTrend取扱を隠す';
@@ -372,7 +376,7 @@ def _filter_bar(tbl) -> str:
     chips = ['<span class="chip on" data-cat="all">すべて</span>']
     chips += [f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
     if "枠" in tbl.columns and (tbl["枠"] == "TAP").any():
-        chips.append('<span class="tgl" id="tap-toggle">🤝 NewTrend取扱を隠す</span>')
+        chips.append('<span class="tgl" id="tap-toggle">🤝 NewTrend取扱を表示</span>')
     return f'<div class="filters">{"".join(chips)}</div>' 
 
 

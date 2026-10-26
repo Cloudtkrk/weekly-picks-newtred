@@ -200,7 +200,7 @@ LINEでお伝えしている合言葉を入力してください。</p>
 <div class="sample-note">🎁 <b>自社サンプル可</b>と記載のある商品が、サンプルをお渡しできる商品です。
 それ以外の商品は、ご連絡いただいてもサンプル対応ができません。<br>
 各ジャンルの最後には、弊社取扱（NewTrend商品一覧）の商品を載せています。</div>
-<div class="filters"><span class="chip on" data-cat="all">すべて</span><span class="chip" data-cat="美容">美容</span><span class="chip" data-cat="食品">食品</span><span class="chip" data-cat="家電ガジェット">家電ガジェット</span><span class="chip" data-cat="キッチン・ホーム用品">キッチン・ホーム用品</span><span class="chip" data-cat="その他">その他</span><span class="tgl" id="tap-toggle">🤝 NewTrend取扱を隠す</span></div>
+<div class="filters"><span class="chip on" data-cat="all">すべて</span><span class="chip" data-cat="美容">美容</span><span class="chip" data-cat="食品">食品</span><span class="chip" data-cat="家電ガジェット">家電ガジェット</span><span class="chip" data-cat="キッチン・ホーム用品">キッチン・ホーム用品</span><span class="chip" data-cat="その他">その他</span><span class="tgl" id="tap-toggle">🤝 NewTrend取扱を表示</span></div>
 <div class="catgrp" data-cat="美容">
 <div class="cat">▼ <b>美容</b>（20件＋NewTrend取扱 159件）</div>
 <div class="card"><img src="https://img.kalocdn.com/tiktok.product/1734468085687223889/cover.png" data-alt="https://img.kalocdn.com/tiktok.product/1734468085687223889/cover.png" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="rec">⭐ 今週売れてる</span><span class="pill hotsale">🔥売れ筋！</span><span class="pill easy">🔰初心者でも狙いやすい</span></div><a class="name" href="https://shop.tiktok.com/view/product/1734468085687223889?region=JP" target="_blank">【dadawoca】匠の魂 極上の切れ味 爪切り 飛散防止 ステンレス 高級 つめきり 切った爪が飛</a><div class="stats">30日売上 <b>2,791万円</b>｜単価 2,873円｜報酬率※ <b class="reward">8%</b></div><div class="tags"><span class="tag">広告主導</span></div><div class="vid">🎬 <a href="https://www.tiktok.com/@nekote_life/video/7674709487848017160" target="_blank" rel="noopener">一番売れてる動画を見る</a><span class="vm">@nekote_life・売上 51万円・13.9万再生</span></div></div></div>
@@ -956,6 +956,10 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
   document.querySelectorAll('.catgrp').forEach(g =>
     g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
 }));
+document.querySelectorAll('.tgl').forEach(t => {
+  document.body.classList.add('hide-tap');  // 既定は隠す
+  t.textContent = '🤝 NewTrend取扱を表示';
+});
 document.querySelectorAll('.tgl').forEach(t => t.addEventListener('click', () => {
   const off = document.body.classList.toggle('hide-tap');
   t.textContent = off ? '🤝 NewTrend取扱を表示' : '🤝 NewTrend取扱を隠す';
