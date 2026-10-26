@@ -56,6 +56,17 @@ header .date{color:var(--sub); font-size:13px}
 .pill.easy{background:#dcf5e5; color:#116932}
 .pill.gem{background:#ede4fd; color:#5b21b6}
 .pill.own{background:#ffe8d2; color:#9a3412}
+.pill.hotsale{background:#fee2e2; color:#b91c1c}
+.vid{margin-top:7px; font-size:12px}
+.vid a{color:#1d4ed8; font-weight:700; text-decoration:none}
+.vid a:hover{text-decoration:underline}
+.vid .vm{color:var(--sub,#6b7280); margin-left:6px}
+details.rg{margin-top:5px; font-size:12px}
+details.rg summary{cursor:pointer; font-weight:800; color:#9a3412}
+details.rg .rgbody{margin-top:5px; padding:8px 10px; background:#fff7ed; border-radius:8px;
+  white-space:pre-wrap; line-height:1.6}
+.sample-note{background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 14px;
+  margin:0 0 14px; font-size:12.5px; line-height:1.6}
 .guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
        padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
 .guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
@@ -96,6 +107,10 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
       background:var(--card); border:1px solid var(--line); color:var(--sub);
       cursor:pointer; user-select:none}
 .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.tgl{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+     background:var(--card); border:1px dashed var(--line); color:var(--sub);
+     cursor:pointer; user-select:none; margin-left:auto}
+.hide-tap .card.tap{display:none}
 .catgrp.hidden{display:none}
 .tab.arch{font-size:12.5px; padding:9px 12px}
 .arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
@@ -291,16 +306,36 @@ def _card(r, kind: str, embed_fn=None) -> str:
     for b in str(r.get("バッジ") or "").split("・"):
         if not b:
             continue
-        cls = "easy" if b.startswith("🔰") else "gem" if b.startswith("💎") else "own"
+        cls = ("easy" if b.startswith("🔰") else "gem" if b.startswith("💎")
+               else "hotsale" if b.startswith("🔥") else "own")
         pills.append(f'<span class="pill {cls}">{_h.escape(b)}</span>')
     rec = f'<div class="pills">{"".join(pills)}</div>' if pills else ""
     # 表示はシンプルに3項目のみ。詳細指標はExcel/data JSON側に残す
-    line1 = (f'30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
-             f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
-    return (f'<div class="card">{img}<div class="body">{rec}'
+    if r.get("枠") == "TAP":          # 各ジャンル末尾の自社TAP取扱商品 (売上データなし)
+        line1 = f'単価 {r["単価"]}｜報酬率※ <b class="reward">{r["報酬率"]}</b>'
+    else:
+        line1 = (f'30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
+                 f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
+    # 一番売れてる動画 + 再現ガイド (売れ筋のみ)
+    vid = ""
+    if kind == "hot":
+        vurl = str(r.get("動画URL") or "")
+        if vurl.startswith("http"):
+            meta = "・".join(x for x in (str(r.get("動画投稿者") or ""),
+                                        f'売上 {r["動画売上"]}' if r.get("動画売上") not in (None, "", "-", "0円") else "",
+                                        f'{r["動画再生数"]}再生' if r.get("動画再生数") not in (None, "", "-", "0") else "")
+                             if x)
+            vid = (f'<div class="vid">🎬 <a href="{_h.escape(vurl)}" target="_blank" rel="noopener">'
+                   f'一番売れてる動画を見る</a>'
+                   + (f'<span class="vm">{_h.escape(meta)}</span>' if meta else "") + '</div>')
+        guide_txt = str(r.get("再現ガイド") or "")
+        if guide_txt:
+            vid += (f'<details class="rg"><summary>📝 この動画の再現ガイド</summary>'
+                    f'<div class="rgbody">{_h.escape(guide_txt)}</div></details>')
+    return (f'<div class="card{" tap" if r.get("枠") == "TAP" else ""}">{img}<div class="body">{rec}'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(str(r["商品名"]))}</a>'
             f'<div class="stats">{line1}</div>'
-            f'{_tag_html(r["タグ"])}</div></div>')
+            f'{_tag_html(r["タグ"])}{vid}</div></div>')
 
 
 def _section(tbl, kind: str, embed_fn=None) -> str:
@@ -308,7 +343,9 @@ def _section(tbl, kind: str, embed_fn=None) -> str:
     for cat, g in tbl.groupby("ジャンル", sort=False):
         cat_e = _h.escape(str(cat))
         parts.append(f'<div class="catgrp" data-cat="{cat_e}">')
-        parts.append(f'<div class="cat">▼ <b>{cat_e}</b>（{len(g)}件）</div>')
+        n_tap = int((g["枠"] == "TAP").sum()) if "枠" in g.columns else 0
+        count = f"{len(g) - n_tap}件" + (f"＋NewTrend取扱 {n_tap}件" if n_tap else "")
+        parts.append(f'<div class="cat">▼ <b>{cat_e}</b>（{count}）</div>')
         parts += [_card(r, kind, embed_fn) for _, r in g.iterrows()]
         parts.append('</div>')
     return "\n".join(parts)
@@ -323,6 +360,10 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
   document.querySelectorAll('.catgrp').forEach(g =>
     g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
 }));
+document.querySelectorAll('.tgl').forEach(t => t.addEventListener('click', () => {
+  const off = document.body.classList.toggle('hide-tap');
+  t.textContent = off ? '🤝 NewTrend取扱を表示' : '🤝 NewTrend取扱を隠す';
+}));
 </script>"""
 
 
@@ -330,6 +371,8 @@ def _filter_bar(tbl) -> str:
     cats = list(dict.fromkeys(tbl["ジャンル"].astype(str)))
     chips = ['<span class="chip on" data-cat="all">すべて</span>']
     chips += [f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
+    if "枠" in tbl.columns and (tbl["枠"] == "TAP").any():
+        chips.append('<span class="tgl" id="tap-toggle">🤝 NewTrend取扱を隠す</span>')
     return f'<div class="filters">{"".join(chips)}</div>' 
 
 
@@ -397,7 +440,11 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
 <li><span class="pill own">🎁 自社サンプル可</span>弊社経由でサンプルを渡せる商品。実績ゼロでもまずここから</li>
 <li><span class="pill gem">💎 狙い目</span>1人あたりの取り分が大きいが、承認には実績や投稿数が必要</li>
 <li><span class="rec">⭐ 今週売れてる</span>直近7日も動画で売れている＝今から乗っても間に合う</li>
-</ul></div>"""
+<li><span class="pill hotsale">🔥 売れ筋！</span>1日100個以上売れている商品</li>
+</ul></div>
+<div class="sample-note">🎁 <b>自社サンプル可</b>と記載のある商品が、サンプルをお渡しできる商品です。
+それ以外の商品は、ご連絡いただいてもサンプル対応ができません。<br>
+各ジャンルの最後には、弊社取扱（NewTrend商品一覧）の商品を載せています。</div>"""
     c = CONFIG
     badge_note = (
         f'🔰 <b>初心者でも狙いやすい</b>＝参画ペース{c["easy_pace"]}人/月以上 × '
@@ -405,7 +452,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         f'またはフォロワーの少ないクリエイターの動画で直近7日に売上実績あり ／ '
         f'💎 <b>狙い目（実績者向け）</b>＝1人あたりGMV{c["gem_gmv_per_creator"] // 10000}万円以上 × '
         f'成立率{c["gem_cvr"]}%以上 ／ '
-        f'🎁 <b>自社サンプル可</b>＝弊社取扱ブランドの商品<br>'
+        f'🎁 <b>自社サンプル可</b>＝弊社取扱ブランドの商品 ／ 🔥 <b>売れ筋！</b>＝1日100個以上売れている商品（30日販売数÷30）<br>'
         f'<b>参画ペース</b>＝参画クリエイター数÷掲載月数（承認の速さの目安）。'
         f'<b>1人あたりGMV</b>＝30日売上÷参画クリエイター数（1人あたりの取り分の目安）<br>')
     doc = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8">
@@ -837,6 +884,11 @@ def _set_teaser(n_hot: int, n_chal: int, n_own: int, n_live: int):
     GATE_TEASER = "　".join(parts) + " を掲載中"
 
 
+def _n_main(hot) -> int:
+    """売れ筋の件数 (各ジャンル末尾に足した自社TAP取扱商品は含めない)"""
+    return int((hot["枠"] != "TAP").sum()) if "枠" in hot.columns else len(hot)
+
+
 def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list | None = None):
     import os
     from weekly_picks import is_live
@@ -846,12 +898,12 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
     own_rows = own_rows or []
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
-    _set_teaser(len(hot), len(new_tbl), n_own, n_live)
+    _set_teaser(_n_main(hot), len(new_tbl), n_own, n_live)
     _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
-          embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
+          embed_fn, today, _n_main(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
-          embed_fn, today, len(hot), len(new_tbl), n_own, n_live)
+          embed_fn, today, _n_main(hot), len(new_tbl), n_own, n_live)
     # 🎁おすすめ / 📺ライブ ページは廃止 (2026-08、🤝案件ページに集約)。
     # own_list.csv 自体は 🎁自社サンプル可バッジ・アフィリンク差し替えに引き続き使う。
 
@@ -880,12 +932,12 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     own_rows = own_rows or []
     live_rows = [r for r in own_rows if is_live(r)]
     n_own, n_live = len(own_rows), len(live_rows)
-    _set_teaser(len(hot), len(new_tbl), n_own, n_live)
+    _set_teaser(_n_main(hot), len(new_tbl), n_own, n_live)
     _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
-          None, today, len(hot), len(new_tbl), n_own, n_live)
+          None, today, _n_main(hot), len(new_tbl), n_own, n_live)
     _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
-          None, today, len(hot), len(new_tbl), n_own, n_live)
+          None, today, _n_main(hot), len(new_tbl), n_own, n_live)
     pages = ["index.html", "challenge.html"]   # 🎁おすすめ / 📺ライブ は廃止
     for fn in pages:
         p = os.path.join(arch_dir, fn)
@@ -896,7 +948,7 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     # 表示テーブルをJSONでも蓄積 (先週比・連続ランクイン等の将来機能の材料)
     data_dir = os.path.join(root_dir, "data")
     os.makedirs(data_dir, exist_ok=True)
-    payload = {"date": date_str, "n_hot": len(hot), "n_challenge": len(new_tbl),
+    payload = {"date": date_str, "n_hot": _n_main(hot), "n_challenge": len(new_tbl),
                "hot": hot.to_dict(orient="records"),
                "challenge": new_tbl.to_dict(orient="records")}
     with open(os.path.join(data_dir, f"{date_str}.json"), "w", encoding="utf-8") as f:

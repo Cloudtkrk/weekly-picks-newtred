@@ -81,14 +81,22 @@ def apply_own_list(tbl: pd.DataFrame, sources: list[tuple[str, dict, dict]]
 
 
 def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
-                small_keys: set | None = None) -> pd.DataFrame:
+                small_keys: set | None = None, hot_badges: bool = False) -> pd.DataFrame:
     """商品×直近7日動画実績を突合して表示用テーブルを作る。
     small_keys: フォロワー少クリエイター動画エクスポートに売上が載っていた商品キー
     (=実績の少ないクリエイターでも売れている実証。🔰判定に使う)"""
     vc = ["recent_video_gmv_7d", "n_videos_7d", "n_new_posts",
           "median_gpm", "organic_gmv_share"]
-    df = prod.merge(videos[["product_key"] + vc], on="product_key", how="left")
+    vx = ["top_video_url", "top_video_creator", "top_video_gmv",
+          "top_video_views", "top_video_posted"]
+    df = prod.merge(videos[["product_key"] + vc + vx], on="product_key", how="left")
     df[vc] = df[vc].fillna(0)
+    df["top_video_url"] = df["top_video_url"].fillna("")
+    df["top_video_creator"] = df["top_video_creator"].fillna("")
+    df["top_video_gmv"] = df["top_video_gmv"].fillna(0)
+    df["top_video_views"] = df["top_video_views"].fillna(0)
+    # 日販 = 30日販売数÷30 (販売数は商品エクスポートの過去30日値)
+    daily = df["units"] / 30
     small_hit = df["product_key"].isin(small_keys or set())
 
     # 新指標: 参画ペース (人/月) = 参画数÷掲載月数 (最低1ヶ月)、1人あたりGMV = 30日売上÷参画数
@@ -107,13 +115,15 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
     is_own = df["product_name"].fillna("").apply(
         lambda s: any(b in s for b in c["own_sample_brands"]))
 
-    def join_badges(e, g, o):
+    def join_badges(e, g, o, d=False):
         b = []
+        if d: b.append("🔥売れ筋！")          # 日販100個以上
         if e: b.append("🔰初心者でも狙いやすい")
         elif g: b.append("💎狙い目（実績者向け）")
         if o: b.append("🎁自社サンプル可")
         return "・".join(b)
-    badge = [join_badges(*t) for t in zip(is_easy, is_gem, is_own)]
+    is_hotsale = (daily >= c["hot_badge_daily_units"]) if hot_badges else (daily < 0)
+    badge = [join_badges(*t) for t in zip(is_easy, is_gem, is_own, is_hotsale)]
 
     def tags(r):
         t = []
@@ -140,6 +150,7 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
         "成長率": df["growth_pct"].map(lambda v: f"{v:+.0f}%"),
         "直近7日動画売上": df["recent_video_gmv_7d"].map(fmt_money),
         "直近7日動画本数": df["n_videos_7d"].astype(int),
+        "日販": daily.round(1),
         "販売件数": df["units"].astype(int).map(lambda v: f"{v/10000:.1f}万件" if v >= 10000 else f"{v:,}件"),
         "単価": df["avg_price"].map(fmt_money),
         "報酬目安/件": (df["avg_price"] * df["commission_pct"] / 100).map(
@@ -153,6 +164,14 @@ def build_table(prod: pd.DataFrame, videos: pd.DataFrame,
         "タグ": df.apply(tags, axis=1),
         "掲載日": df["listed_at"].dt.strftime("%Y-%m-%d"),
         "商品リンク": df["tiktok_link"],
+        "商品ID": df["tiktok_link"].astype(str).str.extract(r"/product/(\d+)")[0].fillna(""),
+        "動画URL": df["top_video_url"],
+        "動画投稿者": df["top_video_creator"],
+        "動画売上": df["top_video_gmv"].map(fmt_money),
+        "動画再生数": df["top_video_views"].map(lambda v: f"{v/10000:.1f}万" if v >= 10000 else f"{v:,.0f}"),
+        "動画投稿日": pd.to_datetime(df["top_video_posted"], errors="coerce").dt.strftime("%Y-%m-%d").fillna(""),
+        "再現ガイド": "",
+        "枠": "売れ筋",
         "画像": df["image_link"],
         "画像alt": df["image_link_alt"],
         "_gmv": df["gmv_30d"],
@@ -285,6 +304,7 @@ def discord_header(today: str) -> str:
         f"🔰 **初心者でも狙いやすい**＝承認ペースが速く成立率も高い、"
         f"またはフォロワーの少ないクリエイターでも売れている実績あり\n"
         f"🎁 **自社サンプル可**＝弊社経由でサンプルを渡せる商品（実績ゼロでもまずここから）\n"
+        f"🔥 **売れ筋！**＝1日100個以上売れている商品\n"
         f"💎 **狙い目（実績者向け）**＝1人あたりの取り分が大きいが、承認には実績や投稿数が必要\n"
         f"{nav}"
         f"-# ※報酬率は取得時点の参考値です。実際の料率は各案件のアフィリエイトセンターで必ず確認してください\n"
@@ -426,6 +446,81 @@ def autodetect_inputs(input_dir: str):
     return hot_f, new_f, main_v, small_v
 
 
+def load_video_guides(path: str = "input/video_guides.json") -> dict:
+    """一番売れてる動画の再現ガイド (週次でClaudeセッションが作る任意ファイル)。
+    形式: {"<商品ID>": {"video_url": "...", "creator": "...", "guide": "改行区切りの本文"}}
+    video_url / creator は省略可 (省略時は動画エクスポートから自動で選んだ動画を使う)。
+    ファイルがなければ空 = 🎬リンクだけ表示し、再現ガイドは出さない"""
+    import json
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def apply_video_guides(tbl: pd.DataFrame, guides: dict) -> pd.DataFrame:
+    if not guides:
+        return tbl
+    tbl = tbl.copy()
+    for i, pid in zip(tbl.index, tbl["商品ID"]):
+        g = guides.get(str(pid))
+        if not g:
+            continue
+        if g.get("video_url"):
+            tbl.at[i, "動画URL"] = g["video_url"]
+        if g.get("creator"):
+            tbl.at[i, "動画投稿者"] = g["creator"]
+        tbl.at[i, "再現ガイド"] = str(g.get("guide", ""))
+    return tbl
+
+
+def build_tap_rows(hot: pd.DataFrame, tap_rows: list[dict]) -> pd.DataFrame:
+    """自社TAP取扱商品を、売れ筋に載った商品を除いて売れ筋と同じ列で返す (保険枠)。
+    売れ行き・日販の基準は適用しない。各ジャンルの末尾に付けるのは呼び出し側。
+    リンクはTAPのアフィリエイトリンク、🎁自社サンプル可を付ける"""
+    from weekly_picks import norm_name, product_image_url
+    if not CONFIG.get("tap_append") or not tap_rows:
+        return hot.iloc[0:0]
+    have_ids = set(hot["商品ID"].astype(str))
+    have_keys = {norm_name(str(n)) for n in hot["商品名"]}
+    rows = []
+    for r in tap_rows:
+        pid = str(r.get("商品ID", "")).strip()
+        name = str(r.get("商品名", ""))
+        if (pid and pid in have_ids) or norm_name(name) in have_keys:
+            continue
+        cat = str(r.get("カテゴリ", ""))
+        try:
+            rate = float(str(r.get("報酬率", "")).replace("%", "").strip())
+        except ValueError:
+            rate = None
+        img = str(r.get("画像", "")).strip()
+        if img and not img.startswith(("http", "/")):
+            img = "/" + img
+        if not img or (img.startswith("/") and not os.path.exists(img.lstrip("/"))):
+            img = product_image_url(f"/product/{pid}") if pid else ""
+        rows.append({
+            "おすすめ": "", "バッジ": "🎁自社サンプル可", "商品名": name[:50],
+            "ジャンル": CONFIG["tap_genre_map"].get(cat, "その他"),
+            "大分類": cat, "カテゴリ": cat, "30日売上": "-",
+            "単価": str(r.get("価格", "")) or "-",
+            "報酬率": f"{rate:.0f}%" if rate is not None else "-",
+            "タグ": "", "商品リンク": r.get("アフィリエイトリンク", ""),
+            "画像": img, "商品ID": pid, "枠": "TAP", "_rate": rate or 0,
+        })
+    if not rows:
+        return hot.iloc[0:0]
+    t = pd.DataFrame(rows).sort_values("_rate", ascending=False, kind="stable")
+    lim = CONFIG.get("tap_append_limit_per_genre")
+    if lim:
+        t = t.groupby("ジャンル", sort=False).head(lim)
+    t = t.drop(columns=["_rate"])
+    for col in hot.columns:                 # 売れ筋にしかない列は空/"-"で埋める
+        if col not in t.columns:
+            t[col] = "" if col in ("動画URL", "動画投稿者", "再現ガイド") else "-"
+    return t[hot.columns]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--auto", metavar="DIR", default=None,
@@ -466,12 +561,16 @@ def main():
         print(f"[info] フォロワー少動画: 商品{len(small_keys)}件を🔰判定に使用")
     prod_main = tag_and_filter(load_products(args.products))
     prod_main = prod_main[prod_main["n_creators"] > CONFIG["hot_min_creators"]]  # 売れ筋のみ: 低参画=専売疑いを除外
+    # 売れ筋: 日販(=30日販売数÷30)が基準以上のみ (2026-10-26 ユーザー指示: 1日30個以上)
+    n_before = len(prod_main)
+    prod_main = prod_main[prod_main["units"] / 30 >= CONFIG["hot_min_daily_units"]]
+    print(f"[info] 日販{CONFIG['hot_min_daily_units']}個以上: {n_before}件 → {len(prod_main)}件")
     prod_new = tag_and_filter(load_products(args.new))
     # 新商品: 成長率マイナスと参画3人以下を除外
     prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
                         & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
 
-    hot = build_table(prod_main, videos, small_keys)
+    hot = build_table(prod_main, videos, small_keys, hot_badges=True)
     # 新商品: 掲載日数以内(データにあれば適用)
     new_tbl = build_table(prod_new, videos, small_keys)
     cutoff = pd.Timestamp.now() - pd.Timedelta(days=CONFIG["challenge_max_listed_days"])
@@ -509,6 +608,22 @@ def main():
                ("自社案件リスト", *index_own_rows(own_rows))]
     hot, n_hot = apply_own_list(hot, sources)
     new_tbl, n_new = apply_own_list(new_tbl, sources)
+    # 一番売れてる動画の再現ガイド (任意ファイル input/video_guides.json)
+    guides = load_video_guides()
+    hot = apply_video_guides(hot, guides)
+    n_guide = int((hot["再現ガイド"] != "").sum())
+    # 保険枠: 自社TAP取扱商品を各ジャンルの末尾に追記 (売れ筋に載った商品は除く)
+    hot_core = hot                          # TAP追記前 (ジャンルサマリー用。indexがhot_gmv_rawと対応)
+    tap_extra = build_tap_rows(hot, tap_rows)
+    if len(tap_extra):
+        hot = pd.concat([hot, tap_extra], ignore_index=True)
+        hot["_g"] = hot["ジャンル"].map(genre_pos).fillna(len(genre_pos))
+        hot["_t"] = (hot["枠"] == "TAP").astype(int)
+        hot = (hot.sort_values(["_g", "_t"], kind="stable")
+                  .drop(columns=["_g", "_t"]).reset_index(drop=True))
+    hot_main = hot[hot["枠"] != "TAP"]
+    print(f"[info] 売れ筋 {len(hot_main)}件 (🔥売れ筋！{int(hot_main['バッジ'].str.contains('🔥').sum())}件) / "
+          f"各ジャンル末尾のTAP取扱 {len(tap_extra)}件 / 再現ガイド {n_guide}件")
     for label, total in (("TAP一覧", len(tap_rows)), ("自社案件リスト", len(own_rows)),
                          ("手動指定", len(CONFIG.get("own_overrides", {})))):
         if total:
@@ -526,7 +641,7 @@ def main():
 
     out_path = args.out or f"weekly_data_{dt.date.today():%Y%m%d}.xlsx"
     with pd.ExcelWriter(out_path, engine="openpyxl") as w:
-        cat_summary(hot, hot_gmv_raw).to_excel(w, sheet_name="カテゴリ別サマリー", index=False)
+        cat_summary(hot_core, hot_gmv_raw).to_excel(w, sheet_name="カテゴリ別サマリー", index=False)
         hot.to_excel(w, sheet_name="売れ筋候補", index=False)
         new_tbl.to_excel(w, sheet_name="新商品候補", index=False)
         # 列幅調整
@@ -535,7 +650,7 @@ def main():
                 width = max(len(str(c.value)) for c in col_cells if c.value) + 2
                 ws.column_dimensions[col_cells[0].column_letter].width = min(width, 50)
 
-    print(f"[info] 売れ筋候補 {len(hot)}件 / 新商品候補 {len(new_tbl)}件 → {out_path}")
+    print(f"[info] 売れ筋候補 {len(hot_main)}件 (+TAP取扱{len(tap_extra)}件) / 新商品候補 {len(new_tbl)}件 → {out_path}")
 
     if args.images:
         embed_images(out_path, ["売れ筋候補", "新商品候補"])
@@ -557,7 +672,7 @@ def main():
     today = dt.date.today().strftime("%m/%d")
     lines = [f"# 📦 今週のおすすめ商品データ（{today}｜コンソール確認用）", "",
              "# 🔥 売れ筋候補"]
-    for cat, g in hot.groupby("ジャンル", sort=False):
+    for cat, g in hot_main.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]
         for _, r in g.iterrows():
             lines += [
@@ -577,14 +692,14 @@ def main():
     print("\n" + "\n".join(lines))
 
     if args.preview_post:
-        post_discord_embeds(hot, new_tbl, "", args.top_per_cat,
+        post_discord_embeds(hot_main, new_tbl, "", args.top_per_cat,
                             preview_path=args.preview_post)
         print(f"[info] Discord投稿プレビューを書き出しました (送信はしていません): {args.preview_post}")
 
     if args.post:
         if not args.webhook:
             sys.exit("[error] --webhook または DISCORD_WEBHOOK_URL を設定してください")
-        post_discord_embeds(hot, new_tbl, args.webhook, args.top_per_cat)
+        post_discord_embeds(hot_main, new_tbl, args.webhook, args.top_per_cat)
         print("[info] Discordに投稿しました")
 
 

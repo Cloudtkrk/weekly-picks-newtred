@@ -32,7 +32,7 @@ import requests
 # ============================================================
 CONFIG = {
     # --- 売れ筋の閾値 ---
-    "hot_min_gmv": 5_000_000,         # 30日売上 500万円以上 (連携クリエイター経由・TTS日本の規模感)
+    "hot_min_gmv": 0,                 # 売上の足切りなし (2026-10-26 ユーザー指示で500万円を撤廃。掲載基準は日販)
     "hot_min_growth": -20.0,          # 成長率 -20%まで許容
     "hot_min_rating": 4.0,
     # --- チャレンジの閾値 ---
@@ -77,7 +77,21 @@ CONFIG = {
         "テキスタイル・ソフトファニシング": "キッチン・ホーム用品", "家具": "キッチン・ホーム用品",
     },
     "genre_order": ["美容", "食品", "家電ガジェット", "キッチン・ホーム用品", "その他"],
-    "per_genre_limit": 10,             # 売れ筋: 各ジャンル上位N件
+    "per_genre_limit": 20,             # 売れ筋: 各ジャンル上位N件 (2026-10-26 10→20)
+    # --- 売れ筋の足切り: 日販 (=30日販売数÷30) ---
+    #     2026-10-26 ユーザー指示: 「1日30個以上」を拾う。売上の足切り(旧500万円)は
+    #     コード側には無く、Kalodataエクスポート条件側にあった (docs参照)
+    "hot_min_daily_units": 30,         # 日販この値以上のみ掲載
+    "hot_badge_daily_units": 100,      # 日販この値以上は「🔥売れ筋！」バッジ
+    # --- 各ジャンル末尾に追記する自社TAP取扱商品 (売れ行き・日販に関係なく載せる保険枠) ---
+    #     tap_list.csv の商品を、売れ筋に載った商品を除いて各ジャンルの最後に足す。
+    #     件数上限は None=全件。TAPのカテゴリ→5ジャンルの対応はここ。未定義は「その他」
+    "tap_append": True,
+    "tap_append_limit_per_genre": None,
+    "tap_genre_map": {
+        "美容・コスメ": "美容", "食品": "食品", "家電": "家電ガジェット",
+        "生活・雑貨": "キッチン・ホーム用品",
+    },
     # --- バッジ閾値 (サンプル承認難易度の可視化) ---
     "easy_pace": 50,                   # 🔰 参画ペース (人/月) 下限
     "easy_cvr": 40,                    # 🔰 成立率 (%) 下限
@@ -370,6 +384,8 @@ def load_videos(path: str) -> pd.DataFrame:
     col_ad_ratio = find_col(df, ["広告視聴率"])
     col_views = find_col_except(df, ["視聴回数", "視聴数"],   # 新: 視聴数
                                 exclude=("1000", "率"))
+    col_vlink = find_col(df, ["動画リンク"])                  # 一番売れてる動画の紹介用 (任意)
+    col_creator = find_col(df, ["クリエイター"])
 
     _missing = [label for label, col in (("商品名", col_product), ("売上高", col_gmv))
                 if col is None]
@@ -387,6 +403,8 @@ def load_videos(path: str) -> pd.DataFrame:
         "gpm": df[col_gpm].map(parse_money),
         "ad_ratio": df[col_ad_ratio].map(parse_pct),
         "views": df[col_views].map(parse_money),
+        "video_url": df[col_vlink] if col_vlink else "",
+        "creator": df[col_creator] if col_creator else "",
     })
 
     today = pd.Timestamp.now().normalize()
@@ -405,6 +423,12 @@ def load_videos(path: str) -> pd.DataFrame:
             ),
             "top_video_desc": g.sort_values("video_gmv", ascending=False)
                                ["product_name"].iloc[0],
+            # 直近7日で一番売れている動画 (カードの🎬リンク用)
+            "top_video_url": g.sort_values("video_gmv", ascending=False)["video_url"].iloc[0],
+            "top_video_creator": g.sort_values("video_gmv", ascending=False)["creator"].iloc[0],
+            "top_video_gmv": g["video_gmv"].max(),
+            "top_video_views": g.sort_values("video_gmv", ascending=False)["views"].iloc[0],
+            "top_video_posted": g.sort_values("video_gmv", ascending=False)["posted_at"].iloc[0],
         }),
         include_groups=False,
     ).reset_index()
