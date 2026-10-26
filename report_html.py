@@ -445,10 +445,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
 <li><span class="pill gem">💎 狙い目</span>1人あたりの取り分が大きいが、承認には実績や投稿数が必要</li>
 <li><span class="rec">⭐ 今週売れてる</span>直近7日も動画で売れている＝今から乗っても間に合う</li>
 <li><span class="pill hotsale">🔥 売れ筋！</span>1日100個以上売れている商品</li>
-</ul></div>
-<div class="sample-note">🎁 <b>自社サンプル可</b>と記載のある商品が、サンプルをお渡しできる商品です。
-それ以外の商品は、ご連絡いただいてもサンプル対応ができません。<br>
-各ジャンルの最後には、弊社取扱（NewTrend商品一覧）の商品を載せています。</div>"""
+</ul></div>"""
     c = CONFIG
     badge_note = (
         f'🔰 <b>初心者でも狙いやすい</b>＝参画ペース{c["easy_pace"]}人/月以上 × '
