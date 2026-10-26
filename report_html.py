@@ -107,6 +107,10 @@ footer{margin-top:44px; color:var(--sub); font-size:12px;
       background:var(--card); border:1px solid var(--line); color:var(--sub);
       cursor:pointer; user-select:none}
 .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.tgl{padding:5px 12px; border-radius:99px; font-size:12.5px; font-weight:700;
+     background:var(--card); border:1px dashed var(--line); color:var(--sub);
+     cursor:pointer; user-select:none; margin-left:auto}
+.hide-tap .card.tap{display:none}
 .catgrp.hidden{display:none}
 .tab.arch{font-size:12.5px; padding:9px 12px}
 .arch-note{margin:10px 0 0; padding:10px 12px; background:#fff3d6; color:#8a6100;
@@ -328,7 +332,7 @@ def _card(r, kind: str, embed_fn=None) -> str:
         if guide_txt:
             vid += (f'<details class="rg"><summary>📝 この動画の再現ガイド</summary>'
                     f'<div class="rgbody">{_h.escape(guide_txt)}</div></details>')
-    return (f'<div class="card">{img}<div class="body">{rec}'
+    return (f'<div class="card{" tap" if r.get("枠") == "TAP" else ""}">{img}<div class="body">{rec}'
             f'<a class="name" href="{_h.escape(link)}" target="_blank">{_h.escape(str(r["商品名"]))}</a>'
             f'<div class="stats">{line1}</div>'
             f'{_tag_html(r["タグ"])}{vid}</div></div>')
@@ -356,6 +360,10 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
   document.querySelectorAll('.catgrp').forEach(g =>
     g.classList.toggle('hidden', v !== 'all' && g.dataset.cat !== v));
 }));
+document.querySelectorAll('.tgl').forEach(t => t.addEventListener('click', () => {
+  const off = document.body.classList.toggle('hide-tap');
+  t.textContent = off ? '🤝 NewTrend取扱を表示' : '🤝 NewTrend取扱を隠す';
+}));
 </script>"""
 
 
@@ -363,6 +371,8 @@ def _filter_bar(tbl) -> str:
     cats = list(dict.fromkeys(tbl["ジャンル"].astype(str)))
     chips = ['<span class="chip on" data-cat="all">すべて</span>']
     chips += [f'<span class="chip" data-cat="{_h.escape(c)}">{_h.escape(c)}</span>' for c in cats]
+    if "枠" in tbl.columns and (tbl["枠"] == "TAP").any():
+        chips.append('<span class="tgl" id="tap-toggle">🤝 NewTrend取扱を隠す</span>')
     return f'<div class="filters">{"".join(chips)}</div>' 
 
 
