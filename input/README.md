@@ -25,3 +25,4 @@ Actionsの自動トリガーは `input/**` 配下の変更のみ。コミット�
 
 2026-10-27: 商品画像は `product_images.json` (商品ID→画像URL、TikTok商品ページの og:image) を最優先で使う。
 CSVの「画像リンク」の img.kalocdn.com/tiktok.product/<ID>/cover.png は実在しないURLなので無視する。
+2026-10-27: 画像が取れない商品は Kalodata詳細ページ (kalodata.com/product/detail?id=<ID>) の商品画像 (img.kalocdn.com/tiktok.product.images/...) を使う。
