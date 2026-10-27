@@ -450,6 +450,8 @@ def load_video_guides(path: str = "input/video_guides.json") -> dict:
     """一番売れてる動画の再現ガイド (週次でClaudeセッションが作る任意ファイル)。
     形式: {"<商品ID>": {"video_url": "...", "creator": "...", "guide": "改行区切りの本文"}}
     video_url / creator は省略可 (省略時は動画エクスポートから自動で選んだ動画を使う)。
+    video_url で動画を差し替えたときは video_gmv / video_views (例 "155万円" / "107.7万") も書く。
+    書かないと、元の動画の売上・再生数が残る
     ファイルがなければ空 = 🎬リンクだけ表示し、再現ガイドは出さない"""
     import json
     if not os.path.exists(path):
@@ -470,6 +472,11 @@ def apply_video_guides(tbl: pd.DataFrame, guides: dict) -> pd.DataFrame:
             tbl.at[i, "動画URL"] = g["video_url"]
         if g.get("creator"):
             tbl.at[i, "動画投稿者"] = g["creator"]
+        # 動画を差し替えたときは、売上・再生数も差し替え先の数字にする (表示用の文字列)
+        if g.get("video_gmv"):
+            tbl.at[i, "動画売上"] = g["video_gmv"]
+        if g.get("video_views"):
+            tbl.at[i, "動画再生数"] = g["video_views"]
         tbl.at[i, "再現ガイド"] = str(g.get("guide", ""))
     return tbl
 

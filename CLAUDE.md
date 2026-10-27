@@ -155,7 +155,7 @@ python weekly_data_v1.py --auto input/ --html
   社内用の取扱依頼候補はGoogleシートの社内専用タブだけに置く
 - **一番売れてる動画**: 動画エクスポート (直近7日) の商品ごとの売上1位の動画へのリンク・投稿者・売上・再生数を自動で出す (🎬)
 - **再現ガイド**: 任意ファイル `input/video_guides.json` (形式は `weekly_data_v1.load_video_guides` のdocstring)。
-  商品IDをキーに `guide` (本文) と、必要なら `video_url` / `creator` を書く。週次でClaudeセッションが動画を見て作る。
+  商品IDをキーに `guide` (本文) と、必要なら `video_url` / `creator` を書く。見られない動画を差し替えたときは `video_gmv` / `video_views` (表示用の文字列。動画エクスポートの数字) も書く。週次でClaudeセッションが動画を見て作る。
   ファイルが無い/商品が載っていなければガイドは出さず🎬リンクだけ。薬機法・景表法に触れやすい言い回しは言い換え案を添える
 
 ### 名称ルール
