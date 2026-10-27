@@ -199,7 +199,12 @@ python weekly_data_v1.py --auto input/ --html
   2026-08に削除した (🤝案件ページに集約)。`report_html.write_site` / `archive_site` からも
   生成呼び出しを外してある。復活させる場合は `_own_page` / `_shop_pages` / `_live_page` /
   `_timesale_pages` が残っているので呼び出しを戻せばよい
-- **商品画像**: `product-images/<商品ID>.jpeg` がリポジトリにあればそれを (Vercelが静的配信)、
+- **商品画像 (売れ筋/新商品カード, 2026-10-27〜)**: `product_images.json` (商品ID→URL) を最優先。
+  TikTok商品ページ (`shop.tiktok.com/view/product/<ID>?region=JP`) の og:image (ibyteimg、クエリ文字列なしで表示可) を
+  Claude in Chrome のページ内XHRで3秒間隔で取得して書き足す (連続アクセスはパズル認証に当たるので急がない。認証は人が解く)。
+  CSVの「画像リンク」の `img.kalocdn.com/tiktok.product/<ID>/cover.png` は実在しないので使わない (推測URLを作らないこと)。
+  商品ページが og:image を返さない商品 (販売終了等) は画像なし表示のまま。毎週、新規掲載分だけ追記する。
+- **商品画像 (TAP/フォールバック)**: `product-images/<商品ID>.jpeg` がリポジトリにあればそれを (Vercelが静的配信)、
   無ければ `https://newtrend.entercommerce.co.jp/product-images/<商品ID>.jpeg`
 
 ## 🤝 NewTrend商品一覧 (tap.html)

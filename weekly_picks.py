@@ -214,6 +214,25 @@ def fix_image_url(u):
 PRODUCT_IMAGE_BASE = "https://newtrend.entercommerce.co.jp/product-images"
 
 
+_PRODUCT_IMAGES = None
+
+
+def mapped_product_image(link) -> str:
+    """商品ページ (og:image) から取得した画像URLの対応表 product_images.json (商品ID→URL)。
+    KalodataのCSVの「画像リンク」は img.kalocdn.com/tiktok.product/<ID>/cover.png という
+    実在しないURLが入ることがあるため、商品ページから取ったURLを最優先で使う"""
+    global _PRODUCT_IMAGES
+    if _PRODUCT_IMAGES is None:
+        try:
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "product_images.json"), encoding="utf-8") as f:
+                _PRODUCT_IMAGES = json.load(f)
+        except Exception:
+            _PRODUCT_IMAGES = {}
+    m = re.search(r"/product/(\d+)", str(link or ""))
+    return _PRODUCT_IMAGES.get(m.group(1), "") if m else ""
+
+
 def product_image_url(link) -> str:
     """商品URL (TikTokリンク) から商品IDを取り出して画像URLを組み立てる。
     Kalodataの画面取得データには「画像リンク」列が無いためのフォールバック。
@@ -496,9 +515,13 @@ def load_products(path: str) -> pd.DataFrame:
     # 画像リンクが取れていない行 (画面取得データには「画像リンク」列が無い) は
     # 商品IDから自社ホストの画像を引く。列はあるが空、というセルも同じ扱い
     if col_tt_link:
-        usable = out["image_link"].astype(str).str.startswith(("http", "/"))
+        # kalocdn の cover.png は存在しない (2026-10-27確認) ので使わない
+        usable = (out["image_link"].astype(str).str.startswith(("http", "/"))
+                  & ~out["image_link"].astype(str).str.contains("kalocdn.com/tiktok.product/"))
         out["image_link"] = out["image_link"].where(
             usable, out["tiktok_link"].map(product_image_url))
+        mapped = out["tiktok_link"].map(mapped_product_image)
+        out["image_link"] = out["image_link"].where(mapped == "", mapped)
 
     # カテゴリ誤り補正 (is_yakki判定や表示グループ化の前に適用)
     out["category"] = [fix_category(n, c) for n, c in

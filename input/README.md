@@ -22,3 +22,6 @@ Actionsの自動トリガーは `input/**` 配下の変更のみ。コミット�
 
 2026-09-07 分から 🎁自社サンプル可 の個別例外は `CONFIG["own_overrides"]` (商品ID→指定) で管理する。
 案件リストのCSVはGoogleシートのスナップショットなので直接編集しないこと。
+
+2026-10-27: 商品画像は `product_images.json` (商品ID→画像URL、TikTok商品ページの og:image) を最優先で使う。
+CSVの「画像リンク」の img.kalocdn.com/tiktok.product/<ID>/cover.png は実在しないURLなので無視する。
