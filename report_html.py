@@ -291,7 +291,7 @@ def _card(r, kind: str, embed_fn=None) -> str:
     elif isinstance(r["画像"], str) and r["画像"].startswith(("http", "/")):
         alt = r.get("画像alt", "")
         alt_attr = _h.escape(alt) if isinstance(alt, str) and alt.startswith("http") else ""
-        img = (f'<img src="{_h.escape(r["画像"])}" data-alt="{alt_attr}" loading="lazy" referrerpolicy="no-referrer" '
+        img = (f'<img src="{_h.escape(r["画像"])}" data-alt="{alt_attr}" loading="lazy" '
                f'referrerpolicy="no-referrer" alt="" '
                f"onerror=\"if(this.dataset.alt&&this.src!==this.dataset.alt)"
                f"{{this.src=this.dataset.alt}}else{{this.outerHTML="
