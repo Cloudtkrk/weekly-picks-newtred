@@ -203,7 +203,24 @@ python weekly_data_v1.py --auto input/ --html
   TikTok商品ページ (`shop.tiktok.com/view/product/<ID>?region=JP`) の og:image (ibyteimg、クエリ文字列なしで表示可) を
   Claude in Chrome のページ内XHRで3秒間隔で取得して書き足す (連続アクセスはパズル認証に当たるので急がない。認証は人が解く)。
   CSVの「画像リンク」の `img.kalocdn.com/tiktok.product/<ID>/cover.png` は実在しないので使わない (推測URLを作らないこと)。
-  商品ページが og:image を返さない商品 (販売終了等) は画像なし表示のまま。毎週、新規掲載分だけ追記する。
+  商品ページが og:image を返さない商品は、Kalodata詳細ページ (`kalodata.com/product/detail?id=<ID>`、
+  要ログイン済みChrome) の商品画像 (`img.kalocdn.com/tiktok.product.images/<tos…>/<hash>.png`、
+  背景画像として描画される。`img` タグではない) を使い、同じ `product_images.json` に書く。
+  毎週、新規掲載分だけ追記する。
+
+  **画像の原因と対策 (2026-10-27)**
+  - 原因1: CSVの「画像リンク」が `img.kalocdn.com/tiktok.product/<ID>/cover.png` という実在しないURLだった
+    (取得時に推測で組んだパターン)。→ 無視し、商品ページから実URLを取る。
+  - 原因2: 画像が無い行は自社ホスト `newtrend.entercommerce.co.jp/product-images/` に落ちるが、そこにも無い。
+  - 原因3: 取得を連続で回すとTikTokのパズル認証 (Security Check) に当たり、以後の取得が全滅する
+    (応答は200で og:image だけ無い)。→ 3秒間隔、`Security Check` を検知したら即停止して人に解いてもらう。
+  - 原因4: ページを再読み込みすると `window` の取得結果が消える。→ 取得結果は都度 localStorage に保存する。
+  - 原因5: 一部商品はTikTok商品ページが画像情報を返さない (販売終了・非表示等)。→ Kalodata詳細ページで補う。
+  - **公開前ゲート**: `python check_images.py preview` で「画像なし: 0件」を確認してから公開する
+    (1件でもあれば公開しない。ユーザー指示 2026-10-27)。
+  - 所要時間の目安: 商品ページ取得は1件約4秒 (3秒待ち+応答)。表示対象は売れ筋100+新商品約40=約140件で
+    全件初回なら約10分、2週目以降は新規分だけ (数十件=数分)。エクスポート全行 (約500件) なら約35分。
+    Kalodata詳細ページ補完は1件約30秒 (手動ナビ)。
 - **商品画像 (TAP/フォールバック)**: `product-images/<商品ID>.jpeg` がリポジトリにあればそれを (Vercelが静的配信)、
   無ければ `https://newtrend.entercommerce.co.jp/product-images/<商品ID>.jpeg`
 
