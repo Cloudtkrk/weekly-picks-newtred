@@ -173,7 +173,8 @@ python weekly_data_v1.py --auto input/ --html
 - リポジトリ: `Cloudtkrk/weekly-picks-newtred` (public) → Vercel自動デプロイ
 - 公開URL: Vercelプロジェクトのドメイン直下 `/` (売れ筋)、`/challenge.html` (新商品)、
   `/tap.html` (NewTrend商品一覧)、`/archive/` (過去週一覧)
-- タブ構成: 🔥売れ筋 / 🚀新商品 / 🤝NewTrend商品一覧 / 📅アーカイブ
+- タブ構成: 🔥売れ筋 / 🚀新商品 / 📅アーカイブ (2026-10-27 🤝NewTrend商品一覧タブは非表示。`CONFIG["show_tap_tab"]=False`。
+  `build_tap.py` は何もせず終了し、tap.html は更新もリンクもしない。復活は True に戻す)
 - プッシュ対象は直下の `index.html` / `challenge.html` と `archive/`・`data/` 配下、
   および Actionsの入力となる `input/*.xlsx` (privateリポジトリのためコミットOK)。
   生成物の `weekly_data_*.xlsx` と `.img_cache/` はコミットしない (.gitignore済)

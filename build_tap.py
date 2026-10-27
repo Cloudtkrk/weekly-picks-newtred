@@ -18,6 +18,9 @@ def main():
     # 引数でタブを差し込む対象ディレクトリを指定できる (既定は直下)。
     # 例: python build_tap.py preview → preview/index.html などに ../tap.html のタブを差し込む
     patch_dir = sys.argv[1] if len(sys.argv) > 1 else "."
+    from weekly_picks import CONFIG
+    if not CONFIG.get("show_tap_tab", True):
+        print("show_tap_tab=False のためタブ差し込み・tap.html再生成をスキップ"); return
     n_hot, n_chal, n_own, n_live = counts(
         os.path.join(patch_dir, "index.html") if patch_dir != "." else "index.html")
     prods, camps = tap_site.load_tap(".")

@@ -27,3 +27,4 @@ Actionsの自動トリガーは `input/**` 配下の変更のみ。コミット�
 CSVの「画像リンク」の img.kalocdn.com/tiktok.product/<ID>/cover.png は実在しないURLなので無視する。
 2026-10-27: 画像が取れない商品は Kalodata詳細ページ (kalodata.com/product/detail?id=<ID>) の商品画像 (img.kalocdn.com/tiktok.product.images/...) を使う。
 (画像対応表を再反映するため再生成)
+2026-10-27: NewTrend商品一覧タブを非表示にしたため、プレビュー再生成

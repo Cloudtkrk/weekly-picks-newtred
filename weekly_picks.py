@@ -86,6 +86,7 @@ CONFIG = {
     # --- 各ジャンル末尾に追記する自社TAP取扱商品 (売れ行き・日販に関係なく載せる保険枠) ---
     #     tap_list.csv の商品を、売れ筋に載った商品を除いて各ジャンルの最後に足す。
     #     件数上限は None=全件。TAPのカテゴリ→5ジャンルの対応はここ。未定義は「その他」
+    "show_tap_tab": False,  # 2026-10-27 ユーザー指示: 🤝NewTrend商品一覧タブを非表示 (tap.htmlは残すがリンクしない)
     "tap_append": False,  # 2026-10-27 ユーザー指示で売れ筋ページのNewTrend取扱枠は廃止
     "tap_append_limit_per_genre": None,
     "tap_genre_map": {
