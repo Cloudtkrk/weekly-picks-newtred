@@ -28,3 +28,4 @@ CSVの「画像リンク」の img.kalocdn.com/tiktok.product/<ID>/cover.png は
 2026-10-27: 画像が取れない商品は Kalodata詳細ページ (kalodata.com/product/detail?id=<ID>) の商品画像 (img.kalocdn.com/tiktok.product.images/...) を使う。
 (画像対応表を再反映するため再生成)
 2026-10-27: NewTrend商品一覧タブを非表示にしたため、プレビュー再生成
+2026-10-30: 新規掲載商品の画像50件を Kalodata の cover.png からダウンロードして product-images/kalodata/ に置いたため、プレビュー再生成

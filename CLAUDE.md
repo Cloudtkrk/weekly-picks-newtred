@@ -203,11 +203,20 @@ python weekly_data_v1.py --auto input/ --html
 - **商品画像 (売れ筋/新商品カード, 2026-10-27〜)**: `product_images.json` (商品ID→URL) を最優先。
   TikTok商品ページ (`shop.tiktok.com/view/product/<ID>?region=JP`) の og:image (ibyteimg、クエリ文字列なしで表示可) を
   Claude in Chrome のページ内XHRで3秒間隔で取得して書き足す (連続アクセスはパズル認証に当たるので急がない。認証は人が解く)。
-  CSVの「画像リンク」の `img.kalocdn.com/tiktok.product/<ID>/cover.png` は実在しないので使わない (推測URLを作らないこと)。
+  CSVの「画像リンク」の `img.kalocdn.com/tiktok.product/<ID>/cover.png` は直リンクでは表示できないので、そのまま使わない (下の「2026-10-30〜」のとおりダウンロードして置く)。
   商品ページが og:image を返さない商品は、Kalodata詳細ページ (`kalodata.com/product/detail?id=<ID>`、
   要ログイン済みChrome) の商品画像 (`img.kalocdn.com/tiktok.product.images/<tos…>/<hash>.png`、
   背景画像として描画される。`img` タグではない) を使い、同じ `product_images.json` に書く。
   毎週、新規掲載分だけ追記する。
+
+  **2026-10-30〜 取得順を変更 (ユーザー指示: 速くするため Kalodata を先に、取れない分だけ TikTok)**
+  - まず `img.kalocdn.com/tiktok.product/<ID>/cover.png` をダウンロードして
+    `product-images/kalodata/<ID>.<jpg|png|webp>` (中身の形式で拡張子を決める) に置き、
+    `product_images.json` に `/product-images/kalodata/<ID>.<拡張子>` と書く。
+    このURLは実在する (Kalodata商品一覧のサムネイルと同じ) が、**他サイトからの直リンクは Referer で 403** になる。
+    「実在しない」と見えていたのはこのため。だから直リンクせず、リポジトリに置いて Vercel から配る。
+    ログイン・Cookie不要のCDN取得なので Kalodata のアカウントロックとは無関係 (0.5秒間隔で50件が数十秒)
+  - 取れなかった (200以外・画像でない) 商品だけ、上の TikTok 商品ページ og:image → Kalodata詳細ページの順で補う
 
   **画像の原因と対策 (2026-10-27)**
   - 原因1: CSVの「画像リンク」が `img.kalocdn.com/tiktok.product/<ID>/cover.png` という実在しないURLだった
