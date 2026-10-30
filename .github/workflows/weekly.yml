@@ -4,6 +4,9 @@
 #       a) Actionsタブ「Weekly Picks」→ Run workflow (手動)
 #       b) publish/REQUEST.md を更新し、コミットメッセージを publish: で始めてプッシュ
 #          (Actions画面を開けない環境から公開するための経路)
+#       c) publish/SCHEDULED に日付を書いてプッシュ → 月曜 9:00 (日本時間) の定時実行で公開
+#          (Discordの確認用チャンネルで ✅ すると、Macの publish.sh がこれをプッシュする。
+#           公開そのものは Actions が行うので、月曜にMacが閉じていてもよい)
 name: Weekly Picks
 
 on:
@@ -11,7 +14,16 @@ on:
     paths:
       - "input/**"
       - "publish/**"
+  schedule:
+    # 月曜 9:00 (日本時間) = 月曜 0:00 UTC。GitHubの定時実行は数分〜数十分遅れることがある
+    - cron: "0 0 * * 1"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "now=今すぐ公開 / scheduled=予約 (publish/SCHEDULED) があるときだけ公開 (月曜の定時実行と同じ動き)"
+        type: choice
+        options: [now, scheduled]
+        default: now
 
 permissions:
   contents: write
@@ -112,26 +124,47 @@ jobs:
   #      「含む」ではなく「で始まる」なのは、本文で [publish] に言及しただけの
   #      コミットが誤って公開してしまうのを防ぐため
   #      通常のプッシュ (プレビュー生成やコード修正) では絶対に走らない
+  #      月曜 9:00 の定時実行 (schedule) は publish/SCHEDULED (✅ で入る予約) があるときだけ公開する
   publish:
     if: >-
       github.event_name == 'workflow_dispatch'
+      || github.event_name == 'schedule'
       || (github.event_name == 'push'
           && startsWith(github.event.head_commit.message, 'publish:'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check reservation (scheduled runs only)
+        id: gate
+        env:
+          SCHEDULED_RUN: ${{ github.event_name == 'schedule' || inputs.mode == 'scheduled' }}
+        run: |
+          if [ "$SCHEDULED_RUN" != "true" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "scheduled=false" >> "$GITHUB_OUTPUT"
+          elif [ -s publish/SCHEDULED ]; then
+            echo "公開予約あり: $(cat publish/SCHEDULED) 分"
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "scheduled=true" >> "$GITHUB_OUTPUT"
+            echo "date=$(head -1 publish/SCHEDULED | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+          else
+            echo "公開予約 (publish/SCHEDULED) がないので何もしません"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-python@v5
+        if: steps.gate.outputs.run == 'true'
         with:
           python-version: "3.12"
 
       - name: Install dependencies
+        if: steps.gate.outputs.run == 'true'
         run: pip install -r requirements.txt
 
       # 生成が失敗した場合はここで止まり、Discord投稿もサイト更新も行われない
       # コミットメッセージに [no-discord] を入れると投稿せずサイトだけ作り直す
       # (公開後に表示の不具合を直して出し直す場合に、二重通知を避けるため)
       - name: Generate site and post to Discord
+        if: steps.gate.outputs.run == 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
@@ -144,6 +177,10 @@ jobs:
           python weekly_data_v1.py --auto input/ --html $POST --top-per-cat 3
 
       - name: Publish site (commit & push)
+        if: steps.gate.outputs.run == 'true'
+        env:
+          SCHEDULED: ${{ steps.gate.outputs.scheduled }}
+          RES_DATE: ${{ steps.gate.outputs.date }}
         run: |
           cp weekly_site/index.html index.html
           cp weekly_site/challenge.html challenge.html
@@ -153,6 +190,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -r --ignore-unmatch --quiet preview || true
           git add -A index.html challenge.html tap.html archive/ data/
+          # 予約公開のときは予約を消し、公開ログに残す
+          if [ "$SCHEDULED" = "true" ]; then
+            git rm --quiet publish/SCHEDULED
+            echo "| $(TZ=Asia/Tokyo date +%F) | $RES_DATE 分 (月曜9時の予約公開) | Discordの確認用チャンネルで ✅ → 月曜9時に GitHub Actions が公開 |" >> publish/REQUEST.md
+            git add publish/REQUEST.md
+          fi
           if git diff --cached --quiet; then
             echo "変更なし: コミットをスキップ"
           else

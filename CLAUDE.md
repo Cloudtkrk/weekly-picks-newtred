@@ -18,6 +18,11 @@ Vercel (GitHubリポジトリ `weekly-picks-newtred` 連携) で公開するプ�
 - **(a) Actionsタブ「Weekly Picks」→ Run workflow** (workflow_dispatch)
 - **(b) `publish/REQUEST.md` の公開ログに1行足し、コミットメッセージを `publish:` で始めてプッシュ**
   → Actions画面を開けない環境 (Claudeのリモートセッション等) から公開するための経路。
+- **(c) 月曜 9:00 の予約公開 (2026-10-30〜 通常運用はこれ)**: `publish/SCHEDULED` に日付を1行書いてプッシュ
+  (コミットメッセージは `schedule:` で始める。`publish:` にしない)。月曜 0:00 UTC = 9:00 JST の定時実行
+  (`schedule`) が予約を見つけたら本公開・Discord投稿し、`publish/SCHEDULED` を消して `publish/REQUEST.md` に記録する。
+  予約がなければ何もしない。Discordの確認用チャンネルで ✅ するとMacの `~/mysite/weekly-picks/publish.sh` が予約を入れる
+  (✅ が月曜 9:00 を過ぎていたら (b) で即時公開)。動作確認は Run workflow で mode=scheduled
   Claudeからの `workflow_dispatch` はAPI権限がなく `403 Resource not accessible by integration`
   で弾かれるため、この経路を用意してある
 
