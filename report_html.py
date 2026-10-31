@@ -67,6 +67,16 @@ details.rg .rgbody{margin-top:5px; padding:8px 10px; background:#fff7ed; border-
   white-space:pre-wrap; line-height:1.6}
 .sample-note{background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 14px;
   margin:0 0 14px; font-size:12.5px; line-height:1.6}
+details.howto{background:#f0fdf9; border:1px solid #a7f3d0; border-radius:12px;
+  padding:12px 14px; margin:12px 0 4px; font-size:12.5px}
+details.howto summary{cursor:pointer; font-weight:800; font-size:13.5px; color:var(--ink)}
+.howto ol{list-style:none; counter-reset:st; display:flex; flex-direction:column; gap:9px; margin-top:10px}
+.howto li{counter-increment:st; display:flex; gap:10px; align-items:flex-start; line-height:1.6}
+.howto li::before{content:counter(st); flex:0 0 22px; height:22px; border-radius:50%;
+  background:var(--chal); color:#fff; font-weight:800; font-size:12px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px}
+.howto li b{color:var(--ink)}
+.howto li span{color:var(--sub)}
 .guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
        padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
 .guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
@@ -424,6 +434,16 @@ def make_embed_fn():
     return fetch
 
 
+# はじめての人向けの使い方 (売れ筋・新商品の両ページ冒頭。やることを順番に書く)
+HOWTO = """<details class="howto" open><summary>📖 はじめての方へ：このサイトの使い方（5ステップ）</summary><ol>
+<li><div><b>商品を選ぶ</b><br><span>上のタブで「🔥売れ筋」か「🚀新商品」を選び、ジャンルのボタンで絞り込みます。迷ったら <b>🔰初心者でも狙いやすい</b> か <b>🎁自社サンプル可</b> の付いた商品から。</span></div></li>
+<li><div><b>商品名をタップして商品ページを開く</b><br><span>TikTok Shopの商品ページが開きます。ショーケースへの追加やサンプル申請はそこから。報酬率は参考値なので、実際の料率はアフィリエイトセンターで確認してください。</span></div></li>
+<li><div><b>🎬「一番売れてる動画を見る」で、実際に売れた動画を見る</b><br><span>何をどう見せると売れているのかを、まず1本見てつかみます。</span></div></li>
+<li><div><b>📝「この動画の再現ガイド」を開いて、同じ流れで撮る</b><br><span>【構成】の秒数どおりに並べ、【撮り方】【再現のコツ】を真似します。動画をそのまま転載せず、自分の言葉と映像で撮ってください。</span></div></li>
+<li><div><b>投稿前に【注意・言い換え】をチェックする</b><br><span>効果の言い切りなど薬機法・景品表示法に触れやすい表現は、言い換え案に直します。価格・クーポン・在庫に触れるときは「投稿時点の情報です」と添えてください。</span></div></li>
+</ol><p style="margin-top:10px;color:var(--sub)">🎁自社サンプル可と書かれた商品は、弊社経由でサンプルをお渡しできます（それ以外の商品はサンプルのご相談に対応できません）。リストは毎週更新、過去分は📅アーカイブから見られます。</p></details>"""
+
+
 def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
           n_hot: int, n_chal: int, n_own: int = 0, n_live: int = 0):
     if kind == "hot":
@@ -462,6 +482,7 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">{today} 更新</span></header>
 <div class="tabs">{tabs}</div>
+{HOWTO}
 {guide}
 {_filter_bar(tbl)}
 {_section(tbl, kind, embed_fn)}
