@@ -316,9 +316,9 @@ def _card(r, kind: str, embed_fn=None) -> str:
     else:
         line1 = (f'30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
                  f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
-    # 一番売れてる動画 + 再現ガイド (売れ筋のみ)
+    # 一番売れてる動画 + 再現ガイド (売れ筋・新商品)
     vid = ""
-    if kind == "hot":
+    if kind in ("hot", "challenge"):
         vurl = str(r.get("動画URL") or "")
         if vurl.startswith("http"):
             meta = "・".join(x for x in (str(r.get("動画投稿者") or ""),

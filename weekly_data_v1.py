@@ -618,6 +618,7 @@ def main():
     # 一番売れてる動画の再現ガイド (任意ファイル input/video_guides.json)
     guides = load_video_guides()
     hot = apply_video_guides(hot, guides)
+    new_tbl = apply_video_guides(new_tbl, guides)
     n_guide = int((hot["再現ガイド"] != "").sum())
     # 保険枠: 自社TAP取扱商品を各ジャンルの末尾に追記 (売れ筋に載った商品は除く)
     hot_core = hot                          # TAP追記前 (ジャンルサマリー用。indexがhot_gmv_rawと対応)
