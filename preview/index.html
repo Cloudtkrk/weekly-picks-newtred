@@ -62,6 +62,16 @@ details.rg .rgbody{margin-top:5px; padding:8px 10px; background:#fff7ed; border-
   white-space:pre-wrap; line-height:1.6}
 .sample-note{background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:10px 14px;
   margin:0 0 14px; font-size:12.5px; line-height:1.6}
+details.howto{background:#f0fdf9; border:1px solid #a7f3d0; border-radius:12px;
+  padding:12px 14px; margin:12px 0 4px; font-size:12.5px}
+details.howto summary{cursor:pointer; font-weight:800; font-size:13.5px; color:var(--ink)}
+.howto ol{list-style:none; counter-reset:st; display:flex; flex-direction:column; gap:9px; margin-top:10px}
+.howto li{counter-increment:st; display:flex; gap:10px; align-items:flex-start; line-height:1.6}
+.howto li::before{content:counter(st); flex:0 0 22px; height:22px; border-radius:50%;
+  background:var(--chal); color:#fff; font-weight:800; font-size:12px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px}
+.howto li b{color:var(--ink)}
+.howto li span{color:var(--sub)}
 .guide{background:var(--card); border:1px solid var(--line); border-radius:12px;
        padding:12px 14px; margin:12px 0 4px; font-size:12.5px; color:var(--sub)}
 .guide .g-title{font-weight:800; font-size:13.5px; margin-bottom:8px; color:var(--ink)}
@@ -190,6 +200,13 @@ LINEでお伝えしている合言葉を入力してください。</p>
 <div class="wrap">
 <header><h1>📦 週次おすすめ商品</h1><span class="date">2026/10/31 更新</span></header><div class="arch-note">🧪 プレビュー版です。この内容で公開してよければ Claudeに「公開して」と伝えるか、GitHub Actions の「Weekly Picks」→ Run workflow を実行してください（Web公開とDiscord投稿が行われます）</div>
 <div class="tabs"><a class="tab active hot" href="./">🔥 売れ筋（88）</a><a class="tab" href="./challenge.html">🚀 新商品（28）</a><a class="tab arch" href="./archive/">📅 アーカイブ</a></div>
+<details class="howto" open><summary>📖 はじめての方へ：このサイトの使い方（5ステップ）</summary><ol>
+<li><div><b>商品を選ぶ</b><br><span>上のタブで「🔥売れ筋」か「🚀新商品」を選び、ジャンルのボタンで絞り込みます。迷ったら <b>🔰初心者でも狙いやすい</b> か <b>🎁自社サンプル可</b> の付いた商品から。</span></div></li>
+<li><div><b>商品名をタップして商品ページを開く</b><br><span>TikTok Shopの商品ページが開きます。ショーケースへの追加やサンプル申請はそこから。報酬率は参考値なので、実際の料率はアフィリエイトセンターで確認してください。</span></div></li>
+<li><div><b>🎬「一番売れてる動画を見る」で、実際に売れた動画を見る</b><br><span>何をどう見せると売れているのかを、まず1本見てつかみます。</span></div></li>
+<li><div><b>📝「この動画の再現ガイド」を開いて、同じ流れで撮る</b><br><span>【構成】の秒数どおりに並べ、【撮り方】【再現のコツ】を真似します。動画をそのまま転載せず、自分の言葉と映像で撮ってください。</span></div></li>
+<li><div><b>投稿前に【注意・言い換え】をチェックする</b><br><span>効果の言い切りなど薬機法・景品表示法に触れやすい表現は、言い換え案に直します。価格・クーポン・在庫に触れるときは「投稿時点の情報です」と添えてください。</span></div></li>
+</ol><p style="margin-top:10px;color:var(--sub)">🎁自社サンプル可と書かれた商品は、弊社経由でサンプルをお渡しできます（それ以外の商品はサンプルのご相談に対応できません）。リストは毎週更新、過去分は📅アーカイブから見られます。</p></details>
 <div class="guide"><div class="g-title">自分に合う商品の選び方</div><ul>
 <li><span class="pill easy">🔰 初心者でも狙いやすい</span>承認ペースが速く成立率も高い、またはフォロワーの少ないクリエイターでも売れている実績あり</li>
 <li><span class="pill own">🎁 自社サンプル可</span>弊社経由でサンプルを渡せる商品。実績ゼロでもまずここから</li>
@@ -587,7 +604,7 @@ LINEでお伝えしている合言葉を入力してください。</p>
 
 【再現のコツ】①冒頭は「◯◯だと思ってたけど」型で、商品カテゴリの常識を一言で否定して手を止めさせる　②「訳あり」商品は安い理由（形が不揃い・端材）をテロップで明言し、品質への不安を先に消す　③包丁で切る→クラッカーに乗せる、と「買った後の食べ方」を手元で見せ、最後は塊を切る手元に赤い矢印を重ねて誘導する
 
-【注意・言い換え】食品なので健康・美容効果はうたわず、味・量・使い方の話にとどめる（この動画もその範囲）。「コンビニよりコスパいい」は比較表現なので、具体的な価格比較をする場合は根拠を示すか「自分の場合は」と個人の感想として言う。ナレーションで「千円台で買える」と言っていますが、マニフェスト上の単価は4,067円のため、価格を言うときは必ず投稿時点の実際の価格（クーポン適用条件を含む）を確認し、「投稿時点（2026年10月）の情報です。価格・在庫は変わる場合があります」と添えてください。「お得なうちに」も同様に時点の注記を入れること。生ハムは要冷蔵・開封後の保存方法がある商品なので、ストックを勧める場合は「保存方法は商品ページを確認してください」と一言あると親切です。</div></details></div></div>
+【注意・言い換え】食品なので健康・美容効果はうたわず、味・量・使い方の話にとどめる（この動画もその範囲）。「コンビニよりコスパいい」は比較表現なので、具体的な価格比較をする場合は根拠を示すか「自分の場合は」と個人の感想として言う。ナレーションで「千円台で買える」と言っていますが、このサイト掲載時点の単価は4,067円のため、価格を言うときは必ず投稿時点の実際の価格（クーポン適用条件を含む）を確認し、「投稿時点（2026年10月）の情報です。価格・在庫は変わる場合があります」と添えてください。「お得なうちに」も同様に時点の注記を入れること。生ハムは要冷蔵・開封後の保存方法がある商品なので、ストックを勧める場合は「保存方法は商品ページを確認してください」と一言あると親切です。</div></details></div></div>
 <div class="card"><img src="/product-images/kalodata/1736416524575868615.jpg" data-alt="" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="rec">⭐ 今週売れてる</span><span class="pill easy">🔰初心者でも狙いやすい</span></div><a class="name" href="https://shop.tiktok.com/view/product/1736416524575868615?region=JP" target="_blank">【新規購入者様限定！特別クーポン利用で50%OFF！！！】  レンジで焼鮭 ドドンと600g入！ 約</a><div class="stats">30日売上 <b>1,413万円</b>｜単価 5,767円｜報酬率※ <b class="reward">4%</b></div><div class="tags"><span class="tag camp">🎫キャンペーン中</span><span class="tag">オーガニック</span></div><div class="vid">🎬 <a href="https://www.tiktok.com/@miyabichan27/video/7700490392034118930" target="_blank" rel="noopener">一番売れてる動画を見る</a><span class="vm">@miyabichan27・売上 167万円・152.5万再生</span></div><details class="rg"><summary>📝 この動画の再現ガイド</summary><div class="rgbody">【構成】42秒・商品レビュー＋時短実演。つかみ：ママが大きな鮭の袋を顔の横で持ち上げて「リキ太郎が鮭大好きやから、TikTok Shopで買ってみました」。テロップ白文字で一言ずつ。
 0〜8秒｜袋を持って登場。「子どもが鮭大好きだから買った」と動機を話し、約10切れの大きさを袋ごと見せる
 8〜15秒｜「レンジ約40秒でできるらしい、検証します」と指で数える。「安くて、こんなに入って3000円ちょっと」と値段に触れる
@@ -720,7 +737,7 @@ LINEでお伝えしている合言葉を入力してください。</p>
 【再現のコツ】①冒頭は完成品の最後の工程（大葉をのせる・切る）を先に見せ、商品の強み3ワードを1秒ずつテロップで出す　②開封→冷凍のまま並べる→凍ったまま焼く、の流れで「ストックしておける」「下処理いらず」を手順の中で見せる　③テロップは工程名だけの短い言葉にし、分量や詳細はキャプションに書く。全編に小さく下向き矢印を入れておく
 
 【注意・言い換え】食品なので健康効果（「体にいい」「DHAで頭が良くなる」など）はうたわない。この動画は味と便利さの話にとどまっているので、その方針でよい。「無添加」は何が無添加なのか（保存料・着色料など）を商品表示に合わせて具体的に言うと食品表示上も安全。「骨なし」は「骨取り済み（小骨が残る場合があります）」と添えると親切。「半額以下で購入」は「投稿時点（2026年9月）の情報です。価格・在庫は変わる場合があります」を添える。「悪魔的」「悪魔の調味料」は誇張表現として問題は小さいが、商品の効能と結びつけないこと。
-備考：動画内で商品名・ブランドの表示なし（段ボール・袋の表記は判読できず。マニフェストの商品はKalodata商品名検索で照合したもの）</div></details></div></div>
+備考：動画内で商品名・ブランドの表示なし（段ボール・袋の表記は判読できず）</div></details></div></div>
 <div class="card"><img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/775f91905b894c94822d42eea2ab9ce7~tplv-aphluv4xwc-resize-webp:800:800.webp" data-alt="" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="pill own">🎁自社サンプル可</span></div><a class="name" href="https://affiliate.tiktok.com/api/v1/share/AL1bIz7B8ZXn" target="_blank">【7種から選べる】  銀鮭 切り身  10切れ 加熱用 鮭 さけ サケ 焼き鮭 焼き魚 魚 さかな </a><div class="stats">30日売上 <b>1,276万円</b>｜単価 5,515円｜報酬率※ <b class="reward">5%</b></div><div class="tags"><span class="tag">LIVE向き</span></div><div class="vid">🎬 <a href="https://www.tiktok.com/@lincronova/video/7679072878964280596" target="_blank" rel="noopener">一番売れてる動画を見る</a><span class="vm">@lincronova・売上 14万円・13.36万再生</span></div><details class="rg"><summary>📝 この動画の再現ガイド</summary><div class="rgbody">【構成】61秒・リアクション実食型。つかみ：横から差し出された「しおそうの切り身」の袋に男性が驚く顔、赤フチの特大テロップ「おっほおいおい」→「デカッ!」
 0〜4秒｜スタッフの手が袋を差し出し、男性が受け取って「おっほおいおい」「デカッ!」と大きくリアクション。袋の中の切り身の大きさを最初に見せる
 4〜11秒｜袋を両手で持ってカメラに向け、赤い筆文字風テロップ「しおそうの切り身」で商品名を出す。「これ美味いんだよね」「リアルにめっちゃ食べてる」と普段から食べている体で話し、「焼きます」
@@ -824,7 +841,7 @@ LINEでお伝えしている合言葉を入力してください。</p>
 【再現のコツ】①1カット目は完成した料理を頬張る瞬間から入る（説明は後回し）　②袋から一気に出す・1粒を指でつまんでカメラに寄せる、で量と大きさを見せる　③卵黄を割る・醤油をかけるなどのシズルは真横の寄りで撮り、実食は顔と料理が同時に入る固定アングルで完食まで見せる
 
 【注意・言い換え】食品なので健康効果はうたわないこと（この動画は効果効能に触れておらず問題なし）。ハッシュタグ「#マジで飛ぶぞ」はおいしさの比喩だが、誤解を招く表現が気になる場合は「#ほっぺが落ちる」などに言い換えると安心。実食の途中で、丼のご飯の上に透明なフィルムのようなものが見えるカットがあり、ご飯の上げ底をしている可能性がある（推測）。実際より量が多く見える盛り付けは誤解につながるので、再現する場合は「1袋○gを使用」など実際の量がわかる見せ方にする。生食用か加熱用かは商品の表示どおりに扱い、生で食べる場合は「生食用の表示を確認してください」と添える。価格・セールに触れる場合は「投稿時点の情報です。価格・在庫は変わる場合があります」と添えてください。
-備考：動画内で商品名・ブランドの表示なし（袋の裏ラベルの一部が映るのみ。同名出品が複数あり、どの出品の商品かは動画からは判別できない）</div></details></div></div>
+備考：動画内で商品名・ブランドの表示なし（袋の裏ラベルの一部が映るのみ）</div></details></div></div>
 </div>
 <div class="catgrp" data-cat="家電ガジェット">
 <div class="cat">▼ <b>家電ガジェット</b>（12件）</div>
@@ -1136,7 +1153,7 @@ LINEでお伝えしている合言葉を入力してください。</p>
 【再現のコツ】①最初の1秒は実際の汚れ（グリル・コンロ）を見せてから拭くカットへつなぐ　②使い古しのクロスを積み重ねて「長く使っている」ことを映像で証明し、その上に新品を重ねる　③コンロ→壁→電子レンジ→ホコリ取り→洗う→干す、と使い道を1カット1つで並べ、最後に1枚あたりの価格と左下カートへの誘導で締める
 
 【注意・言い換え】「洗剤なしでいける」「ピッカピカ」「1年以上もつ」は効果・耐久性の断定なので、「汚れの程度によります」「使用頻度により異なります（個人の感想）」を添える。「バズりまくってる」は根拠がない場合「SNSで話題（投稿者の体感）」程度にする。価格は動画内で「5枚で640円」「1枚128円」、キャプションでは「5枚で1,280円＝1枚256円」と食い違っており、現在の単価（1,179円）とも異なるため、再現時はそのまま使わないこと。元動画のように「※ユーザーや時期によって価格が異なります」「※○月○日現在価格」を入れているのは良い例なので、価格に触れる場合は同様に「投稿時点の情報です。価格・在庫は変わる場合があります」を必ず添えてください。
-備考：動画内で商品名・ブランドの表示なし（同名出品が複数あり、どの出品の商品かは動画からは判別できない）</div></details></div></div>
+備考：動画内で商品名・ブランドの表示なし</div></details></div></div>
 <div class="card"><img src="/product-images/kalodata/1736930860248761937.jpg" data-alt="" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.outerHTML='<div class=noimg>no image</div>'}"><div class="body"><div class="pills"><span class="pill hotsale">🔥売れ筋！</span></div><a class="name" href="https://shop.tiktok.com/view/product/1736930860248761937?region=JP" target="_blank">【dadawoca】食品用シリコーン保存バッグ 繰り返し使える 密閉液漏れ防止 冷凍 / 電子レンジ</a><div class="stats">30日売上 <b>1,923万円</b>｜単価 2,811円｜報酬率※ <b class="reward">8%</b></div><div class="vid">🎬 <a href="https://www.tiktok.com/@nextturn.cs/video/7689608478167452948" target="_blank" rel="noopener">一番売れてる動画を見る</a><span class="vm">@nextturn.cs・売上 106万円・15.26万再生</span></div><details class="rg"><summary>📝 この動画の再現ガイド</summary><div class="rgbody">【構成】27秒・紹介型（使い方の実演）。つかみ：鍋のカレーをシリコンの保存バッグに流し込むカットに、オレンジ＋赤フチのテロップ「この食品保存バッグ」→バッグを持ち上げて「作り置きカレーが全て入る!」（集中線エフェクト付き）
 0〜3秒｜鍋からカレーを保存バッグに一気に注ぐ→たっぷり入ったバッグを持ち上げて「作り置きカレーが全て入る!」
 3〜5秒｜IHコンロの上の鍋にラップをかけたカットで「鍋のままラップ保存するのは卒業です」と、よくある悩みを見せる
