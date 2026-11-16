@@ -34,7 +34,9 @@ def main():
     # 既存ページのタブ行に 🤝案件 を差し込む (再生成せずHTMLを直接パッチ)
     tab = (f'<a class="tab" href="./tap.html">🤝 NewTrend商品一覧（{n}）</a>')
     tab_sub = (f'<a class="tab" href="../tap.html">🤝 NewTrend商品一覧（{n}）</a>')
-    pat = re.compile(r'(<a class="tab[^"]*" href="(?:\./|\.\./)?challenge\.html">🚀 新商品（\d+）</a>)')
+    # 🚀新商品タブ (2026-11-16 で廃止) があればその後ろ、なければ🔥売れ筋タブの後ろに差し込む
+    pat = re.compile(r'(<a class="tab[^"]*" href="(?:\./|\.\./)?challenge\.html">🚀 新商品（\d+）</a>'
+                     r'|<a class="tab[^"]*" href="(?:\./|\.\./)?">🔥 売れ筋（\d+）</a>(?!<a class="tab[^"]*" href="[^"]*challenge))')
     if patch_dir == ".":
         targets = ["index.html", "challenge.html", "recommend.html", "live.html"] \
                   + sorted(glob.glob("shops/*.html"))

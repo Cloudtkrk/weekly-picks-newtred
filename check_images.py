@@ -6,7 +6,10 @@ import sys
 
 d = sys.argv[1] if len(sys.argv) > 1 else "preview"
 missing = {}
+import os
 for f in ("index.html", "challenge.html"):
+    if not os.path.exists(f"{d}/{f}"):   # challenge.html は 2026-11-16 から転送ページのみ
+        continue
     s = open(f"{d}/{f}", encoding="utf-8").read()
     for pid in re.findall(r"product-images/(\d+)\.jpeg", s):
         missing.setdefault(pid, set()).add(f)

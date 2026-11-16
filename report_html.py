@@ -436,7 +436,7 @@ def make_embed_fn():
 
 # はじめての人向けの使い方 (売れ筋・新商品の両ページ冒頭。やることを順番に書く)
 HOWTO = """<details class="howto" open><summary>📖 はじめての方へ：このサイトの使い方（5ステップ）</summary><ol>
-<li><div><b>商品を選ぶ</b><br><span>上のタブで「🔥売れ筋」か「🚀新商品」を選び、ジャンルのボタンで絞り込みます。迷ったら <b>🔰初心者でも狙いやすい</b> か <b>🎁自社サンプル可</b> の付いた商品から。</span></div></li>
+<li><div><b>商品を選ぶ</b><br><span>「🔥売れ筋」のジャンルのボタンで絞り込みます。迷ったら <b>🔰初心者でも狙いやすい</b> か <b>🎁自社サンプル可</b> の付いた商品から。</span></div></li>
 <li><div><b>商品名をタップして商品ページを開く</b><br><span>TikTok Shopの商品ページが開きます。ショーケースへの追加やサンプル申請はそこから。報酬率は参考値なので、実際の料率はアフィリエイトセンターで確認してください。</span></div></li>
 <li><div><b>🎬「一番売れてる動画を見る」で、実際に売れた動画を見る</b><br><span>何をどう見せると売れているのかを、まず1本見てつかみます。</span></div></li>
 <li><div><b>📝「この動画の再現ガイド」を開いて、同じ流れで撮る</b><br><span>【構成】の秒数どおりに並べ、【撮り方】【再現のコツ】を真似します。動画をそのまま転載せず、自分の言葉と映像で撮ってください。</span></div></li>
@@ -448,8 +448,9 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
           n_hot: int, n_chal: int, n_own: int = 0, n_live: int = 0):
     if kind == "hot":
         title, color_cls = "🔥 売れ筋", "hot"
-        tabs = (f'<a class="tab active hot" href="./">🔥 売れ筋（{n_hot}）</a>'
-                f'<a class="tab" href="./challenge.html">🚀 新商品（{n_chal}）</a>')
+        tabs = f'<a class="tab active hot" href="./">🔥 売れ筋（{n_hot}）</a>'
+        if n_chal:   # 新商品は 2026-11-16 から載せない (0件ならタブも出さない)
+            tabs += f'<a class="tab" href="./challenge.html">🚀 新商品（{n_chal}）</a>'
     else:
         title, color_cls = "🚀 新商品", "chal"
         tabs = (f'<a class="tab" href="./">🔥 売れ筋（{n_hot}）</a>'
@@ -551,8 +552,9 @@ def _own_tabs(active: str, n_hot: int, n_chal: int, n_own: int, n_live: int,
     """おすすめ/ライブ/ショップ各ページ共通のタブ"""
     def cls(name, extra=""):
         return f'tab active {extra}' if active == name else 'tab'
-    t = (f'<a class="{cls("hot","hot")}" href="{prefix or "./"}">🔥 売れ筋（{n_hot}）</a>'
-         f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>')
+    t = f'<a class="{cls("hot","hot")}" href="{prefix or "./"}">🔥 売れ筋（{n_hot}）</a>'
+    if n_chal:
+        t += f'<a class="{cls("chal","chal")}" href="{prefix}challenge.html">🚀 新商品（{n_chal}）</a>'
     if TAP_TAB_N:
         t += f'<a class="{cls("tap","tap")}" href="{prefix}tap.html">🤝 NewTrend商品一覧（{TAP_TAB_N}）</a>'
     t += f'<a class="tab arch" href="{prefix}archive/">📅 アーカイブ</a>'
@@ -900,7 +902,7 @@ def _shop_pages(own_rows: list, out_dir: str, today: str, n_hot: int, n_chal: in
 def _set_teaser(n_hot: int, n_chal: int, n_own: int, n_live: int):
     """ゲート画面に出す「今週の中身」ティザーを組み立てる"""
     global GATE_TEASER
-    parts = [f"🔥 売れ筋 {n_hot}件", f"🚀 新商品 {n_chal}件"]
+    parts = [f"🔥 売れ筋 {n_hot}件"] + ([f"🚀 新商品 {n_chal}件"] if n_chal else [])
     if n_own:
         parts.append(f"🎁 自社サンプル可 {n_own:,}件")
     GATE_TEASER = "　".join(parts) + " を掲載中"
@@ -909,6 +911,11 @@ def _set_teaser(n_hot: int, n_chal: int, n_own: int, n_live: int):
 def _n_main(hot) -> int:
     """売れ筋の件数 (各ジャンル末尾に足した自社TAP取扱商品は含めない)"""
     return int((hot["枠"] != "TAP").sum()) if "枠" in hot.columns else len(hot)
+
+
+REDIRECT_TOP = ('<!doctype html><html lang="ja"><head><meta charset="utf-8">'
+                '<meta http-equiv="refresh" content="0; url=./"><title>週次おすすめ商品</title></head>'
+                '<body><a href="./">🔥 売れ筋へ</a></body></html>')
 
 
 def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list | None = None):
@@ -924,8 +931,12 @@ def write_site(hot, new_tbl, out_dir: str, embed: bool = False, own_rows: list |
     _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(out_dir, "index.html"),
           embed_fn, today, _n_main(hot), len(new_tbl), n_own, n_live)
-    _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
-          embed_fn, today, _n_main(hot), len(new_tbl), n_own, n_live)
+    if len(new_tbl):
+        _page(new_tbl, "challenge", os.path.join(out_dir, "challenge.html"),
+              embed_fn, today, _n_main(hot), len(new_tbl), n_own, n_live)
+    else:
+        # 新商品は 2026-11-16 から載せない。古いリンクから来た人は売れ筋へ送る
+        _write(os.path.join(out_dir, "challenge.html"), REDIRECT_TOP)
     # 🎁おすすめ / 📺ライブ ページは廃止 (2026-08、🤝案件ページに集約)。
     # own_list.csv 自体は 🎁自社サンプル可バッジ・アフィリンク差し替えに引き続き使う。
 
@@ -958,9 +969,11 @@ def archive_site(hot, new_tbl, root_dir: str = ".", date_str: str | None = None,
     _set_gate_preview(hot)
     _page(hot, "hot", os.path.join(arch_dir, "index.html"),
           None, today, _n_main(hot), len(new_tbl), n_own, n_live)
-    _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
-          None, today, _n_main(hot), len(new_tbl), n_own, n_live)
-    pages = ["index.html", "challenge.html"]   # 🎁おすすめ / 📺ライブ は廃止
+    pages = ["index.html"]   # 🎁おすすめ / 📺ライブ は廃止
+    if len(new_tbl):   # 新商品は 2026-11-16 から載せない
+        _page(new_tbl, "challenge", os.path.join(arch_dir, "challenge.html"),
+              None, today, _n_main(hot), len(new_tbl), n_own, n_live)
+        pages.append("challenge.html")
     for fn in pages:
         p = os.path.join(arch_dir, fn)
         with open(p, encoding="utf-8") as f:
@@ -999,8 +1012,9 @@ def write_archive_index(root_dir: str = "."):
             try:
                 with open(jpath, encoding="utf-8") as f:
                     j = json.load(f)
-                counts = (f'<span class="stats">🔥 売れ筋 {j["n_hot"]}件 / '
-                          f'🚀 新商品 {j["n_challenge"]}件</span>')
+                counts = (f'<span class="stats">🔥 売れ筋 {j["n_hot"]}件'
+                          + (f' / 🚀 新商品 {j["n_challenge"]}件' if j.get("n_challenge") else "")
+                          + '</span>')
             except Exception:
                 pass
         rows.append(f'<a class="card week" href="./{d}/">'
@@ -1014,8 +1028,7 @@ def write_archive_index(root_dir: str = "."):
 .card.week:hover{{border-color:var(--ink)}}</style></head><body>
 <div class="wrap">
 <header><h1>📅 過去のランキング</h1></header>
-<div class="tabs"><a class="tab" href="/">🔥 最新の売れ筋</a>
-<a class="tab" href="/challenge.html">🚀 最新の新商品</a></div>
+<div class="tabs"><a class="tab" href="/">🔥 最新の売れ筋</a></div>
 {body}
 <footer>毎週の更新時に自動保存されるアーカイブです。数値・報酬率は各時点の参考値で、現在の条件とは異なる場合があります。</footer>
 </div></body></html>"""

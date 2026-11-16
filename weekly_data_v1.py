@@ -293,7 +293,7 @@ def discord_header(today: str) -> str:
     nav = ""
     if site:
         nav = (f"\n**▼ 全件はこちら（毎週更新）**\n"
-               f"🔥 売れ筋・🚀 新商品・🎁 おすすめ・📺 ライブ\n{site}\n")
+               f"🔥 売れ筋（ジャンル別の全件）\n{site}\n")
         # Discordは登録済みクリエイターのみのチャンネルなので合言葉を直接記載する
         if CONFIG.get("site_passcode"):
             nav += (f"🔑 合言葉： **{CONFIG['site_passcode']}**\n"
@@ -358,6 +358,8 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat, preview_path: str | 
     today = dt.date.today().strftime("%m/%d")
     send(content=discord_header(today))
     for label, tbl, kind in [("🔥 売れ筋", hot, "hot"), ("🚀 新商品", new_tbl, "challenge")]:
+        if tbl is None or tbl.empty:   # 新商品は 2026-11-16 から載せない (空なら何も出さない)
+            continue
         for cat, g in tbl.groupby("ジャンル", sort=False):
             g = g.head(top_per_cat)
             embeds = [make_embed(r, kind) for _, r in g.iterrows()]
@@ -375,7 +377,8 @@ def post_discord_embeds(hot, new_tbl, webhook, top_per_cat, preview_path: str | 
 
 def autodetect_inputs(input_dir: str):
     """input_dir のKalodataエクスポートを自動判別して
-    (売れ筋, 新商品, 動画, フォロワー少動画orNone) を返す。判別できなければエラーで停止。
+    (売れ筋, 新商品orNone, 動画, フォロワー少動画orNone) を返す。判別できなければエラーで停止。
+    - Kalodata_Product_* ×1: 売れ筋のみ (2026-11-16〜 新商品は載せない)
     - Kalodata_Product_*.xlsx ×2: 「アップロード時間」が全行45日以内の方が新商品
     - Kalodata_Video_*.xlsx ×1〜2: 2つある場合は行数が多い方が通常動画、少ない方がフォロワー少動画"""
     import glob
@@ -385,8 +388,8 @@ def autodetect_inputs(input_dir: str):
             hits += glob.glob(os.path.join(input_dir, f"Kalodata_{kind}_*{ext}"))
         return sorted(hits)
     prods, vids = find("Product"), find("Video")
-    if len(prods) != 2:
-        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_* が2ファイル必要です "
+    if not 1 <= len(prods) <= 2:
+        sys.exit(f"[error] --auto: {input_dir} に Kalodata_Product_* が1〜2ファイル必要です "
                  f"(検出 {len(prods)}件: {prods})")
     if not 1 <= len(vids) <= 2:
         sys.exit(f"[error] --auto: {input_dir} に Kalodata_Video_* が1〜2ファイル必要です "
@@ -405,8 +408,10 @@ def autodetect_inputs(input_dir: str):
             sys.exit(f"[error] --auto: {path} の「{col}」を日付として読めません")
         return bool((ts >= pd.Timestamp.now() - pd.Timedelta(days=days)).all())
 
-    recent = [all_recent(p) for p in prods]
-    if recent == [True, False]:
+    recent = [all_recent(p) for p in prods] if len(prods) == 2 else None
+    if recent is None:
+        hot_f, new_f = prods[0], None
+    elif recent == [True, False]:
         new_f, hot_f = prods
     elif recent == [False, True]:
         hot_f, new_f = prods
@@ -441,7 +446,7 @@ def autodetect_inputs(input_dir: str):
     else:
         main_v, small_v = vids[0], None
 
-    print(f"[info] --auto判別: 売れ筋={hot_f} / 新商品={new_f} / 動画={main_v}"
+    print(f"[info] --auto判別: 売れ筋={hot_f} / 新商品={new_f or 'なし'} / 動画={main_v}"
           + (f" / フォロワー少動画={small_v}" if small_v else ""))
     return hot_f, new_f, main_v, small_v
 
@@ -557,8 +562,8 @@ def main():
 
     if args.auto:
         args.products, args.new, args.videos, args.videos_small = autodetect_inputs(args.auto)
-    elif not (args.products and args.new and args.videos):
-        ap.error("--products/--new/--videos を指定するか --auto <DIR> を使ってください")
+    elif not (args.products and args.videos):
+        ap.error("--products/--videos (--new は任意) を指定するか --auto <DIR> を使ってください")
 
     videos = load_videos(args.videos)
     small_keys = set()
@@ -572,18 +577,21 @@ def main():
     n_before = len(prod_main)
     prod_main = prod_main[prod_main["units"] / 30 >= CONFIG["hot_min_daily_units"]]
     print(f"[info] 日販{CONFIG['hot_min_daily_units']}個以上: {n_before}件 → {len(prod_main)}件")
-    prod_new = tag_and_filter(load_products(args.new))
-    # 新商品: 成長率マイナスと参画3人以下を除外
-    prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
-                        & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
-
     hot = build_table(prod_main, videos, small_keys, hot_badges=True)
-    # 新商品: 掲載日数以内(データにあれば適用)
-    new_tbl = build_table(prod_new, videos, small_keys)
-    cutoff = pd.Timestamp.now() - pd.Timedelta(days=CONFIG["challenge_max_listed_days"])
-    recent_mask = new_tbl["_listed"] >= cutoff
-    if recent_mask.any():
-        new_tbl = new_tbl[recent_mask]
+    # 新商品は 2026-11-16 から載せない (ユーザー指示)。--new を渡したときだけ作る
+    if args.new:
+        prod_new = tag_and_filter(load_products(args.new))
+        # 新商品: 成長率マイナスと参画3人以下を除外
+        prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
+                            & (prod_new["n_creators"] > CONFIG["challenge_min_creators"])]
+        # 新商品: 掲載日数以内(データにあれば適用)
+        new_tbl = build_table(prod_new, videos, small_keys)
+        cutoff = pd.Timestamp.now() - pd.Timedelta(days=CONFIG["challenge_max_listed_days"])
+        recent_mask = new_tbl["_listed"] >= cutoff
+        if recent_mask.any():
+            new_tbl = new_tbl[recent_mask]
+    else:
+        new_tbl = hot.iloc[0:0].copy()
 
     # 並び順: ジャンル固定順 → ⭐(直近7日動画売上あり)優先 → 乗りやすさ順。
     # 乗りやすさ = 成立率のパーセンタイル + 1人あたりGMVのパーセンタイル
@@ -688,7 +696,8 @@ def main():
                 f"　30日売上 {r['30日売上']}（{r['販売件数']}）｜直近7日動画売上 {r['直近7日動画売上']}（{r['直近7日動画本数']}本）",
                 f"　単価 {r['単価']}｜報酬率 {r['報酬率']}→**1件{r['報酬目安/件']}**｜成立率 {r['成立率']}（参画{r['参画クリエイター数']}人）",
                 f"　タグ: {r['タグ'] or 'なし'}", ""]
-    lines += ["# 🚀 新商品候補"]
+    if len(new_tbl):
+        lines += ["# 🚀 新商品候補"]
     for cat, g in new_tbl.groupby("ジャンル", sort=False):
         lines += [f"## ▼ {cat}（{len(g)}件）"]
         for _, r in g.iterrows():
