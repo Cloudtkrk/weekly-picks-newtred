@@ -323,6 +323,9 @@ def _card(r, kind: str, embed_fn=None) -> str:
     # 表示はシンプルに3項目のみ。詳細指標はExcel/data JSON側に残す
     if r.get("枠") == "TAP":          # 各ジャンル末尾の自社TAP取扱商品 (売上データなし)
         line1 = f'単価 {r["単価"]}｜報酬率※ <b class="reward">{r["報酬率"]}</b>'
+    elif r.get("枠") == "シート":     # 🚀新商品 (スプレッドシート。報酬率は無い)
+        line1 = (f'{_h.escape(str(r["売上ラベル"]))} <b>{_h.escape(str(r["30日売上"]))}</b>｜'
+                 f'単価 {_h.escape(str(r["単価"]))}｜成長率 {_h.escape(str(r["成長率"]))}')
     else:
         line1 = (f'30日売上 <b>{r["30日売上"]}</b>｜単価 {r["単価"]}｜'
                  f'報酬率※ <b class="reward">{r["報酬率"]}</b>')
@@ -459,6 +462,12 @@ def _page(tbl, kind: str, out_path: str, embed_fn, today: str,
         tabs += f'<a class="tab" href="./tap.html">🤝 NewTrend商品一覧（{TAP_TAB_N}）</a>'
     tabs += '<a class="tab arch" href="./archive/">📅 アーカイブ</a>'
     guide = ""
+    if kind == "challenge" and (tbl["枠"] == "シート").any():
+        guide = """<div class="guide"><div class="g-title">🚀 新商品の見方</div><ul>
+<li><b>掲載30日以内</b>：直近30日で売上が伸びている、掲載30日以内の商品（数字は動画売上・30日）</li>
+<li><b>直近7日 注文○件</b>：直近7日で注文100件以上、売上が落ちていない商品（数字は動画売上・7日）</li>
+<li>どちらもクリエイター数40以下で、まだ参入が少ない商品です。報酬率は商品ページで確認してください</li>
+</ul></div>"""
     if kind == "hot":
         guide = """<div class="guide"><div class="g-title">自分に合う商品の選び方</div><ul>
 <li><span class="pill easy">🔰 初心者でも狙いやすい</span>承認ペースが速く成立率も高い、またはフォロワーの少ないクリエイターでも売れている実績あり</li>

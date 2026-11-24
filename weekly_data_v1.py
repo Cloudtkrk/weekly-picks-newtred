@@ -271,7 +271,10 @@ def make_embed(r, kind: str) -> dict:
     badges = str(r.get("バッジ") or "")
     if badges:
         desc.append(badges.replace("・", "　"))       # Webのピル行に相当
-    desc.append(f"30日売上 **{r['30日売上']}**｜単価 {r['単価']}｜報酬率※ **{r['報酬率']}**")
+    if r.get("枠") == "シート":   # 🚀新商品 (スプレッドシート): 報酬率は無い
+        desc.append(f"{r['売上ラベル']} **{r['30日売上']}**｜単価 {r['単価']}｜成長率 {r['成長率']}")
+    else:
+        desc.append(f"30日売上 **{r['30日売上']}**｜単価 {r['単価']}｜報酬率※ **{r['報酬率']}**")
     if r["タグ"]:
         desc.append(f"🏷️ {r['タグ']}")
     star = "⭐ " if r.get("おすすめ") == "⭐" and kind == "hot" else ""
@@ -540,6 +543,8 @@ def main():
                          "(--products/--new/--videos/--videos-small の代わり)")
     ap.add_argument("--products", default=None)
     ap.add_argument("--new", default=None)
+    ap.add_argument("--new-sheet", default=None,
+                    help="🚀新商品をスプレッドシートから作る (sheet_new.py fetch の CSV)。--auto なら input/Sheet_New_*.csv を自動で使う")
     ap.add_argument("--videos", default=None)
     ap.add_argument("--videos-small", default=None,
                     help="フォロワー少クリエイターの上位動画エクスポート (🔰判定の実証データ、任意)")
@@ -562,6 +567,9 @@ def main():
 
     if args.auto:
         args.products, args.new, args.videos, args.videos_small = autodetect_inputs(args.auto)
+        if not args.new_sheet:
+            from sheet_new import latest_csv
+            args.new_sheet = latest_csv(args.auto)
     elif not (args.products and args.videos):
         ap.error("--products/--videos (--new は任意) を指定するか --auto <DIR> を使ってください")
 
@@ -578,8 +586,13 @@ def main():
     prod_main = prod_main[prod_main["units"] / 30 >= CONFIG["hot_min_daily_units"]]
     print(f"[info] 日販{CONFIG['hot_min_daily_units']}個以上: {n_before}件 → {len(prod_main)}件")
     hot = build_table(prod_main, videos, small_keys, hot_badges=True)
-    # 新商品は 2026-11-16 から載せない (ユーザー指示)。--new を渡したときだけ作る
-    if args.new:
+    # 新商品は 2026-11-16 から Kalodata では作らない (ユーザー指示)。
+    # 2026-11-24〜 スプレッドシート「商品選定リスト」の14タブをそのまま載せる (sheet_new.py。足切り・並べ替えなし)
+    if args.new_sheet:
+        from sheet_new import load_sheet_new
+        new_tbl = load_sheet_new(args.new_sheet, list(hot.columns))
+        print(f"[info] 新商品 (スプレッドシート {os.path.basename(args.new_sheet)}): {len(new_tbl)}件")
+    elif args.new:
         prod_new = tag_and_filter(load_products(args.new))
         # 新商品: 成長率マイナスと参画3人以下を除外
         prod_new = prod_new[(prod_new["growth_pct"] >= CONFIG["challenge_min_growth"])
@@ -603,14 +616,14 @@ def main():
     hot = hot.sort_values(["_genre", "_star", "_ride"],
                           ascending=[True, False, False], kind="stable")
     hot = hot.groupby("ジャンル", sort=False).head(CONFIG["per_genre_limit"])
-    # 新商品は件数制限なし・同じジャンル構成で成長率順のまま
-    new_tbl["_genre"] = new_tbl["ジャンル"].map(genre_pos)
-    new_tbl = new_tbl.sort_values(["_genre", "_growth"],
-                                  ascending=[True, False], kind="stable")
+    # 新商品は件数制限なし・同じジャンル構成で成長率順のまま (スプレッドシートのときはシートの並びのまま)
+    if not args.new_sheet:
+        new_tbl["_genre"] = new_tbl["ジャンル"].map(genre_pos)
+        new_tbl = new_tbl.sort_values(["_genre", "_growth"],
+                                      ascending=[True, False], kind="stable")
 
     drop = ["_gmv", "_growth", "_listed", "_cvr", "_gmv_pc", "_genre", "_star", "_ride"]
     hot_gmv_raw = hot["_gmv"]
-    new_gmv_raw = new_tbl["_gmv"]
     hot = hot.drop(columns=drop)
     new_tbl = new_tbl.drop(columns=[c for c in drop if c in new_tbl.columns])
 
